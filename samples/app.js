@@ -1,6 +1,7 @@
 let restify = require('restify');
 let builder = require('botbuilder');
 var teams = require("botbuilder-teams");
+var serviceNow = require("./serviceNow");
 
 //=========================================================
 // Bot Setup
