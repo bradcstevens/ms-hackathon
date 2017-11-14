@@ -1,11 +1,23 @@
 let axios = require('axios')
 
+let auth = `Basic ${Buffer.from("arerlend:Arthur999").toString('base64')}`;
+
 const config = {
-	headers: { "Content-Type": "application/json" }
+	headers: { 
+		"Content-Type": "application/json",
+		"Authorization": auth
+	}
 };
 
 const createTicket = (dialogData) => {
-	let route = "";
+	let route = "https://dev45236.service-now.com/api/now/v1/table/incident";
+	let ticket = {
+		caller_id: dialogData.caller,
+		short_description: dialogData.description,
+		urgency: dialogData.urgency,
+		notes: dialogData.notes ? dialogData.notes: "",
+		state: "New"
+	}
 	return axios.post(route, ticket, config)
 }
 
@@ -34,5 +46,5 @@ module.exports = {
 	listTickets: listTickets,
 	closeTicket: closeTicket,
 	updateTicket: updateTicket,
-	reOpenTicket: reOpenTicket,
+	reOpenTicket: reOpenTicket
 }

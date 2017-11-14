@@ -40,6 +40,8 @@ bot.dialog('/', [
 
 bot.dialog('/createTicket', [
     (session, args, next) => {
+        //HARDCODED - need to pull from teams
+        session.dialogData.caller = "Arthur Erlendsson";
         session.send("Hmm, I see that you want to create a ticket")
         builder.Prompts.text(session, "Can you give me a description of the problem?")
     },
@@ -55,12 +57,21 @@ bot.dialog('/createTicket', [
         if (results.response.entity === "Yes") {
             builder.Prompts.text(session, "Go ahead")
         } else {
-            session.endDialog();
+            serviceNow.createTicket(session.dialogData)
+                .then((res) => {
+                    session.endDialog();
+                }).catch((err) => {
+                    console.log("ERR", err)
+                })
         }
     },
     (session, results, next) => {
         session.dialogData.notes = results.response;
-        session.endDialog();
+        serviceNow.createTicket(session.dialogData)
+            .then((res) => {
+                console.log("Created", res)
+                session.endDialog();
+            })
     }
 ]).triggerAction({
     matches: "CreateTicket",
