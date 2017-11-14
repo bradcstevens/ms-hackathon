@@ -1,13 +1,15 @@
+require('dotenv').config()
 var builder = require('botbuilder');
 var restify = require('restify');
 
+
 // Setup Restify Server
 var server = restify.createServer();
-server.listen(process.env.port || process.env.PORT || 3978, function () {
+server.listen(process.env.port || process.env.PORT || 3978, function() {
     console.log('%s listening to %s', server.name, server.url);
 });
-
-// Create chat bot
+console.log(process.env)
+    // Create chat bot
 var connector = new builder.ChatConnector({
     appId: process.env.MICROSOFT_APP_ID,
     appPassword: process.env.MICROSOFT_APP_PASSWORD
@@ -19,9 +21,7 @@ const ResetPasswordOption = 'Reset Password';
 var bot = new builder.UniversalBot(connector, [
     (session) => {
         builder.Prompts.choice(session,
-            'What do yo want to do today?',
-            [ChangePasswordOption, ResetPasswordOption],
-            { listStyle: builder.ListStyle.button });
+            'What do yo want to do today?', [ChangePasswordOption, ResetPasswordOption], { listStyle: builder.ListStyle.button });
     },
     (session, result) => {
         if (result.response) {
