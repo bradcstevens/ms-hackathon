@@ -1,8 +1,8 @@
 require('dotenv').config()
 var builder = require('botbuilder');
+var teams = require('botbuilder-teams');
 var restify = require('restify');
 var serviceNow = require("./serviceNow");
-
 
 
 // Setup Restify Server
@@ -10,8 +10,6 @@ var server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, function () {
     console.log('%s listening to %s', server.name, server.url);
 });
-
-console.log(process.env.MICROSOFT_APP_ID)
 
 // Create chat bot
 var connector = new builder.ChatConnector({
@@ -41,9 +39,14 @@ bot.dialog('/', [
 bot.dialog('/createTicket', [
     (session, args, next) => {
         //HARDCODED - need to pull from teams
-        session.dialogData.caller = "Arthur Erlendsson";
-        session.send("Hmm, I see that you want to create a ticket")
-        builder.Prompts.text(session, "Can you give me a description of the problem?")
+        let firstName = "Arthur";
+        let lastName = "Erlendsson"
+        serviceNow.getUserRecord(firstName, lastName)
+            .then((res) => {
+                session.dialogData.caller_id = res.data.result[0].sys_id;
+                session.send("Hmm, I see that you want to create a ticket")
+                builder.Prompts.text(session, "Can you give me a description of the problem?")
+            })
     },
     (session, results, next) => {
         session.dialogData.description = results.response;

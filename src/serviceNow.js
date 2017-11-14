@@ -12,12 +12,13 @@ const config = {
 const createTicket = (dialogData) => {
 	let route = "https://dev45236.service-now.com/api/now/v1/table/incident";
 	let ticket = {
-		caller_id: dialogData.caller,
+		caller_id: dialogData.caller_id,
 		short_description: dialogData.description,
 		urgency: dialogData.urgency,
 		notes: dialogData.notes ? dialogData.notes: "",
 		state: "New"
 	}
+	console.log(ticket)
 	return axios.post(route, ticket, config)
 }
 
@@ -51,5 +52,6 @@ module.exports = {
 	listTickets: listTickets,
 	closeTicket: closeTicket,
 	updateTicket: updateTicket,
-	reOpenTicket: reOpenTicket
+	reOpenTicket: reOpenTicket,
+	getUserRecord: getUserRecord
 }
