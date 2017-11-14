@@ -21,9 +21,9 @@ const createTicket = (dialogData) => {
 	return axios.post(route, ticket, config)
 }
 
-const listTickets = (ticket) => {
-	let route = "";
-	return axios.post(route, ticket, config)
+const listTickets = async (callerId) => {
+	let route = `https://dev45236.service-now.com/api/now/table/incident?sysparm_query=caller_id%3D${callerId}`;
+	return axios.get(route, config)
 }
 
 const closeTicket = (ticket) => {
