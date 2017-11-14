@@ -49,7 +49,7 @@ bot.dialog('/createTicket', [
             })
     },
     (session, results, next) => {
-        session.dialogData.description = results.response;
+        session.dialogData.short_description = results.response;
         builder.Prompts.choice(session, "Thanks! What level of urgency?", ["High", "Medium", "Low"], { listStyle: builder.ListStyle.button })
     },
     (session, results, next) => {

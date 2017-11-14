@@ -10,13 +10,16 @@ const config = {
 };
 
 const createTicket = (dialogData) => {
-	let route = "https://dev45236.service-now.com/api/now/v1/table/incident";
+	let route = "https://dev45236.service-now.com/api/now/v1/table/incident?sysparm_suppress_auto_sys_field=true";
 	let ticket = {
 		caller_id: dialogData.caller_id,
-		short_description: dialogData.description,
+		short_description: dialogData.short_description,
 		urgency: dialogData.urgency,
-		notes: dialogData.notes ? dialogData.notes: "",
-		state: "New"
+		state: "New",
+		sys_created_by: dialogData.caller,
+		sys_created_on: Date.now(),
+		sys_updated_by: dialogData.caller,
+		sys_updated_on: Date.now()
 	}
 	return axios.post(route, ticket, config)
 }
@@ -31,9 +34,17 @@ const closeTicket = (ticket) => {
 	return axios.post(route, ticket, config)
 }
 
-const updateTicket = (ticket) => {
-	let route = "";
-	return axios.post(route, ticket, config)
+const updateTicket = (ticket, ticketSysId, userId) => {
+    let route = `https://dev45236.service-now.com/api/now/table/incident/${ticketSysId}?sysparm_suppress_auto_sys_field=true`;
+    let updateTicket = {
+        caller_id: ticket.caller_id,
+        short_description: ticket.short_description,
+        urgency: ticket.urgency,
+        state: ticket.state,
+        sys_updated_by: userId,
+        sys_updated_on: Date.now()
+    }
+    return axios.put(route, updateTicket, config)
 }
 
 const reOpenTicket = (ticket) => {
