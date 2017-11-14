@@ -41,7 +41,7 @@ const reOpenTicket = (ticket) => {
 	return axios.post(route, ticket, config)
 }
 
-const getSysUserId = async (firstName, lastName) => {
+const getUserRecord = async (firstName, lastName) => {
 	let route = `https://dev45236.service-now.com/api/now/v1/table/sys_user?sysparm_query=first_name%3D${firstName}%5Elast_name%3D${lastName}`;
 	return axios.get(route,config);
 }
