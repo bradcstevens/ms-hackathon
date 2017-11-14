@@ -26,7 +26,7 @@ var model = 'https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/' + proce
 var recognizer = new builder.LuisRecognizer(model)
 var dialog = new builder.IntentDialog({ recognizers: [recognizer] });
 
-myObj = { 'username': 'null', 'issueType': 'null', 'deviceType': 'null', 'macaddr': 'null', 'resHall': 'null' };
+myObj = { 'username': 'null', 'createTicket': 'null', 'updateTicket': 'null', 'reopenTicket': 'null', 'listTickets': 'null', 'closeTicket': 'null' };
 var isDone = false;
 
 bot.dialog('/', dialog)
