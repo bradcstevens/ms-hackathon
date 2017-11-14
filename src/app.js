@@ -97,16 +97,68 @@ bot.dialog('/listTickets', [
 
 bot.dialog('/reOpenTicket', [
     (session, args, next) => {
-        session.send("you said hello!")
+        //HARDCODED - need to pull from teams
+        session.dialogData.caller = "Arthur Erlendsson";
+        session.send("Great, I see that you want to re-open a ticket")
+        builder.Prompts.text(session, "What ticket number would you like to re-open?")
     },
+    (session, results, next) => {
+        session.dialogData.number = results.response;
+        builder.Prompts.choice(session, "Would you like to add any notes to the ticket?", ["Yes", "No"], { listStyle: builder.ListStyle.button })
+    },
+    (session, results, next) => {
+        if (results.response.entity === "Yes") {
+            builder.Prompts.text(session, "Go ahead")
+        } else {
+            serviceNow.reOpenTicket(session.dialogData)
+                .then((res) => {
+                    session.endDialog();
+                }).catch((err) => {
+                    console.log("ERR", err)
+                })
+        }
+    },
+    (session, results, next) => {
+        session.dialogData.notes = results.response;
+        serviceNow.reOpenTicket(session.dialogData)
+            .then((res) => {
+                console.log("Re-opened", res)
+                session.endDialog();
+            })
+    }
 ]).triggerAction({
     matches: "ReOpenTicket",
 });
 
 bot.dialog('/closeTicket', [
     (session, args, next) => {
-        session.send("you said hello!")
+        //HARDCODED - need to pull from teams
+        session.dialogData.caller = "Arthur Erlendsson";
+        session.send("Awesome, I see that you want to close a ticket")
+        builder.Prompts.text(session, "What ticket number would you like to close?")
     },
+    (session, results, next) => {
+        session.dialogData.number = results.response;
+        builder.Prompts.choice(session, "Would you like to add any notes to the ticket?", ["Yes", "No"], { listStyle: builder.ListStyle.button })
+    },
+    (session, results, next) => {
+        if (results.response.entity === "Yes") {
+            builder.Prompts.text(session, "Go ahead")
+        }
+    },
+    (session, results, next) => {
+        session.dialogData.close_notes = results.response;
+        // Change this to pull resolution codes from SN?
+        builder.Prompts.choice(session, "What is the Resolution Code?", ["Solved (Work Around)", "Solved (Permanently)", "Solved Remotely (Work Around)", "Solved Remotely (Permanently)", "Not Solved (Not Reproducible)", "Not Solved (Too Costly)", "Closed/Resolved by Caller" ], { listStyle: builder.ListStyle.button })
+    },
+    (session, results, next) => {
+        session.dialogData.close_code = results.response.entity;
+        serviceNow.closeTicket(session.dialogData)
+            .then((res) => {
+                console.log("Ticket closed", res)
+                session.endDialog();
+            })
+    }
 ]).triggerAction({
     matches: "CloseTicket",
 });
