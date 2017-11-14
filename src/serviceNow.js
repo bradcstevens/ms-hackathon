@@ -18,7 +18,6 @@ const createTicket = (dialogData) => {
 		notes: dialogData.notes ? dialogData.notes: "",
 		state: "New"
 	}
-	console.log(ticket)
 	return axios.post(route, ticket, config)
 }
 

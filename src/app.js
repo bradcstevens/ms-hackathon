@@ -20,7 +20,7 @@ var connector = new builder.ChatConnector({
 // Listen for messages
 server.post('/api/messages', connector.listen());
 
-var bot = new builder.UniversalBot(connector, '/');
+var bot = new builder.UniversalBot(connector);
 
 var model = 'https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/' + process.env.LUIS_ID + '?subscription-key=' + process.env.LUIS_KEY + '&verbose=true&timezoneOffset=0&q='
 var recognizer = new builder.LuisRecognizer(model)
@@ -72,7 +72,6 @@ bot.dialog('/createTicket', [
         session.dialogData.notes = results.response;
         serviceNow.createTicket(session.dialogData)
             .then((res) => {
-                console.log("Created", res)
                 session.endDialog();
             })
     }
