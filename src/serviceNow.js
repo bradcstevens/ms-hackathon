@@ -4,7 +4,7 @@ const config = {
 	headers: { "Content-Type": "application/json" }
 };
 
-const createTicket = (ticket) => {
+const createTicket = (dialogData) => {
 	let route = "";
 	return axios.post(route, ticket, config)
 }

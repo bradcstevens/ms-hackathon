@@ -1,15 +1,17 @@
 require('dotenv').config()
 var builder = require('botbuilder');
 var restify = require('restify');
+var serviceNow = require("./serviceNow");
+
 
 
 // Setup Restify Server
 var server = restify.createServer();
-server.listen(process.env.port || process.env.PORT || 3978, function() {
+server.listen(process.env.port || process.env.PORT || 3978, function () {
     console.log('%s listening to %s', server.name, server.url);
 });
 
-console.log(process.env)
+console.log(process.env.MICROSOFT_APP_ID)
 
 // Create chat bot
 var connector = new builder.ChatConnector({
@@ -29,60 +31,69 @@ var dialog = new builder.IntentDialog({ recognizers: [recognizer] });
 myObj = { 'username': 'null', 'createTicket': 'null', 'updateTicket': 'null', 'reopenTicket': 'null', 'listTickets': 'null', 'closeTicket': 'null' };
 var isDone = false;
 
-bot.dialog('/', dialog)
+//Dialogs
+bot.dialog('/', [
+    (session, args, next) => {
+        session.beginDialog('/createTicket')
+    },
+])
 
-    //========================
-    //LUIS Dialog
-    //========================
-
-    //==========
-    //Help!
-    //==========
-    .matches('help', helpResponse)
-    .matches('greeting', helpResponse)
-
-    //==========
-    //Create Tickets
-    //==========
-    .matches('create', createTicket)
-    .matches('new', createTicket)
-    .matches('issue', createTicket)
-
-
-    //==========
-    //reset in event of wrong answers
-    //==========
-    .matches('restart', restartResponse)
-    .onDefault((session, results) => {
-        session.send("Sorry, I didn't understand");
-    })
-
-    //==========
-    //Help!
-    //==========
-    function helpResponse(session)
-    {
-        session.send("I'm your Library Digital Assistant to help you get your issue to someone who can help. What appears to be the problem?")
+bot.dialog('/createTicket', [
+    (session, args, next) => {
+        session.send("Hmm, I see that you want to create a ticket")
+        builder.Prompts.text(session, "Can you give me a description of the problem?")
+    },
+    (session, results, next) => {
+        session.dialogData.description = results.response;
+        builder.Prompts.choice(session, "Thanks! What level of urgency?", ["High", "Medium", "Low"], { listStyle: builder.ListStyle.button })
+    },
+    (session, results, next) => {
+        session.dialogData.urgency = results.response.entity;
+        builder.Prompts.choice(session, "Would you like to add any additional notes?", ["Yes", "No"], { listStyle: builder.ListStyle.button })
+    },
+    (session, results, next) => {
+        if (results.response.entity === "Yes") {
+            builder.Prompts.text(session, "Go ahead")
+        } else {
+            session.endDialog();
+        }
+    },
+    (session, results, next) => {
+        session.dialogData.notes = results.response;
+        session.endDialog();
     }
+]).triggerAction({
+    matches: "CreateTicket",
+});
 
-    //==========
-    //Base issue
-    //==========
-    function createTicket(session)
-    {
-        session.send("First things first, what seems to be the problem?");
-    }
+bot.dialog('/updateTicket', [
+    (session, args, next) => {
+        session.send("you said hello!")
+    },
+]).triggerAction({
+    matches: "UpdateTicket",
+});
 
-    //==========
-    //reset in event of wrong answers
-    //==========
-    function restartResponse(session)
-    {
-        for (x in myObj)
-            {
-                myObj[x] = "null";
-            }
-        session.send("Sorry for the mistake. We've cleared all our data again, please describe your issue again.")
-    }
+bot.dialog('/listTickets', [
+    (session, args, next) => {
+        session.send("you said hello!")
+    },
+]).triggerAction({
+    matches: "ListTickets",
+});
 
-server.post('/api/messages', connector.listen());
+bot.dialog('/reOpenTicket', [
+    (session, args, next) => {
+        session.send("you said hello!")
+    },
+]).triggerAction({
+    matches: "ReOpenTicket",
+});
+
+bot.dialog('/closeTicket', [
+    (session, args, next) => {
+        session.send("you said hello!")
+    },
+]).triggerAction({
+    matches: "CloseTicket",
+});

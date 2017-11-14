@@ -32,10 +32,10 @@ bot.dialog('/', [
     },
 ])
 
-bot.dialog('/testDialog', [
+bot.dialog('/createTicket', [
     (session, args, next) => {
         session.send("you said hello!")
     },
 ]).triggerAction({
-    matches: /^hello$/,
+    matches: "CreateTicket",
 });
