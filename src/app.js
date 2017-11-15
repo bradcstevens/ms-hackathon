@@ -38,7 +38,7 @@ bot.dialog('/', [
 
 bot.dialog('/createTicket', [
     (session, args, next) => {
-        // Get User
+		let fullName = session.message.address.user.name
         let firstName = "Arthur";
         let lastName = "Erlendsson"
         serviceNow.getUserRecord(firstName, lastName)
