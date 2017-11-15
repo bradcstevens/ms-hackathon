@@ -68,7 +68,6 @@ bot.dialog('/createTicket', [
         serviceNow.getUserRecord(firstName, lastName)
             .then((res) => {
                 session.dialogData.caller_id = res.data.result[0].sys_id;
-                session.send("Hmm, I see that you want to create a ticket")
                 builder.Prompts.text(session, "Can you give me a description of the problem?")
             })
     },
@@ -111,7 +110,6 @@ bot.dialog('/createTicket', [
 
 bot.dialog('/updateTicket', [
     (session, args, next) => {
-        session.send("I see that you'd like to update a ticket.");
         builder.Prompts.text(session, "What is the number of the ticket you'd like to update?");
     },
     (session, results, next) => {
@@ -121,8 +119,39 @@ bot.dialog('/updateTicket', [
             .then((res) => {
                 session.dialogData.ticket = res.ticket;
             })
-    }
-    // NOW FIGURE OUT WHAT FIELDS THE USER WANTS TO MODIFY
+    },
+
+    (session, results, next) => {
+        session.dialogData.urgency = results.response.entity;
+        builder.Prompts.choice(session, "What field would you like to modify?", ["Work Notes", "State"], { listStyle: builder.ListStyle.button })
+    },
+    (session, results, next) => {
+        if (results.response.entity === "State") {
+            // Update State
+            var upd = "State"
+            builder.Prompts.choice(session, "What shall I change the state to?", ["New", "In Process", "On Hold", "Resolved", "Closed", "Canceled"], { listStyle: builder.ListStyle.button })
+        } else {
+            // Update Work Notes
+            var upd = "Notes"
+            builder.Prompts.text(session, "Please enter the notes you wish to add")
+        }
+    },
+
+   (session, results, next) => {
+        if (upd === "State") {
+            session.dialogData.state = results.response;
+        }
+        else {
+            session.dialogData.notes = results.response;
+        }
+        
+        serviceNow.updateTicket(session.dialogData)
+        .then((res) => {
+            console.log("Ticket Updated", res)
+            session.endDialog();
+        })
+    },
+
 ]).triggerAction({
     matches: "UpdateTicket",
 }).endConversationAction(
