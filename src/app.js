@@ -147,6 +147,8 @@ bot.dialog('/updateTicket', [
             // Update Work Notes
             var upd = "Notes"
             builder.Prompts.text(session, "Please enter the notes you wish to add")
+            
+            
         }
     },
 
