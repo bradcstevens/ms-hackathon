@@ -43,7 +43,7 @@ Every IT department request ticket that is sent to CDW is currently  handled by 
 
 CDW saw two primary ways to achieve this goal: make _, and better _.
 
->"Quote_." -
+>"In the world we live in, of everything being available at the click of a button, Microsoft has implemented a point-and-click solution, that we were able to leverage with minimal effort, for something as complicated as Machine Learning. LUIS is probably the best example I've seen first-hand of Machine Learning." -
 >*Brad Stevens, Senior Consulting Engineer, CDW*
 
 Most _ have a large amount of information accompanying them for _ to read.
