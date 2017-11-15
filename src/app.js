@@ -117,14 +117,11 @@ bot.dialog('/updateTicket', [
         session.send("Let me fetch that ticket for you.");
         serviceNow.getTicketByNumber(session.dialogData.ticketNumber)
             .then((res) => {
-                session.dialogData.ticket = res.ticket;
+                session.dialogData.ticket = res.sys_id;
+                builder.Prompts.choice(session, "What field would you like to modify?", ["Work Notes", "State"], { listStyle: builder.ListStyle.button })
             })
     },
 
-    (session, results, next) => {
-        session.dialogData.urgency = results.response.entity;
-        builder.Prompts.choice(session, "What field would you like to modify?", ["Work Notes", "State"], { listStyle: builder.ListStyle.button })
-    },
     (session, results, next) => {
         if (results.response.entity === "State") {
             // Update State
