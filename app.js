@@ -129,12 +129,12 @@ bot.dialog('/login', [
                                     session.endDialog();
                                 })
                                 .catch((err) => {
-                                    session.send("Hmm, I can't find your user account with those credentials. Let's try again.")
+                                    session.send("Hmm, I can't find your user account with your teams credentials.")
                                     session.replaceDialog('/specifyCredentials')
                                 })
                         })
                         .catch((err) => {
-                            session.send("Hmm, I can't find your user account with those credentials. Let's try again.")
+                            session.send("Hmm, I can't find your user account with your teams credentials.")
                             session.replaceDialog('/specifyCredentials')
                         })
                 })
