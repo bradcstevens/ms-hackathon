@@ -1,9 +1,11 @@
-require('dotenv').config()
 var builder = require('botbuilder');
 var teams = require('botbuilder-teams');
 var restify = require('restify');
 var serviceNow = require("./serviceNow");
 var axios = require("axios");
+const dotenv = require("dotenv");
+
+dotenv.load();
 
 // Setup Restify Server
 var server = restify.createServer();
@@ -170,8 +172,8 @@ bot.dialog('/updateTicket', [
             // Update Work Notes
             var upd = "Notes"
             builder.Prompts.text(session, "Please enter the notes you wish to add")
-            
-            
+
+
         }
     },
 
