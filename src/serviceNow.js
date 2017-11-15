@@ -25,12 +25,12 @@ const createTicket = (dialogData) => {
 }
 
 const getTicketByNumber = async (ticketNumber) => {
-    let route = "https://dev45236.service-now.com/api/now/table/incident?sysparm_query=number%3D${ticketNumber}";
+    let route = `https://dev45236.service-now.com/api/now/v1/table/incident?sysparm_query=number%3D${ticketNumber}`;
     return axios.get(route,config);
 }
 
 const listTickets = async (callerId) => {
-	let route = "https://dev45236.service-now.com/api/now/table/incident?sysparm_query=caller_id%3D${callerId}";
+	let route = `https://dev45236.service-now.com/api/now/table/incident?sysparm_query=caller_id%3D${callerId}`;
 	return axios.get(route, config)
 }
 
@@ -68,5 +68,6 @@ module.exports = {
 	closeTicket: closeTicket,
 	updateTicket: updateTicket,
 	reOpenTicket: reOpenTicket,
-	getUserRecord: getUserRecord
+	getUserRecord: getUserRecord,
+	getTicketByNumber: getTicketByNumber
 }
