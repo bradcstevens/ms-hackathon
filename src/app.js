@@ -61,6 +61,9 @@ bot.dialog('/hello', [
 bot.dialog('/login', [
     (session, args, next) => {
         if (session.message.address.channelId === "msteams") {
+            //There are 2 steps to get the user info from a chat
+            //1. Get an access token
+            //2. Use the access token to pull the user
             let appId = process.env.MICROSOFT_APP_ID
             let appPassword = process.env.MICROSOFT_APP_PASSWORD
             const tokenUrl = `https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token`;
@@ -71,6 +74,7 @@ bot.dialog('/login', [
                     "Host": "login.microsoftonline.com"
                 },
             };
+            //This request will return the access token
             axios.post(tokenUrl, tokenBody, tokenConfig)
                 .then((res) => {
                     let accessToken = res.data.access_token;
@@ -82,8 +86,18 @@ bot.dialog('/login', [
                             "Authorization": `Bearer ${accessToken}`
                         },
                     };
+                    //This request will return the user
                     axios.get(route, authorizedConfig)
                         .then((res) => {
+                            //RESULTANT PAYLOAD - 
+                            // [{ id: '29:1GEnGoPgXQBlHio0KwoUwxhqLfMAvdLQXpFOn7PEIsBjrKBgnYmwJeepucBpCT6fSkCQF7LXW2IWqJgnT3lYiyw',
+                            // objectId: 'c49fe892-7d11-4ef8-a551-a755a2471b4a',
+                            // name: 'Lucas Huet-Hudson',
+                            // givenName: 'Lucas',
+                            // surname: 'Huet-Hudson',
+                            // email: 'lucashh@microsoft.com',
+                            // userPrincipalName: 'lucashh@microsoft.com' } ]
+
                             let firstName = res.data[0].givenName;
                             let lastName = res.data[0].surname;
                             serviceNow.getUserRecord(firstName, lastName)
