@@ -22,17 +22,18 @@ var connector = new builder.ChatConnector({
 // Listen for messages
 server.post('/api/messages', connector.listen());
 
-var bot = new builder.UniversalBot(connector);
+var bot = new builder.UniversalBot(connector, (session) => {
+    session.send("I'm not sure what you are saying...")
+    session.beginDialog('/hello');
+});
 
 var model = 'https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/' + process.env.LUIS_ID + '?subscription-key=' + process.env.LUIS_KEY + '&verbose=true&timezoneOffset=-8.0&q='
 var recognizer = new builder.LuisRecognizer(model)
-var dialog = new builder.IntentDialog({ recognizers: [recognizer] });
+bot.recognizer(recognizer);
 
 myObj = { 'username': 'null', 'createTicket': 'null', 'updateTicket': 'null', 'reopenTicket': 'null', 'listTickets': 'null', 'closeTicket': 'null' };
 var isDone = false;
 
-//Dialogs
-bot.dialog('/', dialog)
 
 bot.dialog('/hello', [
     (session, results, next) => {
@@ -43,7 +44,7 @@ bot.dialog('/hello', [
         if (results.response.entity === "Create a new Service Now Ticket") {
             session.send("Create a new Service Now Ticket? Oooo yeah, caan doo!")
             session.replaceDialog('/createTicket')
-        } else if (results.response.entity === "Update a Service Now Ticket") { 
+        } else if (results.response.entity === "Update a Service Now Ticket") {
             session.send("Update a new Service Now Ticket? Oooo yeah, caan doo!")
             session.replaceDialog('/updateTicket')
         } else if (results.response.entity === "Delete a Service Now Ticket") {
@@ -173,7 +174,7 @@ bot.dialog('/createTicket', [
             })
     }
 ]).triggerAction({
-    matches: "/createTicket",
+    matches: "CreateTicket",
 }).endConversationAction(
     "endTicketCreate", "Ok. Goodbye.",
     {
@@ -214,14 +215,14 @@ bot.dialog('/updateTicket', [
 
         }
     },
-        (session, results, next) => {
-            session.dialogData.notes = results.response;
-            serviceNow.updateTicket(session.dialogData, session.dialogData.notes, session.userData.caller_id)
-                .then((res) => {
-                    session.send("Success!")
-                    console.log("Ticket Updated", res)
-                    session.endDialog();
-                })
+    (session, results, next) => {
+        session.dialogData.notes = results.response;
+        serviceNow.updateTicket(session.dialogData, session.dialogData.notes, session.userData.caller_id)
+            .then((res) => {
+                session.send("Success!")
+                console.log("Ticket Updated", res)
+                session.endDialog();
+            })
     }
 
 ]).triggerAction({
@@ -347,11 +348,12 @@ bot.dialog('/closeTicket', [
     }
     );
 
-    bot.dialog('/None', [
-        (session, results, next) => {
-            session.send("I'm not sure what you are saying...")
-            session.beginDialog("/hello")
-        }
-    ]).triggerAction({
-        matches: "None",
-    })
+bot.dialog('/None', [
+    (session, results, next) => {
+        session.send("I'm not sure what you are saying...")
+        session.beginDialog("/hello")
+    }
+]).triggerAction({
+    matches: "None",
+})
+
