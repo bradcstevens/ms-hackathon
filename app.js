@@ -58,10 +58,32 @@ bot.dialog('/hello', [
         }
     },
 ])
+bot.dialog('/specifyCredentials', [
+    (session, results, next) => {
+        builder.Prompts.text(session, "What is the first name you used to log in to Service Now?")
+    },
+    (session, results, next) => {
+        session.dialogData.firstName = results.response;
+        builder.Prompts.text(session, "Thanks! And your last name?")
+    },
+    (session, results, next) => {
+        session.dialogData.lastName = results.response;
+        serviceNow.getUserRecord(session.dialogData.firstName, session.dialogData.lastName)
+            .then((res) => {
+                session.userData.caller_id = res.data.result[0].sys_id;
+                session.send(`Thanks, ${session.dialogData.firstName}`)
+                session.endDialog();
+            })
+            .catch((err) => {
+                session.send("Hmm, I can't find your user account with those credentials. Let's try again.")
+                session.replaceDialog('/specifyCredentials')
+            })
+    }
+])
 
 bot.dialog('/login', [
     (session, args, next) => {
-        if (session.message.address.channelId === "msteams") {
+        if (session.message.address.channelId !== "msteams") {
             //There are 2 steps to get the user info from a chat
             //1. Get an access token
             //2. Use the access token to pull the user
@@ -106,32 +128,19 @@ bot.dialog('/login', [
                                     session.userData.caller_id = res.data.result[0].sys_id;
                                     session.endDialog();
                                 })
+                                .catch((err) => {
+                                    session.send("Hmm, I can't find your user account with those credentials. Let's try again.")
+                                    session.replaceDialog('/specifyCredentials')
+                                })
                         })
                         .catch((err) => {
                             session.send("Hmm, I can't find your user account with those credentials. Let's try again.")
-                            session.replaceDialog('/login')
+                            session.replaceDialog('/specifyCredentials')
                         })
                 })
         } else {
-            builder.Prompts.text(session, "What is the first name you used to log in to Service Now?")
+            session.replaceDialog('/specifyCredentials')
         }
-    },
-    (session, results, next) => {
-        session.dialogData.firstName = results.response;
-        builder.Prompts.text(session, "Thanks! And your last name?")
-    },
-    (session, results, next) => {
-        session.dialogData.lastName = results.response;
-        serviceNow.getUserRecord(session.dialogData.firstName, session.dialogData.lastName)
-            .then((res) => {
-                session.userData.caller_id = res.data.result[0].sys_id;
-                session.send(`Thanks, ${session.dialogData.firstName}`)
-                session.endDialog();
-            })
-            .catch((err) => {
-                session.send("Hmm, I can't find your user account with those credentials. Let's try again.")
-                session.replaceDialog('/login')
-            })
     },
 ])
 
