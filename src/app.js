@@ -45,7 +45,7 @@ bot.dialog('/hello', [
         if (results.response.entity === "Create a new Service Now Ticket") {
             session.send("Create a new Service Now Ticket? Oooo yeah, caan doo!")
             session.replaceDialog('/createTicket')
-        } else if (results.response.entity === "Update a new Service Now Ticket") { 
+        } else if (results.response.entity === "Update a Service Now Ticket") { 
             session.send(session, "Update a new Service Now Ticket? Oooo yeah, caan doo!")
             session.replaceDialog('/updateTicket')
         } else if (results.response.entity === "Delete a Service Now Ticket") {
