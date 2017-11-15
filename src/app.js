@@ -41,11 +41,11 @@ bot.dialog('/hello', [
         session.send("Hi! I'm Mr. Meeseeks! Look at me!")
         builder.Prompts.choice(session, "What can I do for you?", ["Create a new Service Now Ticket", "Update a Service Now Ticket", "Delete a Service Now Ticket", "List all of your Service Now Tickets"], { listStyle: builder.ListStyle.button })
     },
-    (session, results, next) => {    
+    (session, results, next) => {
         if (results.response.entity === "Create a new Service Now Ticket") {
             session.send("Create a new Service Now Ticket? Oooo yeah, caan doo!")
             session.replaceDialog('/createTicket')
-        } else if (results.response.entity === "Update a Service Now Ticket") { 
+        } else if (results.response.entity === "Update a Service Now Ticket") {
             session.send(session, "Update a new Service Now Ticket? Oooo yeah, caan doo!")
             session.replaceDialog('/updateTicket')
         } else if (results.response.entity === "Delete a Service Now Ticket") {
@@ -57,26 +57,49 @@ bot.dialog('/hello', [
         } else {
             session.endDialog();
         }
-    },  
+    },
 ])
 
 bot.dialog('/createTicket', [
     (session, args, next) => {
         if (session.message.address.channelId === "msteams") {
-            let root = session.message.address.serviceUrl;
-            let conversationID = session.message.address.conversation.id;
-            let route = root.concat(`/v3/conversations/${conversationID}/members`);
-            axios.get(route).then((res) => {
-                console.log(res)
-                //need to set first name and last name from res
-                let firstName = "Arthur";
-                let lastName = "Erlendsson";
-                serviceNow.getUserRecord(firstName, lastName)
-                    .then((res) => {
-                        session.dialogData.caller_id = res.data.result[0].sys_id;
-                        builder.Prompts.text(session, "Can you give me a description of the problem?")
-                    })
-            })
+            let appId = process.env.MICROSOFT_APP_ID
+            let appPassword = process.env.MICROSOFT_APP_PASSWORD
+            const tokenUrl = `https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token`;
+            const tokenBody = `grant_type=client_credentials&client_id=${appId}&client_secret=${appPassword}&scope=https://api.botframework.com/.default`
+            const tokenConfig = {
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "Host": "login.microsoftonline.com"
+                },
+            };
+            axios.post(tokenUrl, tokenBody, tokenConfig)
+                .then((res) => {
+                    let accessToken = res.data.access_token;
+                    let root = session.message.address.serviceUrl;
+                    let conversationID = session.message.address.conversation.id;
+                    let route = root.concat(`/v3/conversations/${conversationID}/members`);
+                    const authorizedConfig = {
+                        headers: {
+                            "Authorization": `Bearer ${accessToken}`
+                        },
+                    };
+                    axios.get(route, authorizedConfig)
+                        .then((res) => {
+                            let firstName = res.data[0].givenName;
+                            let lastName = res.data[0].surname;
+                            serviceNow.getUserRecord(firstName, lastName)
+                                .then((res) => {
+                                    session.dialogData.caller_id = res.data.result[0].sys_id;
+                                    builder.Prompts.text(session, "Can you give me a description of the problem?")
+                                })
+                        }).catch((err) => {
+                            console.log(err.response)
+                        })
+                })
+                .catch((err) => {
+                    console.log(err.response)
+                })
         } else {
             let firstName = "Arthur";
             let lastName = "Erlendsson";
@@ -122,7 +145,7 @@ bot.dialog('/createTicket', [
         matches: /^cancel$|^goodbye$|^nevermind$/i,
         confirmPrompt: "Are you sure?"
     }
-);
+    );
 
 bot.dialog('/updateTicket', [
     (session, args, next) => {
@@ -153,19 +176,19 @@ bot.dialog('/updateTicket', [
         }
     },
 
-   (session, results, next) => {
+    (session, results, next) => {
         if (upd === "State") {
             session.dialogData.state = results.response;
         }
         else {
             session.dialogData.notes = results.response;
         }
-        
+
         serviceNow.updateTicket(session.dialogData)
-        .then((res) => {
-            console.log("Ticket Updated", res)
-            session.endDialog();
-        })
+            .then((res) => {
+                console.log("Ticket Updated", res)
+                session.endDialog();
+            })
     },
 
 ]).triggerAction({
@@ -176,7 +199,7 @@ bot.dialog('/updateTicket', [
         matches: /^cancel$|^goodbye$|^nevermind$/i,
         confirmPrompt: "Are you sure?"
     }
-);
+    );
 
 bot.dialog('/listTickets', [
     (session, args, next) => {
@@ -190,7 +213,7 @@ bot.dialog('/listTickets', [
         matches: /^cancel$|^goodbye$|^nevermind$/i,
         confirmPrompt: "Are you sure?"
     }
-);
+    );
 
 bot.dialog('/reOpenTicket', [
     (session, args, next) => {
@@ -236,7 +259,7 @@ bot.dialog('/reOpenTicket', [
         matches: /^cancel$|^goodbye$|^nevermind$/i,
         confirmPrompt: "Are you sure?"
     }
-);
+    );
 
 bot.dialog('/closeTicket', [
     (session, args, next) => {
@@ -280,4 +303,4 @@ bot.dialog('/closeTicket', [
         matches: /^cancel$|^goodbye$|^nevermind$/i,
         confirmPrompt: "Are you sure?"
     }
-);
+    );
