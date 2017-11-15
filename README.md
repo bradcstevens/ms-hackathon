@@ -1,6 +1,6 @@
 # Graphs, Teams & Bots MS Hackathon
 
-Microsoft teamed up with [Computer Discount Warehouse (CDW)](https://www.cdw.com) to create a solution that would provide a more customized workspace.
+Microsoft teamed up with [CDW](https://www.cdw.com), a Fortune 500 technology solutions provider, to create a solution that would provide a more customized workspace.
 
 ## Key technologies used
 
@@ -45,6 +45,9 @@ CDW saw two primary ways to achieve this goal: make _, and better _.
 
 >"In the world we live in, of everything being available at the click of a button, Microsoft has implemented a point-and-click solution, that we were able to leverage with minimal effort, for something as complicated as Machine Learning. LUIS is probably the best example I've seen first-hand of Machine Learning." -
 >*Brad Stevens, Senior Consulting Engineer, CDW*
+
+>"Utilizing the Microsoft Bot Builder SDK allowed us to create a working bot in a minimal amount of time (even with NLP) - the ability to add buttons to chat conversations is a great feature as well." -
+>*Mike Robinson, Technical Architect, CDW*
 
 Most _ have a large amount of information accompanying them for _ to read.
 
