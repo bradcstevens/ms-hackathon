@@ -38,7 +38,7 @@ bot.dialog('/', [
 
 bot.dialog('/createTicket', [
     (session, args, next) => {
-        //HARDCODED - need to pull from teams
+        // Get User
         let firstName = "Arthur";
         let lastName = "Erlendsson"
         serviceNow.getUserRecord(firstName, lastName)
@@ -97,10 +97,15 @@ bot.dialog('/listTickets', [
 
 bot.dialog('/reOpenTicket', [
     (session, args, next) => {
-        //HARDCODED - need to pull from teams
-        session.dialogData.caller = "Arthur Erlendsson";
-        session.send("Great, I see that you want to re-open a ticket")
-        builder.Prompts.text(session, "What ticket number would you like to re-open?")
+        // Get User
+        let firstName = "Arthur";
+        let lastName = "Erlendsson"
+        serviceNow.getUserRecord(firstName, lastName)
+        .then((res) => {
+            session.dialogData.caller_id = res.data.result[0].sys_id;
+            session.send("Great, I see that you want to re-open a ticket")
+            builder.Prompts.text(session, "What ticket number would you like to re-open?")
+        })
     },
     (session, results, next) => {
         session.dialogData.number = results.response;
@@ -132,10 +137,15 @@ bot.dialog('/reOpenTicket', [
 
 bot.dialog('/closeTicket', [
     (session, args, next) => {
-        //HARDCODED - need to pull from teams
-        session.dialogData.caller = "Arthur Erlendsson";
-        session.send("Awesome, I see that you want to close a ticket")
-        builder.Prompts.text(session, "What ticket number would you like to close?")
+        // Get User
+        let firstName = "Arthur";
+        let lastName = "Erlendsson"
+        serviceNow.getUserRecord(firstName, lastName)
+        .then((res) => {
+            session.dialogData.caller_id = res.data.result[0].sys_id;
+            session.send("Awesome, I see that you want to close a ticket")
+            builder.Prompts.text(session, "What ticket number would you like to close?")
+        })
     },
     (session, results, next) => {
         session.dialogData.number = results.response;
