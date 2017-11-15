@@ -32,10 +32,7 @@ myObj = { 'username': 'null', 'createTicket': 'null', 'updateTicket': 'null', 'r
 var isDone = false;
 
 //Dialogs
-bot.dialog('/', [
-    (session, args, next) => {
-    },
-])
+bot.dialog('/', dialog)
 
 bot.dialog('/hello', [
     (session, results, next) => {
