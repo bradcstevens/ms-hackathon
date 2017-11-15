@@ -62,7 +62,7 @@ bot.dialog('/hello', [
     },
 ])
 
-bot.dialog('/createTicket', [
+bot.dialog('/login', [
     (session, args, next) => {
         if (session.message.address.channelId === "msteams") {
             let appId = process.env.MICROSOFT_APP_ID
@@ -92,25 +92,48 @@ bot.dialog('/createTicket', [
                             let lastName = res.data[0].surname;
                             serviceNow.getUserRecord(firstName, lastName)
                                 .then((res) => {
-                                    session.dialogData.caller_id = res.data.result[0].sys_id;
-                                    builder.Prompts.text(session, "Can you give me a description of the problem?")
+                                    session.userData.caller_id = res.data.result[0].sys_id;
+                                    session.endDialog();
                                 })
-                        }).catch((err) => {
-                            console.log(err.response)
+                        })
+                        .catch((err) => {
+                            session.send("Hmm, I can't find your user account with those credentials. Let's try again.")
+                            session.replaceDialog('/login')
                         })
                 })
-                .catch((err) => {
-                    console.log(err.response)
-                })
         } else {
-            let firstName = "Arthur";
-            let lastName = "Erlendsson";
-            serviceNow.getUserRecord(firstName, lastName)
-                .then((res) => {
-                    session.dialogData.caller_id = res.data.result[0].sys_id;
-                    builder.Prompts.text(session, "Can you give me a description of the problem?")
-                })
+            builder.Prompts.text(session, "What is the first name you used to log in to Service Now?")
         }
+    },
+    (session, results, next) => {
+        session.dialogData.firstName = results.response;
+        builder.Prompts.text(session, "Thanks! And your last name?")
+    },
+    (session, results, next) => {
+        session.dialogData.lastName = results.response;
+        serviceNow.getUserRecord(session.dialogData.firstName, session.dialogData.lastName)
+            .then((res) => {
+                session.userData.caller_id = res.data.result[0].sys_id;
+                session.send(`Thanks, ${session.dialogData.firstName}`)
+                session.endDialog();
+            })
+            .catch((err) => {
+                session.send("Hmm, I can't find your user account with those credentials. Let's try again.")
+                session.replaceDialog('/login')
+            })
+    },
+])
+
+bot.dialog('/createTicket', [
+    (session, results, next) => {
+        if (!session.userData.caller_id) {
+            session.beginDialog('/login')
+        } else {
+            next()
+        }
+    },
+    (session, results, next) => {
+        builder.Prompts.text(session, "Can you give me a description of the problem?")
     },
     (session, results, next) => {
         session.dialogData.short_description = results.response;
@@ -124,7 +147,7 @@ bot.dialog('/createTicket', [
         if (results.response.entity === "Yes") {
             builder.Prompts.text(session, "Go ahead")
         } else {
-            serviceNow.createTicket(session.dialogData)
+            serviceNow.createTicket(session.dialogData, session.userData.caller_id)
                 .then((res) => {
                     session.endDialog();
                 }).catch((err) => {
@@ -134,7 +157,7 @@ bot.dialog('/createTicket', [
     },
     (session, results, next) => {
         session.dialogData.notes = results.response;
-        serviceNow.createTicket(session.dialogData)
+        serviceNow.createTicket(session.dialogData, session.userData.caller_id)
             .then((res) => {
                 session.endDialog();
             })
@@ -150,6 +173,13 @@ bot.dialog('/createTicket', [
     );
 
 bot.dialog('/updateTicket', [
+    (session, results, next) => {
+        if (!session.userData.caller_id) {
+            session.beginDialog('/login')
+        } else {
+            next()
+        }
+    },
     (session, args, next) => {
         builder.Prompts.text(session, "What is the number of the ticket you'd like to update?");
     },
@@ -162,7 +192,6 @@ bot.dialog('/updateTicket', [
                 builder.Prompts.choice(session, "What field would you like to modify?", ["Work Notes", "State"], { listStyle: builder.ListStyle.button })
             })
     },
-
     (session, results, next) => {
         if (results.response.entity === "State") {
             // Update State
@@ -172,11 +201,8 @@ bot.dialog('/updateTicket', [
             // Update Work Notes
             var upd = "Notes"
             builder.Prompts.text(session, "Please enter the notes you wish to add")
-
-
         }
     },
-
     (session, results, next) => {
         if (upd === "State") {
             session.dialogData.state = results.response;
@@ -184,7 +210,6 @@ bot.dialog('/updateTicket', [
         else {
             session.dialogData.notes = results.response;
         }
-
         serviceNow.updateTicket(session.dialogData)
             .then((res) => {
                 console.log("Ticket Updated", res)
@@ -203,8 +228,15 @@ bot.dialog('/updateTicket', [
     );
 
 bot.dialog('/listTickets', [
+    (session, results, next) => {
+        if (!session.userData.caller_id) {
+            session.beginDialog('/login')
+        } else {
+            next()
+        }
+    },
     (session, args, next) => {
-        session.send("you said hello!")
+        session.send("Great, lets look at your open tickets.")
     },
 ]).triggerAction({
     matches: "ListTickets",
@@ -217,16 +249,16 @@ bot.dialog('/listTickets', [
     );
 
 bot.dialog('/reOpenTicket', [
+    (session, results, next) => {
+        if (!session.userData.caller_id) {
+            session.beginDialog('/login')
+        } else {
+            next()
+        }
+    },
     (session, args, next) => {
-        // Get User
-        let firstName = "Arthur";
-        let lastName = "Erlendsson"
-        serviceNow.getUserRecord(firstName, lastName)
-            .then((res) => {
-                session.dialogData.caller_id = res.data.result[0].sys_id;
-                session.send("Great, I see that you want to re-open a ticket")
-                builder.Prompts.text(session, "What ticket number would you like to re-open?")
-            })
+        session.send("Great, I see that you want to re-open a ticket")
+        builder.Prompts.text(session, "What ticket number would you like to re-open?")
     },
     (session, results, next) => {
         session.dialogData.number = results.response;
@@ -246,6 +278,7 @@ bot.dialog('/reOpenTicket', [
     },
     (session, results, next) => {
         session.dialogData.notes = results.response;
+        session.dialogData.caller_id = session.userData.caller_id;
         serviceNow.reOpenTicket(session.dialogData)
             .then((res) => {
                 console.log("Re-opened", res)
@@ -263,16 +296,16 @@ bot.dialog('/reOpenTicket', [
     );
 
 bot.dialog('/closeTicket', [
+    (session, results, next) => {
+        if (!session.userData.caller_id) {
+            session.beginDialog('/login')
+        } else {
+            next()
+        }
+    },
     (session, args, next) => {
-        // Get User
-        let firstName = "Arthur";
-        let lastName = "Erlendsson"
-        serviceNow.getUserRecord(firstName, lastName)
-            .then((res) => {
-                session.dialogData.caller_id = res.data.result[0].sys_id;
-                session.send("Awesome, I see that you want to close a ticket")
-                builder.Prompts.text(session, "What ticket number would you like to close?")
-            })
+        session.send("Awesome, I see that you want to close a ticket")
+        builder.Prompts.text(session, "What ticket number would you like to close?")
     },
     (session, results, next) => {
         session.dialogData.number = results.response;
@@ -289,6 +322,7 @@ bot.dialog('/closeTicket', [
         builder.Prompts.choice(session, "What is the Resolution Code?", ["Solved (Work Around)", "Solved (Permanently)", "Solved Remotely (Work Around)", "Solved Remotely (Permanently)", "Not Solved (Not Reproducible)", "Not Solved (Too Costly)", "Closed/Resolved by Caller"], { listStyle: builder.ListStyle.button })
     },
     (session, results, next) => {
+        session.dialogData.caller_id = session.userData.caller_id;
         session.dialogData.close_code = results.response.entity;
         serviceNow.closeTicket(session.dialogData)
             .then((res) => {
