@@ -83,7 +83,7 @@ bot.dialog('/specifyCredentials', [
 
 bot.dialog('/login', [
     (session, args, next) => {
-        if (session.message.address.channelId !== "msteams") {
+        if (session.message.address.channelId === "msteams") {
             //There are 2 steps to get the user info from a chat
             //1. Get an access token
             //2. Use the access token to pull the user
