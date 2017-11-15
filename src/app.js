@@ -32,8 +32,32 @@ var isDone = false;
 //Dialogs
 bot.dialog('/', [
     (session, args, next) => {
-        session.beginDialog('/createTicket')
+        session.beginDialog('/hello')
     },
+])
+
+bot.dialog('/hello', [
+    (session, results, next) => {
+        session.send("Hi! I'm Mr. Meeseeks! Look at me!")
+        builder.Prompts.choice(session, "What can I do for you?", ["Create a new Service Now Ticket", "Update a Service Now Ticket", "Delete a Service Now Ticket", "List all of your Service Now Tickets"], { listStyle: builder.ListStyle.button })
+    },
+    (session, results, next) => {    
+        if (results.response.entity === "Create a new Service Now Ticket") {
+            session.send("Create a new Service Now Ticket? Oooo yeah, caan doo!")
+            session.replaceDialog('/createTicket')
+        } else if (results.response.entity === "Update a new Service Now Ticket") { 
+            session.send(session, "Update a new Service Now Ticket? Oooo yeah, caan doo!")
+            session.replaceDialog('/updateTicket')
+        } else if (results.response.entity === "Delete a Service Now Ticket") {
+            session.send(session, "Delete a Service Now Ticket? Oooo yeah, caan doo!")
+            session.replaceDialog('/deleteTicket')
+        } else if (results.response.entity === "List all of your Service Now Tickets") {
+            session.send(session, "List all of your Service Now Tickets? Oooo yeah, caan doo!")
+            session.replaceDialog('/listTickets')
+        } else {
+            session.endDialog();
+        }
+    },  
 ])
 
 bot.dialog('/createTicket', [
@@ -76,8 +100,14 @@ bot.dialog('/createTicket', [
             })
     }
 ]).triggerAction({
-    matches: "CreateTicket",
-});
+    matches: "/createTicket",
+}).endConversationAction(
+    "endTicketCreate", "Ok. Goodbye.",
+    {
+        matches: /^cancel$|^goodbye$|^nevermind$/i,
+        confirmPrompt: "Are you sure?"
+    }
+);
 
 bot.dialog('/updateTicket', [
     (session, args, next) => {
@@ -95,7 +125,13 @@ bot.dialog('/updateTicket', [
     // NOW FIGURE OUT WHAT FIELDS THE USER WANTS TO MODIFY
 ]).triggerAction({
     matches: "UpdateTicket",
-});
+}).endConversationAction(
+    "endTicketUpdate", "Ok. Goodbye.",
+    {
+        matches: /^cancel$|^goodbye$|^nevermind$/i,
+        confirmPrompt: "Are you sure?"
+    }
+);
 
 bot.dialog('/listTickets', [
     (session, args, next) => {
@@ -103,7 +139,13 @@ bot.dialog('/listTickets', [
     },
 ]).triggerAction({
     matches: "ListTickets",
-});
+}).endConversationAction(
+    "endTicketList", "Ok. Goodbye.",
+    {
+        matches: /^cancel$|^goodbye$|^nevermind$/i,
+        confirmPrompt: "Are you sure?"
+    }
+);
 
 bot.dialog('/reOpenTicket', [
     (session, args, next) => {
@@ -143,7 +185,13 @@ bot.dialog('/reOpenTicket', [
     }
 ]).triggerAction({
     matches: "ReOpenTicket",
-});
+}).endConversationAction(
+    "endTicketReOpen", "Ok. Goodbye.",
+    {
+        matches: /^cancel$|^goodbye$|^nevermind$/i,
+        confirmPrompt: "Are you sure?"
+    }
+);
 
 bot.dialog('/closeTicket', [
     (session, args, next) => {
@@ -181,4 +229,10 @@ bot.dialog('/closeTicket', [
     }
 ]).triggerAction({
     matches: "CloseTicket",
-});
+}).endConversationAction(
+    "endTicketClose", "Ok. Goodbye.",
+    {
+        matches: /^cancel$|^goodbye$|^nevermind$/i,
+        confirmPrompt: "Are you sure?"
+    }
+);
