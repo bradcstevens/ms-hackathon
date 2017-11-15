@@ -34,7 +34,6 @@ var isDone = false;
 //Dialogs
 bot.dialog('/', [
     (session, args, next) => {
-        session.beginDialog('/hello')
     },
 ])
 
@@ -336,3 +335,12 @@ bot.dialog('/closeTicket', [
         confirmPrompt: "Are you sure?"
     }
     );
+
+    bot.dialog('/None', [
+        (session, results, next) => {
+            session.send("I'm not sure what you are saying...")
+            session.beginDialog("/hello")
+        }
+    ]).triggerAction({
+        matches: "None",
+    })
