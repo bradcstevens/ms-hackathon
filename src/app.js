@@ -47,14 +47,14 @@ bot.dialog('/hello', [
         if (results.response.entity === "Create a new Service Now Ticket") {
             session.send("Create a new Service Now Ticket? Oooo yeah, caan doo!")
             session.replaceDialog('/createTicket')
-        } else if (results.response.entity === "Update a Service Now Ticket") {
-            session.send(session, "Update a new Service Now Ticket? Oooo yeah, caan doo!")
+        } else if (results.response.entity === "Update a Service Now Ticket") { 
+            session.send("Update a new Service Now Ticket? Oooo yeah, caan doo!")
             session.replaceDialog('/updateTicket')
         } else if (results.response.entity === "Delete a Service Now Ticket") {
-            session.send(session, "Delete a Service Now Ticket? Oooo yeah, caan doo!")
+            session.send("Delete a Service Now Ticket? Oooo yeah, caan doo!")
             session.replaceDialog('/deleteTicket')
         } else if (results.response.entity === "List all of your Service Now Tickets") {
-            session.send(session, "List all of your Service Now Tickets? Oooo yeah, caan doo!")
+            session.send("List all of your Service Now Tickets? Oooo yeah, caan doo!")
             session.replaceDialog('/listTickets')
         } else {
             session.endDialog();
@@ -201,21 +201,18 @@ bot.dialog('/updateTicket', [
             // Update Work Notes
             var upd = "Notes"
             builder.Prompts.text(session, "Please enter the notes you wish to add")
+
         }
     },
-    (session, results, next) => {
-        if (upd === "State") {
-            session.dialogData.state = results.response;
-        }
-        else {
+        (session, results, next) => {
             session.dialogData.notes = results.response;
-        }
-        serviceNow.updateTicket(session.dialogData)
-            .then((res) => {
-                console.log("Ticket Updated", res)
-                session.endDialog();
-            })
-    },
+            serviceNow.updateTicket(session.dialogData, session.dialogData.notes, session.userData.caller_id)
+                .then((res) => {
+                    session.send("Success!")
+                    console.log("Ticket Updated", res)
+                    session.endDialog();
+                })
+    }
 
 ]).triggerAction({
     matches: "UpdateTicket",
