@@ -81,8 +81,18 @@ bot.dialog('/createTicket', [
 
 bot.dialog('/updateTicket', [
     (session, args, next) => {
-        session.send("you said hello!")
+        session.send("I see that you'd like to update a ticket.");
+        builder.Prompts.text(session, "What is the number of the ticket you'd like to update?");
     },
+    (session, results, next) => {
+        session.dialogData.ticketNumber = results.response;
+        session.send("Let me fetch that ticket for you.");
+        serviceNow.getTicketByNumber(session.dialogData.ticketNumber)
+            .then((res) => {
+                session.dialogData.ticket = res.ticket;
+            })
+    }
+    // NOW FIGURE OUT WHAT FIELDS THE USER WANTS TO MODIFY
 ]).triggerAction({
     matches: "UpdateTicket",
 });
