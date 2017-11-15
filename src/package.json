@@ -11,6 +11,7 @@
   "dependencies": {
     "axios": "^0.17.1",
     "botbuilder": "^3.11.0",
+    "botbuilder-teams": "^0.1.6",
     "dotenv": "^4.0.0",
     "restify": "^4.3.1",
     "uuid": "^3.1.0"

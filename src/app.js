@@ -10,7 +10,6 @@ var server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, function () {
     console.log('%s listening to %s', server.name, server.url);
 });
-console.log(process.env)
 
 // Create chat bot
 var connector = new builder.ChatConnector({
@@ -33,8 +32,32 @@ var isDone = false;
 //Dialogs
 bot.dialog('/', [
     (session, args, next) => {
-        session.beginDialog('/createTicket')
+        session.beginDialog('/hello')
     },
+])
+
+bot.dialog('/hello', [
+    (session, results, next) => {
+        session.send("Hi! I'm Mr. Meeseeks! Look at me!")
+        builder.Prompts.choice(session, "What can I do for you?", ["Create a new Service Now Ticket", "Update a Service Now Ticket", "Delete a Service Now Ticket", "List all of your Service Now Tickets"], { listStyle: builder.ListStyle.button })
+    },
+    (session, results, next) => {    
+        if (results.response.entity === "Create a new Service Now Ticket") {
+            session.send("Create a new Service Now Ticket? Oooo yeah, caan doo!")
+            session.replaceDialog('/createTicket')
+        } else if (results.response.entity === "Update a Service Now Ticket") { 
+            session.send(session, "Update a new Service Now Ticket? Oooo yeah, caan doo!")
+            session.replaceDialog('/updateTicket')
+        } else if (results.response.entity === "Delete a Service Now Ticket") {
+            session.send(session, "Delete a Service Now Ticket? Oooo yeah, caan doo!")
+            session.replaceDialog('/deleteTicket')
+        } else if (results.response.entity === "List all of your Service Now Tickets") {
+            session.send(session, "List all of your Service Now Tickets? Oooo yeah, caan doo!")
+            session.replaceDialog('/listTickets')
+        } else {
+            session.endDialog();
+        }
+    },  
 ])
 
 bot.dialog('/createTicket', [
@@ -51,7 +74,6 @@ bot.dialog('/createTicket', [
                 serviceNow.getUserRecord(firstName, lastName)
                     .then((res) => {
                         session.dialogData.caller_id = res.data.result[0].sys_id;
-                        session.send("Hmm, I see that you want to create a ticket")
                         builder.Prompts.text(session, "Can you give me a description of the problem?")
                     })
             })
@@ -61,7 +83,6 @@ bot.dialog('/createTicket', [
             serviceNow.getUserRecord(firstName, lastName)
                 .then((res) => {
                     session.dialogData.caller_id = res.data.result[0].sys_id;
-                    session.send("Hmm, I see that you want to create a ticket")
                     builder.Prompts.text(session, "Can you give me a description of the problem?")
                 })
         }
@@ -94,12 +115,17 @@ bot.dialog('/createTicket', [
             })
     }
 ]).triggerAction({
-    matches: "CreateTicket",
-});
+    matches: "/createTicket",
+}).endConversationAction(
+    "endTicketCreate", "Ok. Goodbye.",
+    {
+        matches: /^cancel$|^goodbye$|^nevermind$/i,
+        confirmPrompt: "Are you sure?"
+    }
+);
 
 bot.dialog('/updateTicket', [
     (session, args, next) => {
-        session.send("I see that you'd like to update a ticket.");
         builder.Prompts.text(session, "What is the number of the ticket you'd like to update?");
     },
     (session, results, next) => {
@@ -109,11 +135,48 @@ bot.dialog('/updateTicket', [
             .then((res) => {
                 session.dialogData.ticket = res.ticket;
             })
-    }
-    // NOW FIGURE OUT WHAT FIELDS THE USER WANTS TO MODIFY
+    },
+
+    (session, results, next) => {
+        session.dialogData.urgency = results.response.entity;
+        builder.Prompts.choice(session, "What field would you like to modify?", ["Work Notes", "State"], { listStyle: builder.ListStyle.button })
+    },
+    (session, results, next) => {
+        if (results.response.entity === "State") {
+            // Update State
+            var upd = "State"
+            builder.Prompts.choice(session, "What shall I change the state to?", ["New", "In Process", "On Hold", "Resolved", "Closed", "Canceled"], { listStyle: builder.ListStyle.button })
+        } else {
+            // Update Work Notes
+            var upd = "Notes"
+            builder.Prompts.text(session, "Please enter the notes you wish to add")
+        }
+    },
+
+   (session, results, next) => {
+        if (upd === "State") {
+            session.dialogData.state = results.response;
+        }
+        else {
+            session.dialogData.notes = results.response;
+        }
+        
+        serviceNow.updateTicket(session.dialogData)
+        .then((res) => {
+            console.log("Ticket Updated", res)
+            session.endDialog();
+        })
+    },
+
 ]).triggerAction({
     matches: "UpdateTicket",
-});
+}).endConversationAction(
+    "endTicketUpdate", "Ok. Goodbye.",
+    {
+        matches: /^cancel$|^goodbye$|^nevermind$/i,
+        confirmPrompt: "Are you sure?"
+    }
+);
 
 bot.dialog('/listTickets', [
     (session, args, next) => {
@@ -121,7 +184,13 @@ bot.dialog('/listTickets', [
     },
 ]).triggerAction({
     matches: "ListTickets",
-});
+}).endConversationAction(
+    "endTicketList", "Ok. Goodbye.",
+    {
+        matches: /^cancel$|^goodbye$|^nevermind$/i,
+        confirmPrompt: "Are you sure?"
+    }
+);
 
 bot.dialog('/reOpenTicket', [
     (session, args, next) => {
@@ -161,7 +230,13 @@ bot.dialog('/reOpenTicket', [
     }
 ]).triggerAction({
     matches: "ReOpenTicket",
-});
+}).endConversationAction(
+    "endTicketReOpen", "Ok. Goodbye.",
+    {
+        matches: /^cancel$|^goodbye$|^nevermind$/i,
+        confirmPrompt: "Are you sure?"
+    }
+);
 
 bot.dialog('/closeTicket', [
     (session, args, next) => {
@@ -199,4 +274,10 @@ bot.dialog('/closeTicket', [
     }
 ]).triggerAction({
     matches: "CloseTicket",
-});
+}).endConversationAction(
+    "endTicketClose", "Ok. Goodbye.",
+    {
+        matches: /^cancel$|^goodbye$|^nevermind$/i,
+        confirmPrompt: "Are you sure?"
+    }
+);
