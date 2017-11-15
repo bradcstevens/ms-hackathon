@@ -3,13 +3,14 @@ var builder = require('botbuilder');
 var teams = require('botbuilder-teams');
 var restify = require('restify');
 var serviceNow = require("./serviceNow");
-
+var axios = require("axios");
 
 // Setup Restify Server
 var server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, function () {
     console.log('%s listening to %s', server.name, server.url);
 });
+console.log(process.env)
 
 // Create chat bot
 var connector = new builder.ChatConnector({
@@ -38,15 +39,32 @@ bot.dialog('/', [
 
 bot.dialog('/createTicket', [
     (session, args, next) => {
-		let fullName = session.message.address.user.name
-        let firstName = "Arthur";
-        let lastName = "Erlendsson"
-        serviceNow.getUserRecord(firstName, lastName)
-            .then((res) => {
-                session.dialogData.caller_id = res.data.result[0].sys_id;
-                session.send("Hmm, I see that you want to create a ticket")
-                builder.Prompts.text(session, "Can you give me a description of the problem?")
+        if (session.message.address.channelId === "msteams") {
+            let root = session.message.address.serviceUrl;
+            let conversationID = session.message.address.conversation.id;
+            let route = root.concat(`/v3/conversations/${conversationID}/members`);
+            axios.get(route).then((res) => {
+                console.log(res)
+                //need to set first name and last name from res
+                let firstName = "Arthur";
+                let lastName = "Erlendsson";
+                serviceNow.getUserRecord(firstName, lastName)
+                    .then((res) => {
+                        session.dialogData.caller_id = res.data.result[0].sys_id;
+                        session.send("Hmm, I see that you want to create a ticket")
+                        builder.Prompts.text(session, "Can you give me a description of the problem?")
+                    })
             })
+        } else {
+            let firstName = "Arthur";
+            let lastName = "Erlendsson";
+            serviceNow.getUserRecord(firstName, lastName)
+                .then((res) => {
+                    session.dialogData.caller_id = res.data.result[0].sys_id;
+                    session.send("Hmm, I see that you want to create a ticket")
+                    builder.Prompts.text(session, "Can you give me a description of the problem?")
+                })
+        }
     },
     (session, results, next) => {
         session.dialogData.short_description = results.response;
@@ -111,11 +129,11 @@ bot.dialog('/reOpenTicket', [
         let firstName = "Arthur";
         let lastName = "Erlendsson"
         serviceNow.getUserRecord(firstName, lastName)
-        .then((res) => {
-            session.dialogData.caller_id = res.data.result[0].sys_id;
-            session.send("Great, I see that you want to re-open a ticket")
-            builder.Prompts.text(session, "What ticket number would you like to re-open?")
-        })
+            .then((res) => {
+                session.dialogData.caller_id = res.data.result[0].sys_id;
+                session.send("Great, I see that you want to re-open a ticket")
+                builder.Prompts.text(session, "What ticket number would you like to re-open?")
+            })
     },
     (session, results, next) => {
         session.dialogData.number = results.response;
@@ -151,11 +169,11 @@ bot.dialog('/closeTicket', [
         let firstName = "Arthur";
         let lastName = "Erlendsson"
         serviceNow.getUserRecord(firstName, lastName)
-        .then((res) => {
-            session.dialogData.caller_id = res.data.result[0].sys_id;
-            session.send("Awesome, I see that you want to close a ticket")
-            builder.Prompts.text(session, "What ticket number would you like to close?")
-        })
+            .then((res) => {
+                session.dialogData.caller_id = res.data.result[0].sys_id;
+                session.send("Awesome, I see that you want to close a ticket")
+                builder.Prompts.text(session, "What ticket number would you like to close?")
+            })
     },
     (session, results, next) => {
         session.dialogData.number = results.response;
@@ -169,7 +187,7 @@ bot.dialog('/closeTicket', [
     (session, results, next) => {
         session.dialogData.close_notes = results.response;
         // Change this to pull resolution codes from SN?
-        builder.Prompts.choice(session, "What is the Resolution Code?", ["Solved (Work Around)", "Solved (Permanently)", "Solved Remotely (Work Around)", "Solved Remotely (Permanently)", "Not Solved (Not Reproducible)", "Not Solved (Too Costly)", "Closed/Resolved by Caller" ], { listStyle: builder.ListStyle.button })
+        builder.Prompts.choice(session, "What is the Resolution Code?", ["Solved (Work Around)", "Solved (Permanently)", "Solved Remotely (Work Around)", "Solved Remotely (Permanently)", "Not Solved (Not Reproducible)", "Not Solved (Too Costly)", "Closed/Resolved by Caller"], { listStyle: builder.ListStyle.button })
     },
     (session, results, next) => {
         session.dialogData.close_code = results.response.entity;
