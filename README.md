@@ -117,8 +117,8 @@ The challenge for us was to make _ more _ for _s and also to provide _ with more
 The solution involved a wide range of Microsoft technologies, but focused around three main areas:
 
 - The Microsoft Bot Framework 
-- Cognitive Services to provide intelligence _ 
-- Azure App Service for _, hosting, and _ .
+- Cognitive Services to provide intelligence dialog 
+- Azure App Service for hosting the Bot and Azure Web Service for hosting the Tab.
 
 The next steps at a high level are to further develop the solution to make it more robust and flexible, and to take it to other customers/clients/companies with the goal of gaining sponsorship to make it a production system.
 
