@@ -30,8 +30,8 @@ A proof-of-concept solution is open-sourced under the MIT License on GitHub.
 
 CDW is a multi-brand technology solutions provider to business, government, education, and healthcare organizations in the United States, Canada, and the United Kingdom. A Fortune 500 company with multi-national capabilities, CDW was founded in 1984 and employs nearly 8,800 coworkers. For the trailing twelve months ended September 30, 2017, the company generated net sales of nearly $15 billion. CDW's broad array of offerings range from discrete hardware and software products to integrated IT solutions such as mobility, security, cloud, data center and collaboration. 
 
- <div style="text-align:center"><img src ="images/cdwLogo.png" /></div>
-
+<div style="text-align:center"><img src ="images/cdwLogo.png" /></div>
+<br>
 
 For this project, Microsoft worked closely with Senior Consulting Engineer Brad Stevens and Technical Architect Mike Robinson from CDW to craft a _ customizable _ bot assistant that _.
 
