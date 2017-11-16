@@ -30,7 +30,7 @@ A proof-of-concept solution is open-sourced under the MIT License on GitHub.
 
 CDW is a multi-brand technology solutions provider to business, government, education, and healthcare organizations in the United States, Canada, and the United Kingdom. A Fortune 500 company with multi-national capabilities, CDW was founded in 1984 and employs nearly 8,800 coworkers. For the trailing twelve months ended September 30, 2017, the company generated net sales of nearly $15 billion. CDW's broad array of offerings range from discrete hardware and software products to integrated IT solutions such as mobility, security, cloud, data center and collaboration. 
 
- ![CDW Logo](/src/images/cdwLogo.png)
+ ![CDW Logo](/images/cdwLogo.png)
 
 For this project, Microsoft worked closely with Senior Consulting Engineer Brad Stevens and Technical Architect Mike Robinson from CDW to craft a _ customizable _ bot assistant that _.
 
@@ -77,7 +77,7 @@ Arthur Erlendsson found out that you can override the automatically set "system"
 
 The entire solution involved multiple technologies. This diagram shows the high-level architecture that is explained in each of the following sub-sections. 
 
- ![Architecture Diagram](/src/images/Architecture.png)
+ ![Architecture Diagram](/images/Architecture.png)
 
 The key steps of the solution were to create a Microsoft Bot Framework bot that would run in Microsoft Teams. This bot would be integrated into CDW's internal Teams and set to activate when a person (user) wished to (open a ticket). The ticket would then be sent to ServiceNow Web API that passes the information through the _ API to gather data on userID, state, list, callerID, blank, and other data points before logging the data in (Table storage) for later analysis and passing the data back to the bot app. The bot would then tailor the conversation about the ticket based on the data gained from the API. 
 
