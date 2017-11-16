@@ -41,7 +41,7 @@ Every IT department request ticket that is sent to CDW is currently  handled by 
 
 CDW saw two primary ways to achieve this goal:
 * Utilize the Microsoft Teams application for collaboration
-* Integrate to ServiceNow for a streamlined workflow
+* Integrate to ServiceNow from Microsoft Teams for a streamlined workflow
 
 >"In the world we live in, of everything being available at the click of a button, Microsoft has implemented a point-and-click solution, that we were able to leverage with minimal effort, for something as complicated as Machine Learning. LUIS is probably the best example I've seen first-hand of Machine Learning." -
 >*Brad Stevens, Senior Consulting Engineer, CDW*
