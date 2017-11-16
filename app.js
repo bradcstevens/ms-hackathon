@@ -23,7 +23,7 @@ var connector = new builder.ChatConnector({
 server.post('/api/messages', connector.listen());
 
 var bot = new builder.UniversalBot(connector, (session) => {
-    session.send("I'm not sure what you are saying...")
+    session.send("Hi! I'm Mr. Meeseeks! Look at me!")
     session.beginDialog('/hello');
 });
 
@@ -31,13 +31,8 @@ var model = 'https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/' + proce
 var recognizer = new builder.LuisRecognizer(model)
 bot.recognizer(recognizer);
 
-myObj = { 'username': 'null', 'createTicket': 'null', 'updateTicket': 'null', 'reopenTicket': 'null', 'listTickets': 'null', 'closeTicket': 'null' };
-var isDone = false;
-
-
 bot.dialog('/hello', [
     (session, results, next) => {
-        session.send("Hi! I'm Mr. Meeseeks! Look at me!")
         builder.Prompts.choice(session, "What can I do for you?", ["Create a new Service Now Ticket", "Update a Service Now Ticket", "Delete a Service Now Ticket", "List all of your Service Now Tickets"], { listStyle: builder.ListStyle.button })
     },
     (session, results, next) => {
