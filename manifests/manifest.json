@@ -2,8 +2,8 @@
     "$schema": "https://statics.teams.microsoft.com/sdk/v1.0/manifest/MicrosoftTeams.schema.json",
     "manifestVersion": "1.0",
     "version": "1.0.0",
-    "id": "a884f181-8026-48f5-8d6d-95b4a5bb4835",
-    "packageName": "com.lucashuet.stockecosystemapp",
+    "id": "a884f181-8026-48f5-8d6d-95b4a1bb4835",
+    "packageName": "com.cdw.ms-hackathon-app",
     "developer": {
         "name": "Microsoft",
         "websiteUrl": "https://www.microsoft.com",
@@ -11,65 +11,45 @@
         "termsOfUseUrl": "https://www.microsoft.com/termsofuse"
     },
     "name": {
-        "short": "CDW Bot",
-        "full": "CDW Bot"
+        "short": "Mr. Meeseeks",
+        "full": "Mr. Meeseeks"
     },
     "description": {
-        "short": "CDW Bot",
+        "short": "Mr. Meeseeks",
         "full": "A bot that allows you to create/close/list Service Now tickets."
     },
     "icons": {
-        "outline": "https://i.imgur.com/T78EABW.png",
-        "color": "https://i.imgur.com/T78EABW.png"
+        "outline": "mrmeeseeks.png",
+        "color": "mrmeeseeks.png"
     },
-    "accentColor": "#60A18E",
-    "staticTabs": [
-        {
-            "entityId": "myportfolio",
-            "name": "My Portfolio",
-            "contentUrl": "https://b2ed2392.ngrok.io",
-            "websiteUrl": "https://b2ed2392.ngrok.io",
-            "scopes": [
-                "personal", "team"
-            ]
-        }
-    ],
-    "bots": [
-        {
-            "botId": "bd5cba79-e44b-4f97-b480-ce6803d74caf",
-            "isNotificationOnly": false,
+    "accentColor": "#0E9FED",
+    "staticTabs": [{
+        "entityId": "Mr. Meeseeks",
+        "name": "Mr. Meeseeks",
+        "contentUrl": "https://STV-WUS-TBOT-DB.azurewebsites.net",
+        "websiteUrl": "https://STV-WUS-TBOT-DB.azurewebsites.net",
+        "scopes": [
+            "personal", "team"
+        ]
+    }],
+    "bots": [{
+        "botId": "b38da782-5920-4464-a1fc-c95e084b917c",
+        "isNotificationOnly": false,
+        "scopes": [
+            "team",
+            "personal"
+        ],
+        "commandLists": [{
             "scopes": [
                 "team",
                 "personal"
             ],
-            "commandLists": [
-                {
-                    "scopes": [
-                        "team",
-                        "personal"
-                    ],
-                    "commands": [
-                        {
-                            "title": "What is the current price of X?",
-                            "description": "X must be a valid stock symbol"
-                        },
-                        {
-                            "title": "Buy X shares of Y",
-                            "description": "Y must be a valid stock symbol"
-                        },
-                        {
-                            "title": "Sell X shares of Y",
-                            "description": "Y must be a valid stock symbol"
-                        },
-                        {
-                            "title": "logout",
-                            "description": "Logs the user out."
-                        }
-                    ]
-                }
-            ]
-        }
-    ],
+            "commands": [{
+                "title": "Open a Ticket",
+                "description": "Triggers a CreateTicket dialog"
+            }]
+        }]
+    }],
     "permissions": [
         "identity",
         "messageTeamMembers"
