@@ -27,6 +27,15 @@ var bot = new builder.UniversalBot(connector, (session) => {
     session.beginDialog('/hello');
 });
 
+bot.dialog('/greeting', [
+    (session, results, next) => {
+        session.send("Hi! I'm Mr. Meeseeks! Look at me!")
+        session.beginDialog('/hello')
+    }
+]).triggerAction({
+    matches: "Greeting",
+});
+
 var model = 'https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/' + process.env.LUIS_ID + '?subscription-key=' + process.env.LUIS_KEY + '&verbose=true&timezoneOffset=-8.0&q='
 var recognizer = new builder.LuisRecognizer(model)
 bot.recognizer(recognizer);
@@ -53,6 +62,7 @@ bot.dialog('/hello', [
         }
     },
 ])
+
 bot.dialog('/specifyCredentials', [
     (session, results, next) => {
         builder.Prompts.text(session, "What is the first name you used to log in to Service Now?")
