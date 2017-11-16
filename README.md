@@ -84,7 +84,7 @@ The key steps of the solution were to create a Microsoft Bot Framework bot that 
 
 ## Microsoft Bot Framework
 
-Web app URL: http://cdwb.azurewebsites.net 
+Web app URL: http://stv-wus-tbot-mm.azurewebsites.net
 
 Code snippet example:
 
