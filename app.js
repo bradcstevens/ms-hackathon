@@ -9,7 +9,7 @@ dotenv.load();
 
 // Setup Restify Server
 var server = restify.createServer();
-server.listen(process.env.port || process.env.PORT || 3978, function () {
+server.listen(process.env.port || process.env.PORT || 3978, function() {
     console.log('%s listening to %s', server.name, server.url);
 });
 
@@ -157,7 +157,7 @@ bot.dialog('/createTicket', [
     },
     (session, results, next) => {
         session.dialogData.short_description = results.response;
-        builder.Prompts.choice(session, "Thanks! What level of urgency?", ["High", "Medium", "Low"], { listStyle: builder.ListStyle.button })
+        builder.Prompts.choice(session, "Got it! What level of urgency?", ["High", "Medium", "Low"], { listStyle: builder.ListStyle.button })
     },
     (session, results, next) => {
         session.dialogData.urgency = results.response.entity;
@@ -165,7 +165,7 @@ bot.dialog('/createTicket', [
     },
     (session, results, next) => {
         if (results.response.entity === "Yes") {
-            builder.Prompts.text(session, "Go ahead")
+            builder.Prompts.text(session, "What other notes should I add to the ticket?")
         } else {
             serviceNow.createTicket(session.dialogData, session.userData.caller_id)
                 .then((res) => {
@@ -185,12 +185,11 @@ bot.dialog('/createTicket', [
 ]).triggerAction({
     matches: "CreateTicket",
 }).endConversationAction(
-    "endTicketCreate", "Ok. Goodbye.",
-    {
+    "endTicketCreate", "Ok. Goodbye.", {
         matches: /^cancel$|^goodbye$|^nevermind$/i,
         confirmPrompt: "Are you sure?"
     }
-    );
+);
 
 bot.dialog('/updateTicket', [
     (session, results, next) => {
@@ -237,12 +236,11 @@ bot.dialog('/updateTicket', [
 ]).triggerAction({
     matches: "UpdateTicket",
 }).endConversationAction(
-    "endTicketUpdate", "Ok. Goodbye.",
-    {
+    "endTicketUpdate", "Ok. Goodbye.", {
         matches: /^cancel$|^goodbye$|^nevermind$/i,
         confirmPrompt: "Are you sure?"
     }
-    );
+);
 
 bot.dialog('/listTickets', [
     (session, results, next) => {
@@ -258,12 +256,11 @@ bot.dialog('/listTickets', [
 ]).triggerAction({
     matches: "ListTickets",
 }).endConversationAction(
-    "endTicketList", "Ok. Goodbye.",
-    {
+    "endTicketList", "Ok. Goodbye.", {
         matches: /^cancel$|^goodbye$|^nevermind$/i,
         confirmPrompt: "Are you sure?"
     }
-    );
+);
 
 bot.dialog('/reOpenTicket', [
     (session, results, next) => {
@@ -305,12 +302,11 @@ bot.dialog('/reOpenTicket', [
 ]).triggerAction({
     matches: "ReOpenTicket",
 }).endConversationAction(
-    "endTicketReOpen", "Ok. Goodbye.",
-    {
+    "endTicketReOpen", "Ok. Goodbye.", {
         matches: /^cancel$|^goodbye$|^nevermind$/i,
         confirmPrompt: "Are you sure?"
     }
-    );
+);
 
 bot.dialog('/closeTicket', [
     (session, results, next) => {
@@ -350,12 +346,11 @@ bot.dialog('/closeTicket', [
 ]).triggerAction({
     matches: "CloseTicket",
 }).endConversationAction(
-    "endTicketClose", "Ok. Goodbye.",
-    {
+    "endTicketClose", "Ok. Goodbye.", {
         matches: /^cancel$|^goodbye$|^nevermind$/i,
         confirmPrompt: "Are you sure?"
     }
-    );
+);
 
 bot.dialog('/None', [
     (session, results, next) => {
@@ -365,4 +360,3 @@ bot.dialog('/None', [
 ]).triggerAction({
     matches: "None",
 })
-
