@@ -38,8 +38,8 @@ const closeTicket = (ticket) => {
 	let route = "";
 	return axios.post(route, ticket, config)
 }
-const updateTicket = (ticket, notes, userId) => {
-    let route = `https://dev45236.service-now.com/api/now/v1/table/task/a6ee1abf4f5e0300c5c9f5a18110c7ce?sysparm_exclude_ref_link=true`;
+const updateTicket = (ticketID, notes, userId) => {
+    let route = `https://dev45236.service-now.com/api/now/v1/table/task/${ticketID}?sysparm_exclude_ref_link=true`;
     let updateTicket = {
         caller_id: userId,
 		/* short_description: ticket.short_description, */

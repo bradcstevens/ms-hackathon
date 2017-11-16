@@ -27,15 +27,6 @@ var bot = new builder.UniversalBot(connector, (session) => {
     session.beginDialog('/hello');
 });
 
-bot.dialog('/greeting', [
-    (session, results, next) => {
-        session.send("Hi! I'm Mr. Meeseeks! Look at me!")
-        session.beginDialog('/hello')
-    }
-]).triggerAction({
-    matches: "Greeting",
-});
-
 var model = 'https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/' + process.env.LUIS_ID + '?subscription-key=' + process.env.LUIS_KEY + '&verbose=true&timezoneOffset=-8.0&q='
 var recognizer = new builder.LuisRecognizer(model)
 bot.recognizer(recognizer);
@@ -212,28 +203,22 @@ bot.dialog('/updateTicket', [
         session.send("Let me fetch that ticket for you.");
         serviceNow.getTicketByNumber(session.dialogData.ticketNumber)
             .then((res) => {
-                session.dialogData.ticket = res.sys_id;
+                session.dialogData.ticketID = res.data.result[0].sys_id;
                 builder.Prompts.choice(session, "What field would you like to modify?", ["Work Notes", "State"], { listStyle: builder.ListStyle.button })
             })
     },
     (session, results, next) => {
         if (results.response.entity === "State") {
-            // Update State
-            var upd = "State"
             builder.Prompts.choice(session, "What shall I change the state to?", ["New", "In Process", "On Hold", "Resolved", "Closed", "Canceled"], { listStyle: builder.ListStyle.button })
         } else {
-            // Update Work Notes
-            var upd = "Notes"
             builder.Prompts.text(session, "Please enter the notes you wish to add")
-
         }
     },
     (session, results, next) => {
         session.dialogData.notes = results.response;
-        serviceNow.updateTicket(session.dialogData, session.dialogData.notes, session.userData.caller_id)
+        serviceNow.updateTicket(session.dialogData.ticketID, session.dialogData.notes, session.userData.caller_id)
             .then((res) => {
                 session.send("Success!")
-                console.log("Ticket Updated", res)
                 session.endDialog();
             })
     }
