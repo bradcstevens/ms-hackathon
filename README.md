@@ -32,6 +32,7 @@ CDW is a multi-brand technology solutions provider to business, government, educ
 
  <div style="text-align:center"><img src ="images/cdwLogo.png" /></div>
 
+
 For this project, Microsoft worked closely with Senior Consulting Engineer Brad Stevens and Technical Architect Mike Robinson from CDW to craft a _ customizable _ bot assistant that _.
 
 # Problem Statement
