@@ -70,7 +70,7 @@ bot.dialog('/hello', [
 
 bot.dialog('/specifyCredentials', [
     (session, results, next) => {
-        builder.Prompts.text(session, "What is the first name you used to log in to Service Now?")
+        builder.Prompts.text(session, "What is the first name you use to log in to Service Now?")
     },
     (session, results, next) => {
         session.dialogData.firstName = results.response;
