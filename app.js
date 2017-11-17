@@ -59,7 +59,14 @@ bot.dialog('/hello', [
             session.endDialog();
         }
     },
-])
+]).triggerAction({
+    matches: "Greeting",
+}).endConversationAction(
+    "endHello", "Ok. Goodbye.", {
+        matches: /^cancel$|^goodbye$|^nevermind$/i,
+        confirmPrompt: "Are you sure?"
+    }
+);
 
 bot.dialog('/specifyCredentials', [
     (session, results, next) => {
