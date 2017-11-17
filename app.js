@@ -33,6 +33,13 @@ bot.recognizer(recognizer);
 
 bot.dialog('/hello', [
     (session, results, next) => {
+        if (!session.userData.caller_id) {
+            session.beginDialog('/login')
+        } else {
+            next()
+        }
+    },
+    (session, results, next) => {
         builder.Prompts.choice(session, "What can I do for you?", ["Create a new Service Now Ticket", "Update a Service Now Ticket", "Delete a Service Now Ticket", "List all of your Service Now Tickets"], { listStyle: builder.ListStyle.button })
     },
     (session, results, next) => {
@@ -116,7 +123,6 @@ bot.dialog('/login', [
                             // surname: 'Huet-Hudson',
                             // email: 'lucashh@microsoft.com',
                             // userPrincipalName: 'lucashh@microsoft.com' } ]
-
                             let firstName = res.data[0].givenName;
                             let lastName = res.data[0].surname;
                             serviceNow.getUserRecord(firstName, lastName)
