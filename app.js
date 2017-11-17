@@ -1,7 +1,7 @@
 var builder = require('botbuilder');
 var teams = require('botbuilder-teams');
 var restify = require('restify');
-var serviceNow = require("./serviceNow");
+var serviceNow = require("./dialogs/serviceNow");
 var axios = require("axios");
 const dotenv = require("dotenv");
 
