@@ -9,7 +9,6 @@ const config = {
     }
 };
 
-/* Hello world! This is an example */
 
 const createTicket = (dialogData, callerId) => {
     let route = "https://dev39812.service-now.com/api/now/v1/table/incident?sysparm_suppress_auto_sys_field=true";
