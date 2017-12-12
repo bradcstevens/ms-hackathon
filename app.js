@@ -4,6 +4,7 @@ var restify = require('restify');
 var serviceNow = require("./dialogs/serviceNow");
 var axios = require("axios");
 const dotenv = require("dotenv");
+const uuid = require("uuid");
 
 dotenv.load();
 
