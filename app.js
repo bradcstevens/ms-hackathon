@@ -23,7 +23,7 @@ var connector = new builder.ChatConnector({
 // Listen for messages
 server.post('/api/messages', connector.listen());
 
-var bot = new builder.UniversalBot(connector, (session) => {
+var bot = new builder.UniversalBot(connector, (session) = {
     session.send("Hi! I'm Mr. Meeseeks! Look at me!")
     session.beginDialog('/hello');
 });
