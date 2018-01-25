@@ -1,6 +1,6 @@
 let axios = require('axios')
 
-let auth = `Basic ${Buffer.from("admin:SdWKd5Fyr3WU").toString('base64')}`;
+let auth = `Basic ${Buffer.from("admin:Password999!").toString('base64')}`;
 
 const config = {
     headers: {
@@ -11,7 +11,7 @@ const config = {
 
 
 const createTicket = (dialogData, callerId) => {
-    let route = "https://dev39812.service-now.com/api/now/v1/table/incident?sysparm_suppress_auto_sys_field=true";
+    let route = "https://dev45236.service-now.com/api/now/v1/table/incident?sysparm_suppress_auto_sys_field=true";
     let ticket = {
         caller_id: callerId,
         short_description: dialogData.short_description,
@@ -26,12 +26,12 @@ const createTicket = (dialogData, callerId) => {
 }
 
 const getTicketByNumber = async(ticketNumber) => {
-    let route = `https://dev39812.service-now.com/api/now/v1/table/incident?sysparm_query=number%3D${ticketNumber}`;
+    let route = `https://dev45236.service-now.com/api/now/v1/table/incident?sysparm_query=number%3D${ticketNumber}`;
     return axios.get(route, config);
 }
 
 const listTickets = async(callerId) => {
-    let route = `https://dev39812.service-now.com/api/now/table/incident?sysparm_query=caller_id%3D${callerId}`;
+    let route = `https://dev45236.service-now.com/api/now/table/incident?sysparm_query=caller_id%3D${callerId}`;
     return axios.get(route, config)
 }
 
@@ -40,7 +40,7 @@ const closeTicket = (ticket) => {
     return axios.post(route, ticket, config)
 }
 const updateTicket = (ticketID, notes, userId) => {
-    let route = `https://dev39812.service-now.com/api/now/v1/table/task/${ticketID}?sysparm_exclude_ref_link=true`;
+    let route = `https://dev45236.service-now.com/api/now/v1/table/task/${ticketID}?sysparm_exclude_ref_link=true`;
     let updateTicket = {
         caller_id: userId,
         /* short_description: ticket.short_description, */
@@ -60,7 +60,7 @@ const reOpenTicket = (ticket) => {
 }
 
 const getUserRecord = (firstName, lastName) => {
-    let route = `https://dev39812.service-now.com/api/now/v1/table/sys_user?sysparm_query=first_name%3D${firstName}%5Elast_name%3D${lastName}`;
+    let route = `https://dev45236.service-now.com/api/now/v1/table/sys_user?sysparm_query=first_name%3D${firstName}%5Elast_name%3D${lastName}`;
     return axios.get(route, config);
 }
 
