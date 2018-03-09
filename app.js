@@ -1,21 +1,21 @@
-var builder = require('botbuilder');
-var teams = require('botbuilder-teams');
-var restify = require('restify');
-var serviceNow = require("./dialogs/serviceNow");
-var axios = require("axios");
+const builder = require('botbuilder');
+const teams = require('botbuilder-teams');
+const restify = require('restify');
+const serviceNow = require("./dialogs/serviceNow");
+const axios = require("axios");
 const dotenv = require("dotenv");
 const uuid = require("uuid");
 
 dotenv.load();
 
 // Setup Restify Server
-var server = restify.createServer();
+const server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, function() {
     console.log('%s listening to %s', server.name, server.url);
 });
 
 // Create chat bot
-var connector = new builder.ChatConnector({
+const connector = new builder.ChatConnector({
     appId: process.env.MICROSOFT_APP_ID,
     appPassword: process.env.MICROSOFT_APP_PASSWORD
 });
@@ -23,13 +23,13 @@ var connector = new builder.ChatConnector({
 // Listen for messages
 server.post('/api/messages', connector.listen());
 
-var bot = new builder.UniversalBot(connector, (session) => {
+const bot = new builder.UniversalBot(connector, (session) => {
     session.send("Hi! I'm Mr. Meeseeks! Look at me!")
     session.beginDialog('/hello');
 });
 
-var model = 'https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/' + process.env.LUIS_ID + '?subscription-key=' + process.env.LUIS_KEY + '&verbose=true&timezoneOffset=-8.0&q='
-var recognizer = new builder.LuisRecognizer(model)
+const model = 'https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/' + process.env.LUIS_ID + '?subscription-key=' + process.env.LUIS_KEY + '&verbose=true&timezoneOffset=-8.0&q='
+const recognizer = new builder.LuisRecognizer(model)
 bot.recognizer(recognizer);
 
 bot.dialog('/hello', [
@@ -181,6 +181,7 @@ bot.dialog('/createTicket', [
                 .then((res) => {
                     session.endDialog();
                 }).catch((err) => {
+                    session.send("Success! You're ticket has been created. You can find your ticket in the ServiceNow portal.")
                     console.log("ERR", err)
                 })
         }
