@@ -59,6 +59,8 @@ intents.matches('Hello', builder.DialogAction.beginDialog('/hello'));
 
 intents.matches('CreateTicket', builder.DialogAction.beginDialog('/createTicket'));
 
+intents.matches('UpdateTicket', builder.DialogAction.beginDialog('/updateTicket'));
+
 intents.matches('qna', [
     function (session, args, next) {
         const answerEntity = builder.EntityRecognizer.findEntity(args.entities, 'answer');
