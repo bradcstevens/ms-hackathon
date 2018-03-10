@@ -156,7 +156,7 @@ bot.dialog('/QnA', basicQnAMakerDialog);
 bot.dialog('/hello', [
     (session, results, next) => {
         session.send("Hi! I'm Mr. Meeseeks! Look at me!")
-        session.send("Mr. Meeseeks was not born into this world fumbling for meaning, " + session.message.user.name + "! I was created to serve a singular purpose for which we will I to any lengths to fufill!")
+        session.send("Mr. Meeseeks was not born into this world fumbling for meaning, " + session.message.user.name + "! I was created to serve a singular purpose for which I will go to any lengths to fufill!")
         session.send("Go ahead! Ask me a question!")
         session.replaceDialog('/')
     }
