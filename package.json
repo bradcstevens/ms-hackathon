@@ -6,6 +6,8 @@
   "dependencies": {
     "axios": "^0.17.1",
     "botbuilder": "^3.14.0",
+    "botbuilder-ai": "^4.0.0-m1.10",
+    "botbuilder-cognitiveservices": "^1.1.0",
     "botbuilder-teams": "^0.1.7",
     "dotenv": "^4.0.0",
     "restify": "^6.3.4",
