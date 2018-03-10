@@ -164,7 +164,7 @@ bot.dialog('/hello', [
     matches: "Hello",
 }).endConversationAction(
     "endHello", "Ok. Goodbye.", {
-        matches: /^cancel$|^goodbye$|^nevermind$/i,
+        matches: /^cancel$|^goodbye$|^nevermind$|^exit$/i,
         confirmPrompt: "Are you sure?"
     }
 );
