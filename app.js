@@ -286,7 +286,7 @@ bot.dialog('/serviceNow', [
     matches: "Hello",
 }).endConversationAction(
     "endHello", "Ok. Goodbye.", {
-        matches: /^cancel$|^goodbye$|^nevermind$/i,
+        matches: /^cancel$|^goodbye$|^nevermind$|^exit$/i,
         confirmPrompt: "Are you sure?"
     }
 );
@@ -333,7 +333,7 @@ bot.dialog('/createTicket', [
     matches: "CreateTicket",
 }).endConversationAction(
     "endTicketCreate", "Ok. Goodbye.", {
-        matches: /^cancel$|^goodbye$|^nevermind$/i,
+        matches: /^cancel$|^goodbye$|^nevermind$|^exit$/i,
         confirmPrompt: "Are you sure?"
     }
 );
@@ -378,7 +378,7 @@ bot.dialog('/updateTicket', [
     matches: "UpdateTicket",
 }).endConversationAction(
     "endTicketUpdate", "Ok. Goodbye.", {
-        matches: /^cancel$|^goodbye$|^nevermind$/i,
+        matches: /^cancel$|^goodbye$|^nevermind$|^exit$/i,
         confirmPrompt: "Are you sure?"
     }
 );
@@ -398,7 +398,7 @@ bot.dialog('/listTickets', [
     matches: "ListTickets",
 }).endConversationAction(
     "endTicketList", "Ok. Goodbye.", {
-        matches: /^cancel$|^goodbye$|^nevermind$/i,
+        matches: /^cancel$|^goodbye$|^nevermind$|^exit$/i,
         confirmPrompt: "Are you sure?"
     }
 );
@@ -444,7 +444,7 @@ bot.dialog('/reOpenTicket', [
     matches: "ReOpenTicket",
 }).endConversationAction(
     "endTicketReOpen", "Ok. Goodbye.", {
-        matches: /^cancel$|^goodbye$|^nevermind$/i,
+        matches: /^cancel$|^goodbye$|^nevermind$|^exit$/i,
         confirmPrompt: "Are you sure?"
     }
 );
@@ -488,7 +488,7 @@ bot.dialog('/closeTicket', [
     matches: "CloseTicket",
 }).endConversationAction(
     "endTicketClose", "Ok. Goodbye.", {
-        matches: /^cancel$|^goodbye$|^nevermind$/i,
+        matches: /^cancel$|^goodbye$|^nevermind$|^exit$/i,
         confirmPrompt: "Are you sure?"
     }
 );
