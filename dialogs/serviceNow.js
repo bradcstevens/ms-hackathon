@@ -64,6 +64,11 @@ const getUserRecord = (firstName, lastName) => {
     return axios.get(route, config);
 }
 
+const searchKb = (searchQuery) => {
+    let route = `https://dev45236.service-now.com/api/now/v1/table/kb_knowledge?sysparm_query=short_descriptionLIKE${searchQuery}&sysparm_fields=short_description&sysparm_limit=10`;
+    return axios.get(route, config);
+}
+
 module.exports = {
     createTicket: createTicket,
     listTickets: listTickets,
@@ -71,5 +76,6 @@ module.exports = {
     updateTicket: updateTicket,
     reOpenTicket: reOpenTicket,
     getUserRecord: getUserRecord,
-    getTicketByNumber: getTicketByNumber
+    getTicketByNumber: getTicketByNumber,
+    searchKb: searchKb
 }
