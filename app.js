@@ -300,7 +300,6 @@ bot.dialog('/createTicket', [
     (session, results, next) => {
         builder.Prompts.text(session, "Can you give me a description of the problem?")
     },
-
     (session, results, next) => {
         session.dialogData.short_description = results.response;
         builder.Prompts.choice(session, "Got it! What level of urgency?", ["High", "Medium", "Low"], { listStyle: builder.ListStyle.button })
@@ -354,11 +353,6 @@ bot.dialog('/SearchKb', [
             .then((res) => {
                 session.dialogData.searchResults = res.data.result
                 let feed = session.dialogData.searchResults
-                    //feed = feed.map(v => v.short_description);
-                console.log(feed);
-
-                //builder.Prompts.text(session, "I found a few published articles in ServiceNow related to Spam.", feed, { listStyle: builder.ListStyle.button })
-
                 let msg = new builder.Message(session).attachmentLayout(builder.AttachmentLayout.carousel);
                 feed.forEach(function(result, i) {
                     let url = `https://dev45236.service-now.com/kb_view.do?sysparm_article=${result.number}`
@@ -372,12 +366,6 @@ bot.dialog('/SearchKb', [
                     );
                 })
                 session.endDialog(msg);
-
-
-
-
-
-
             })
     }
 ]).triggerAction({
