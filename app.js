@@ -302,7 +302,7 @@ bot.dialog('/createTicket', [
     },
     (session, results, next) => {
         session.dialogData.short_description = results.response;
-        builder.Prompts.choice(session, "Got it! What level of urgency?", ["High", "Medium", "Low"], { listStyle: builder.ListStyle.button })
+        builder.Prompts.choice(session, "Got it! How urgent is this issue to you?", ["High", "Medium", "Low"], { listStyle: builder.ListStyle.button })
     },
     (session, results, next) => {
         session.dialogData.urgency = results.response.entity;
@@ -321,10 +321,10 @@ bot.dialog('/createTicket', [
         }
     },
     (session, results, next) => {
+        session.send("Thanks! I was successfully able to submit your issue as an incident in ServiceNow. Please check the incident portal https://dev45236.service-now.com/nav_to.do?uri=%2Fincident_list.do")
         session.dialogData.notes = results.response;
         serviceNow.createTicket(session.dialogData, session.userData.caller_id)
             .then((res) => {
-                session.send("Thanks! I was successfully able to submit your issue as an incident in ServiceNow. Please check the incident portal https://dev45236.service-now.com/nav_to.do?uri=%2Fincident_list.do")
                 session.endDialog();
             })
     }
