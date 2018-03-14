@@ -65,7 +65,7 @@ const getUserRecord = (firstName, lastName) => {
 }
 
 const searchKb = (searchQuery) => {
-    let route = `https://dev45236.service-now.com/api/now/v1/table/kb_knowledge?sysparm_query=short_descriptionLIKE${searchQuery}&sysparm_fields=short_description&sysparm_limit=10`;
+    let route = `https://dev45236.service-now.com/api/now/v1/table/kb_knowledge?sysparm_query=short_descriptionLIKE${searchQuery}&sysparm_display_value=true&sysparm_exclude_reference_link=true&sysparm_fields=short_description%2Cnumber&&sysparm_limit=10`;
     return axios.get(route, config);
 }
 

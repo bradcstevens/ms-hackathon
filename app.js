@@ -10,7 +10,7 @@ dotenv.load();
 
 // Setup Restify Server
 var server = restify.createServer();
-server.listen(process.env.port || process.env.PORT || 3978, function(){
+server.listen(process.env.port || process.env.PORT || 3978, function() {
     console.log('%s listening to %s', server.name, server.url);
 });
 
@@ -33,7 +33,7 @@ var bot = new builder.UniversalBot(connector, {
 //=========================================================
 
 var qnarecognizer = new cognitiveServices.QnAMakerRecognizer({
-    knowledgeBaseId: process.env.QNA_KNOWLEDGE_BASE_ID, 
+    knowledgeBaseId: process.env.QNA_KNOWLEDGE_BASE_ID,
     subscriptionKey: process.env.QNA_SUBSCRIPTION_KEY
 });
 
@@ -66,7 +66,7 @@ intents.matches('SearchKb', builder.DialogAction.beginDialog('/SearchKb'));
 intents.matches('qna', builder.DialogAction.beginDialog('/QnA'));
 
 intents.onDefault([
-    function(session){
+    function(session) {
         session.send("Oops! I didn't understand your question, " + session.message.user.name + ". I may not have the answer right now, but you could always try to rephrase your question and I'll try again to find you an answer!");
     }
 ]);
@@ -79,7 +79,7 @@ var basicQnAMakerDialog = new cognitiveServices.QnAMakerDialog({
 });
 
 // override
-basicQnAMakerDialog.respondFromQnAMakerResult = function(session, qnaMakerResult){
+basicQnAMakerDialog.respondFromQnAMakerResult = function(session, qnaMakerResult) {
     // Save the question
     var question = session.message.text;
     session.conversationData.userQuestion = question;
@@ -87,63 +87,62 @@ basicQnAMakerDialog.respondFromQnAMakerResult = function(session, qnaMakerResult
     // boolean to check if the result is formatted for a card
     var isCardFormat = qnaMakerResult.answers[0].answer.includes(';');
     console.log(isCardFormat);
-    if(!isCardFormat){
+    if (!isCardFormat) {
         // Not semi colon delimited, send a normal text response 
         session.send(qnaMakerResult.answers[0].answer);
-    }else if(qnaMakerResult.answers && qnaMakerResult.score >= 0.5){
-        
+    } else if (qnaMakerResult.answers && qnaMakerResult.score >= 0.5) {
+
         var qnaAnswer = qnaMakerResult.answers[0].answer;
-        
-                var qnaAnswerData = qnaAnswer.split(';');
-                var title = qnaAnswerData[0];
-                var description = qnaAnswerData[1];
-                var url = qnaAnswerData[2];
-                var imageURL = qnaAnswerData[3];
-        
-                var msg = new builder.Message(session)
-                msg.attachments([
-                    new builder.HeroCard(session)
-                    .title(title)
-                    .subtitle(description)
-                    .images([builder.CardImage.create(session, imageURL)])
-                    .buttons([
-                        builder.CardAction.openUrl(session, url, "Learn More")
-                    ])
-                ]);
-        }
+
+        var qnaAnswerData = qnaAnswer.split(';');
+        var title = qnaAnswerData[0];
+        var description = qnaAnswerData[1];
+        var url = qnaAnswerData[2];
+        var imageURL = qnaAnswerData[3];
+
+        var msg = new builder.Message(session)
+        msg.attachments([
+            new builder.HeroCard(session)
+            .title(title)
+            .subtitle(description)
+            .images([builder.CardImage.create(session, imageURL)])
+            .buttons([
+                builder.CardAction.openUrl(session, url, "Learn More")
+            ])
+        ]);
+    }
     session.send(msg).endDialog();
 }
 
-basicQnAMakerDialog.defaultWaitNextMessage = function(session, qnaMakerResult){
+basicQnAMakerDialog.defaultWaitNextMessage = function(session, qnaMakerResult) {
     // saves the user's question
-    session.conversationData.userQuestion = session.message.text; 
-    
-    if(!qnaMakerResult.answers){
+    session.conversationData.userQuestion = session.message.text;
+
+    if (!qnaMakerResult.answers) {
         let msg = new builder.Message(session)
-        .addAttachment({
-            contentType: "application/vnd.microsoft.card.adaptive",
-            content: {
-                type: "AdaptiveCard",
-                body: [
-                    {
-                        "type": "TextBlock",
-                        "text": `${session.conversationData.userQuestion}`,
-                        "size": "large",
-                        "weight": "bolder",
-                        "color": "accent",
-                        "wrap": true
-                    },
-                    {
-                        "type": "TextBlock",
-                        "text": `Sorry, no answer found in QnA service`,
-                        "size": "large",
-                        "weight": "regular",
-                        "color": "dark",
-                        "wrap": true
-                    }
-                ]
-            }
-        });
+            .addAttachment({
+                contentType: "application/vnd.microsoft.card.adaptive",
+                content: {
+                    type: "AdaptiveCard",
+                    body: [{
+                            "type": "TextBlock",
+                            "text": `${session.conversationData.userQuestion}`,
+                            "size": "large",
+                            "weight": "bolder",
+                            "color": "accent",
+                            "wrap": true
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": `Sorry, no answer found in QnA service`,
+                            "size": "large",
+                            "weight": "regular",
+                            "color": "dark",
+                            "wrap": true
+                        }
+                    ]
+                }
+            });
         session.send(msg);
     }
     session.endDialog();
@@ -301,6 +300,7 @@ bot.dialog('/createTicket', [
     (session, results, next) => {
         builder.Prompts.text(session, "Can you give me a description of the problem?")
     },
+
     (session, results, next) => {
         session.dialogData.short_description = results.response;
         builder.Prompts.choice(session, "Got it! What level of urgency?", ["High", "Medium", "Low"], { listStyle: builder.ListStyle.button })
@@ -353,9 +353,32 @@ bot.dialog('/SearchKb', [
         serviceNow.searchKb(session.dialogData.searchQuery)
             .then((res) => {
                 session.dialogData.searchResults = res.data.result
-                console.log(res.data.result);
-            }
-        )
+                let feed = session.dialogData.searchResults
+                    //feed = feed.map(v => v.short_description);
+                console.log(feed);
+
+                //builder.Prompts.text(session, "I found a few published articles in ServiceNow related to Spam.", feed, { listStyle: builder.ListStyle.button })
+
+                let msg = new builder.Message(session).attachmentLayout(builder.AttachmentLayout.carousel);
+                feed.forEach(function(result, i) {
+                    let url = `https://dev45236.service-now.com/kb_view.do?sysparm_article=${result.number}`
+                    msg.addAttachment(
+                        new builder.HeroCard(session)
+                        .title(result.short_description)
+                        .text(result.number)
+                        .buttons([
+                            builder.CardAction.openUrl(session, url, "Learn More")
+                        ])
+                    );
+                })
+                session.endDialog(msg);
+
+
+
+
+
+
+            })
     }
 ]).triggerAction({
     matches: "SearchKb",
@@ -518,8 +541,8 @@ bot.dialog('/closeTicket', [
 
 bot.dialog('/None', [
     (session, results, next) => {
-        session.send("I'm not sure what you are saying...")
-        session.beginDialog("/hello")
+        session.send("Uh oh! I'm not sure I understood what you said. I may not be able to respond to your input, but you could always try to re-phrase what you said!")
+        session.beginDialog("/")
     }
 ]).triggerAction({
     matches: "None",
