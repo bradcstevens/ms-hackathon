@@ -324,6 +324,7 @@ bot.dialog('/createTicket', [
         session.dialogData.notes = results.response;
         serviceNow.createTicket(session.dialogData, session.userData.caller_id)
             .then((res) => {
+                session.send("Thanks! I was successfully able to submit your issue as an incident in ServiceNow. Please check the incident portal https://dev45236.service-now.com/nav_to.do?uri=%2Fincident_list.do")
                 session.endDialog();
             })
     }
@@ -352,6 +353,7 @@ bot.dialog('/SearchKb', [
         serviceNow.searchKb(session.dialogData.searchQuery)
             .then((res) => {
                 session.dialogData.searchResults = res.data.result
+                session.send("Here's what I found:")
                 let feed = session.dialogData.searchResults
                 let msg = new builder.Message(session).attachmentLayout(builder.AttachmentLayout.carousel);
                 feed.forEach(function(result, i) {
