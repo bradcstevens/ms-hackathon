@@ -321,7 +321,7 @@ bot.dialog('/createTicket', [
         }
     },
     (session, results, next) => {
-        session.send("Thanks! I was successfully able to submit your issue as an incident in ServiceNow. Please check the incident portal https://dev45236.service-now.com/nav_to.do?uri=%2Fincident_list.do")
+        session.send("Thanks! I was successfully able to submit your issue as an incident in ServiceNow. Please check the incident portal https://dev29212.service-now.com/nav_to.do?uri=%2Fincident_list.do")
         session.dialogData.notes = results.response;
         serviceNow.createTicket(session.dialogData, session.userData.caller_id)
             .then((res) => {
