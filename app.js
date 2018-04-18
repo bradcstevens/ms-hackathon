@@ -357,7 +357,7 @@ bot.dialog('/SearchKb', [
                 let feed = session.dialogData.searchResults
                 let msg = new builder.Message(session).attachmentLayout(builder.AttachmentLayout.carousel);
                 feed.forEach(function(result, i) {
-                    let url = `https://dev45236.service-now.com/kb_view.do?sysparm_article=${result.number}`
+                    let url = `https://dev29212.service-now.com/kb_view.do?sysparm_article=${result.number}`
                     msg.addAttachment(
                         new builder.HeroCard(session)
                         .title(result.short_description)
