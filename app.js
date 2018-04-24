@@ -372,7 +372,12 @@ bot.dialog('/SearchKb', [
     }
 ]).triggerAction({
     matches: "SearchKb",
-});
+}).endConversationAction(
+    "endSearchKb", "Ok. Goodbye.", {
+        matches: /^cancel$|^goodbye$|^nevermind$|^exit$/i,
+        confirmPrompt: "Are you sure?"
+    }
+);
 
 bot.dialog('/updateTicket', [
     (session, results, next) => {
