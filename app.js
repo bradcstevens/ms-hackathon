@@ -63,6 +63,8 @@ intents.matches('UpdateTicket', builder.DialogAction.beginDialog('/updateTicket'
 
 intents.matches('SearchKb', builder.DialogAction.beginDialog('/SearchKb'));
 
+intents.matches('ThankYou', builder.DialogAction.beginDialog('/thankYou'));
+
 intents.matches('qna', builder.DialogAction.beginDialog('/QnA'));
 
 intents.onDefault([
