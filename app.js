@@ -312,6 +312,7 @@ bot.dialog('/createTicket', [
         if (results.response.entity === "Yes") {
             builder.Prompts.text(session, "What other notes should I add to the ticket?")
         } else {
+            session.send("Thanks! I was successfully able to submit your issue as an incident in ServiceNow. Please check the incident portal https://dev37410.service-now.com/nav_to.do?uri=%2Fincident_list.do")
             serviceNow.createTicket(session.dialogData, session.userData.caller_id)
                 .then((res) => {
                     session.endDialog();
