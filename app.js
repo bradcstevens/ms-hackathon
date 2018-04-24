@@ -321,7 +321,7 @@ bot.dialog('/createTicket', [
         }
     },
     (session, results, next) => {
-        session.send("Thanks! I was successfully able to submit your issue as an incident in ServiceNow. Please check the incident portal https://dev29212.service-now.com/nav_to.do?uri=%2Fincident_list.do")
+        session.send("Thanks! I was successfully able to submit your issue as an incident in ServiceNow. Please check the incident portal https://dev37410.service-now.com/nav_to.do?uri=%2Fincident_list.do")
         session.dialogData.notes = results.response;
         serviceNow.createTicket(session.dialogData, session.userData.caller_id)
             .then((res) => {
@@ -357,7 +357,7 @@ bot.dialog('/SearchKb', [
                 let feed = session.dialogData.searchResults
                 let msg = new builder.Message(session).attachmentLayout(builder.AttachmentLayout.carousel);
                 feed.forEach(function(result, i) {
-                    let url = `https://dev29212.service-now.com/kb_view.do?sysparm_article=${result.number}`
+                    let url = `https://dev37410.service-now.com/kb_view.do?sysparm_article=${result.number}`
                     msg.addAttachment(
                         new builder.HeroCard(session)
                         .title(result.short_description)
