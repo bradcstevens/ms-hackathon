@@ -167,6 +167,16 @@ bot.dialog('/hello', [
     }
 );
 
+bot.dialog('/thankYou', [
+    (session, results, next) => {
+        session.send("Of course," + session.message.user.name + "! I was created to serve a singular purpose for which I will go to any lengths to fufill!")
+        session.send("Just holler if you need anything else!")
+        session.replaceDialog('/')
+    }
+]).triggerAction({
+    matches: "ThankYou",
+});
+
 bot.dialog('/specifyCredentials', [
     (session, results, next) => {
         builder.Prompts.text(session, "What is the first name you use to log in to Service Now?")
