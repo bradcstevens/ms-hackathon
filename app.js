@@ -1,21 +1,21 @@
-var restify = require('restify');
-var builder = require('botbuilder');
-var cognitiveServices = require('botbuilder-cognitiveservices');
-var https = require('https');
-var serviceNow = require("./dialogs/serviceNow");
-var axios = require("axios");
-var dotenv = require("dotenv");
-var uuid = require("uuid");
+const restify = require('restify');
+const builder = require('botbuilder');
+const cognitiveServices = require('botbuilder-cognitiveservices');
+const https = require('https');
+const serviceNow = require("./dialogs/serviceNow");
+const axios = require("axios");
+const dotenv = require("dotenv");
+const uuid = require("uuid");
 dotenv.load();
 
 // Setup Restify Server
-var server = restify.createServer();
+const server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, function() {
     console.log('%s listening to %s', server.name, server.url);
 });
 
 // Create chat connector instance
-var connector = new builder.ChatConnector({
+const connector = new builder.ChatConnector({
     appId: process.env.MICROSOFT_APP_ID, //process.env.MICROSOFT_APP_ID,
     appPassword: process.env.MICROSOFT_APP_PASSWORD, //    process.env.MICROSOFT_APP_PASSWORD,
 });
@@ -24,7 +24,7 @@ var connector = new builder.ChatConnector({
 server.post('/api/messages', connector.listen());
 
 // Bot instance, pass in the connector to receive messages from the user
-var bot = new builder.UniversalBot(connector, {
+const bot = new builder.UniversalBot(connector, {
     storage: new builder.MemoryBotStorage()
 });
 
@@ -32,27 +32,27 @@ var bot = new builder.UniversalBot(connector, {
 // Recognizers
 //=========================================================
 
-var qnarecognizer = new cognitiveServices.QnAMakerRecognizer({
+const qnarecognizer = new cognitiveServices.QnAMakerRecognizer({
     knowledgeBaseId: process.env.QNA_KNOWLEDGE_BASE_ID,
     subscriptionKey: process.env.QNA_SUBSCRIPTION_KEY
 });
 
-var model = 'https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/' + process.env.LUIS_ID + '?subscription-key=' + process.env.LUIS_KEY + '&verbose=true&timezoneOffset=-8.0&q=';
+const model = 'https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/' + process.env.LUIS_ID + '?subscription-key=' + process.env.LUIS_KEY + '&verbose=true&timezoneOffset=-8.0&q=';
 
-var recognizer = new builder.LuisRecognizer(model);
+const recognizer = new builder.LuisRecognizer(model);
 
 //=========================================================
 // Register QnAMakerTools Library to enable the feedback dialog
 //=========================================================
 
-var qnaMakerTools = new cognitiveServices.QnAMakerTools();
+const qnaMakerTools = new cognitiveServices.QnAMakerTools();
 bot.library(qnaMakerTools.createLibrary());
 
 //=========================================================
 // Bot Dialogs
 //=========================================================
 
-var intents = new builder.IntentDialog({ recognizers: [recognizer, qnarecognizer] });
+const intents = new builder.IntentDialog({ recognizers: [recognizer, qnarecognizer] });
 bot.dialog('/', intents);
 
 intents.matches('Hello', builder.DialogAction.beginDialog('/hello'));
@@ -73,7 +73,7 @@ intents.onDefault([
     }
 ]);
 
-var basicQnAMakerDialog = new cognitiveServices.QnAMakerDialog({
+const basicQnAMakerDialog = new cognitiveServices.QnAMakerDialog({
     recognizers: [qnarecognizer],
     defaultMessage: 'No match! Try changing the query terms!',
     qnaThreshold: 0.4,
@@ -83,26 +83,26 @@ var basicQnAMakerDialog = new cognitiveServices.QnAMakerDialog({
 // override
 basicQnAMakerDialog.respondFromQnAMakerResult = function(session, qnaMakerResult) {
     // Save the question
-    var question = session.message.text;
+    const question = session.message.text;
     session.conversationData.userQuestion = question;
 
     // boolean to check if the result is formatted for a card
-    var isCardFormat = qnaMakerResult.answers[0].answer.includes(';');
+    const isCardFormat = qnaMakerResult.answers[0].answer.includes(';');
     console.log(isCardFormat);
     if (!isCardFormat) {
         // Not semi colon delimited, send a normal text response 
         session.send(qnaMakerResult.answers[0].answer);
     } else if (qnaMakerResult.answers && qnaMakerResult.score >= 0.5) {
 
-        var qnaAnswer = qnaMakerResult.answers[0].answer;
+        const qnaAnswer = qnaMakerResult.answers[0].answer;
 
-        var qnaAnswerData = qnaAnswer.split(';');
-        var title = qnaAnswerData[0];
-        var description = qnaAnswerData[1];
-        var url = qnaAnswerData[2];
-        var imageURL = qnaAnswerData[3];
+        const qnaAnswerData = qnaAnswer.split(';');
+        const title = qnaAnswerData[0];
+        const description = qnaAnswerData[1];
+        const url = qnaAnswerData[2];
+        const imageURL = qnaAnswerData[3];
 
-        var msg = new builder.Message(session)
+        const msg = new builder.Message(session)
         msg.attachments([
             new builder.HeroCard(session)
             .title(title)
@@ -210,9 +210,9 @@ bot.dialog('/login', [
             //2. Use the access token to pull the user
             let appId = process.env.MICROSOFT_APP_ID
             let appPassword = process.env.MICROSOFT_APP_PASSWORD
-            var tokenUrl = `https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token`;
-            var tokenBody = `grant_type=client_credentials&client_id=${appId}&client_secret=${appPassword}&scope=https://api.botframework.com/.default`
-            var tokenConfig = {
+            const tokenUrl = `https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token`;
+            const tokenBody = `grant_type=client_credentials&client_id=${appId}&client_secret=${appPassword}&scope=https://api.botframework.com/.default`
+            const tokenConfig = {
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded",
                     "Host": "login.microsoftonline.com"
@@ -225,7 +225,7 @@ bot.dialog('/login', [
                     let root = session.message.address.serviceUrl;
                     let conversationID = session.message.address.conversation.id;
                     let route = root.concat(`/v3/conversations/${conversationID}/members`);
-                    var authorizedConfig = {
+                    const authorizedConfig = {
                         headers: {
                             "Authorization": `Bearer ${accessToken}`
                         },
