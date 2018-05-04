@@ -67,11 +67,11 @@ intents.matches('ThankYou', builder.DialogAction.beginDialog('/thankYou'));
 
 intents.matches('qna', builder.DialogAction.beginDialog('/QnA'));
 
-//intents.onDefault([
-//function(session) {
-//session.send("Oops! I didn't understand your question, " + session.message.user.name + ". I may not have the answer right now, but you could always try to rephrase your question and I'll try again to find you an answer!");
-//}
-//]);
+intents.onDefault([
+    function(session) {
+        session.send("Oops! I didn't understand your question, " + session.message.user.name + ". I may not have the answer right now, but you could always try to rephrase your question and I'll try again to find you an answer!");
+    }
+]);
 
 var basicQnAMakerDialog = new cognitiveServices.QnAMakerDialog({
     recognizers: [qnarecognizer],
