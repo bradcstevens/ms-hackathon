@@ -36,6 +36,8 @@ const resolveIncident = (dialogData, callerId) => {
     let route = `https://dev37410.service-now.com/api/now/table/incident/${dialogData.incidentId}?sysparm_exclude_ref_link=true`;
     let resolveIncident = {
         caller_id: callerId,
+        close_code: "Closed/Resolved By Caller",
+        close_notes: "Closed by API",
         state: "6"
     }
     return axios.put(route, resolveIncident, config)
