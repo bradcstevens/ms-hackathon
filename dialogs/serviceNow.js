@@ -65,7 +65,8 @@ const getUserRecord = (firstName, lastName) => {
 };
 
 const searchKnowledgeBase = (searchQuery) => {
-    let route = `https://dev37410.service-now.com/api/now/table/kb_knowledge?sysparm_query=kb_knowledge_base=d54448954f58124034368d9f9310c72a^workflow_state=published^meta*${searchQuery}^ORtext*${searchQuery}&sysparm_exclude_reference_link=true&sysparm_fields=sys_id%2Cshort_description%2Cworkflow_state%2Ckb_knowledge_base%2Cmeta%2Ctext%2Cnumber&sysparm_limit=10`;
+    let route = `https://dev37410.service-now.com/api/now/table/kb_knowledge?sysparm_query=workflow_state%3Dpublished%5EmetaLIKE${searchQuery}%5EORtextLIKE${searchQuery}&sysparm_exclude_reference_link=true&sysparm_fields=sys_id%2Cshort_description%2Cworkflow_state%2Ckb_knowledge_base%2Ctext%2Cnumber&sysparm_limit=10`;
+
     return axios.get(route, config);
 };
 

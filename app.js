@@ -540,7 +540,7 @@ bot
                             );
                             feed.forEach(function(result, i) {
                                     var url =
-                                        "https://dev37410..service-now.com/sp?id=kb_article&sys_id=" +
+                                        "https://dev37410.service-now.com/sp?id=kb_article&sys_id=" +
                                         result.sys_id;
                                     msg.addAttachment(
                                         new builder.HeroCard(session)
@@ -676,8 +676,9 @@ bot
                     );
                     feed.forEach(function(result, i) {
                             var url =
-                                "https://dev37410.service-now.com/nav_to.do?uri=incident.do?sys_id=" +
-                                result.sys_id;
+                                "https://dev37410.service-now.com/sp?sys_id=" +
+                                result.sys_id +
+                                "&view=sp&id=ticket&table=incident";
                             msg.addAttachment(
                                 new builder.HeroCard(session)
                                 .title(result.short_description)
@@ -746,6 +747,27 @@ bot
             }
         },
         function(session, results, next) {
+            session.dialogData.user_name = session.userData.user_name;
+            console.log(session.userData.user_name);
+            session.send(
+                "I understand that you want me to find your incidents in ServiceNow."
+            );
+            builder.Prompts.choice(
+                session,
+                "Did I understand you correctly?", ["Yes, show my most recently opened incidents.", "No, not now."], { listStyle: builder.ListStyle.button }
+            );
+        },
+        function(session, results, next) {
+            if (results.response.entity === "Yes, show my most recently opened incidents.") {
+                next();
+            } else {
+                session.send(
+                    "Sorry I misunderstood! Maybe I can help with something else?"
+                );
+                session.endDialog();
+            }
+        },
+        function(session, results, next) {
             serviceNow.getIncidents(session.userData.caller_id).then(function(res) {
                 console.log("Successfully queried Incidents");
                 console.log(res);
@@ -758,8 +780,9 @@ bot
                     );
                     feed.forEach(function(result, i) {
                             var url =
-                                "https://dev37410.service-now.com/nav_to.do?uri=incident.do?sys_id=" +
-                                result.sys_id;
+                                "https://dev37410.service-now.com/sp?sys_id=" +
+                                result.sys_id +
+                                "&view=sp&id=ticket&table=incident";
                             msg.addAttachment(
                                 new builder.HeroCard(session)
                                 .title(result.short_description)
@@ -867,8 +890,9 @@ bot
                     );
                     feed.forEach(function(result, i) {
                             var url =
-                                "https://dev37410.service-now.com/nav_to.do?uri=incident.do?sys_id=" +
-                                result.sys_id;
+                                "https://dev37410.service-now.com/sp?sys_id=" +
+                                result.sys_id +
+                                "&view=sp&id=ticket&table=incident";
                             msg.addAttachment(
                                 new builder.HeroCard(session)
                                 .title(result.short_description)
