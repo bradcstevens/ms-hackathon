@@ -33,7 +33,7 @@ const getIncidentByNumber = async(incidentNumber) => {
 
 
 const resolveIncident = (dialogData, callerId) => {
-    let route = `https://dev37410.service-now.com/api/now/v1/table/task/${dialogData.incidentId}?sysparm_exclude_ref_link=true`;
+    let route = `https://dev37410.service-now.com/api/now/table/incident/${dialogData.incidentId}?sysparm_exclude_ref_link=true`;
     let resolveIncident = {
         caller_id: callerId,
         state: "6"
