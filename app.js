@@ -192,7 +192,7 @@ bot.dialog("/QnA", basicQnAMakerDialog);
 bot
     .dialog("/greeting", [
         function(session, results, next) {
-            session.send("Hi! I'm CdwBot!");
+            session.send("Hi! I'm Mr. Meeseeks! Look at me!");
             session.send(
                 "I'm a bot that can help you manage incidents in ServiceNow!"
             );
