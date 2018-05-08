@@ -506,11 +506,11 @@ bot
             );
             builder.Prompts.choice(
                 session,
-                "Did I understand you correctly?", ["Yes, please search IT Help Center.", "No, not now."], { listStyle: builder.ListStyle.button }
+                "Did I understand you correctly?", ["Yes, please search ServiceNow.", "No, not now."], { listStyle: builder.ListStyle.button }
             );
         },
         function(session, results, next) {
-            if (results.response.entity === "Yes, please search IT Help Center.") {
+            if (results.response.entity === "Yes, please search ServiceNow.") {
                 builder.Prompts.text(
                     session,
                     "What would you like to search for? I will be able to provide the first 10 results of what I find."
