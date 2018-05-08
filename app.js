@@ -875,7 +875,27 @@ bot
             }
         },
         function(session, results, next) {
-            session.send("I understand that you want to resolve your incident");
+            session.dialogData.user_name = session.userData.user_name;
+            console.log(session.userData.user_name);
+            session.send(
+                "I understand that you want to resolve a ServiceNow incident"
+            );
+            builder.Prompts.choice(
+                session,
+                "Did I understand you correctly?", ["Yes, resolve an incident for me.", "No, not now."], { listStyle: builder.ListStyle.button }
+            );
+        },
+        function(session, results, next) {
+            if (results.response.entity === "Yes, resolve an incident for me.") {
+                next();
+            } else {
+                session.send(
+                    "Sorry I misunderstood! Maybe I can help with something else?"
+                );
+                session.endDialog();
+            }
+        },
+        function(session, results, next) {
             serviceNow.getIncidents(session.userData.caller_id).then(function(res) {
                 console.log("Successfully queried Incidents");
                 console.log(res);
