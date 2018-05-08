@@ -1,6 +1,8 @@
-let axios = require('axios')
+var dotenv = require("dotenv");
+let axios = require('axios');
+dotenv.load();
 
-let auth = `Basic ${Buffer.from("admin:Password999!").toString('base64')}`;
+let auth = `Basic ${Buffer.from(process.env.SERVICENOW_SA_ID + ':' + process.env.SERVICENOW_SA_PASSWORD).toString('base64')}`;
 
 const config = {
     headers: {
@@ -9,73 +11,76 @@ const config = {
     }
 };
 
-
-const createTicket = (dialogData, callerId) => {
+const createIncident = (dialogData, callerId) => {
     let route = "https://dev37410.service-now.com/api/now/v1/table/incident?sysparm_suppress_auto_sys_field=true";
-    let ticket = {
+    let incident = {
         caller_id: callerId,
+        description: dialogData.description,
         short_description: dialogData.short_description,
-        urgency: dialogData.urgency,
         state: "New",
         sys_created_by: dialogData.caller,
         sys_created_on: Date.now(),
         sys_updated_by: dialogData.caller,
         sys_updated_on: Date.now()
     }
-    return axios.post(route, ticket, config)
-}
+    return axios.post(route, incident, config)
+};
 
-const getTicketByNumber = async(ticketNumber) => {
-    let route = `https://dev37410.service-now.com/api/now/v1/table/incident?sysparm_query=number%3D${ticketNumber}`;
+const getIncidentByNumber = async(incidentNumber) => {
+    let route = `https://dev37410.service-now.com/api/now/v1/table/incident?sysparm_query=number%3D${incidentNumber}`;
     return axios.get(route, config);
-}
+};
 
-const listTickets = async(callerId) => {
-    let route = `https://dev37410.service-now.com/api/now/table/incident?sysparm_query=caller_id%3D${callerId}`;
-    return axios.get(route, config)
-}
 
-const closeTicket = (ticket) => {
-    let route = "";
-    return axios.post(route, ticket, config)
-}
-const updateTicket = (ticketID, notes, userId) => {
-    let route = `https://dev37410.service-now.com/api/now/v1/table/task/${ticketID}?sysparm_exclude_ref_link=true`;
-    let updateTicket = {
-        caller_id: userId,
-        /* short_description: ticket.short_description, */
-        work_notes: notes
-            /* urgency: ticket.urgency,
-            state: ticket.state,
-            sys_updated_by: userId,
-            sys_updated_on: Date.now() */
+const resolveIncident = (dialogData, callerId) => {
+    let route = `https://dev37410.service-now.com/api/now/v1/table/task/${dialogData.incidentId}?sysparm_exclude_ref_link=true`;
+    let resolveIncident = {
+        caller_id: callerId,
+        state: "6"
+    }
+    return axios.put(route, resolveIncident, config)
+};
+
+const updateIncident = (dialogData, callerId) => {
+    let route = `https://dev37410.service-now.com/api/now/v1/table/task/${dialogData.incidentId}?sysparm_exclude_ref_link=true`;
+    let updateIncident = {
+        caller_id: callerId,
+        comments: dialogData.comments,
+        sys_created_by: callerId,
+        sys_created_on: Date.now()
+
     }
 
-    return axios.put(route, updateTicket, config)
-}
+    return axios.put(route, updateIncident, config)
+};
 
-const reOpenTicket = (ticket) => {
+const reopenIncident = (incident) => {
     let route = "";
-    return axios.post(route, ticket, config)
-}
+    return axios.post(route, incident, config)
+};
 
 const getUserRecord = (firstName, lastName) => {
     let route = `https://dev37410.service-now.com/api/now/v1/table/sys_user?sysparm_query=first_name%3D${firstName}%5Elast_name%3D${lastName}`;
     return axios.get(route, config);
-}
+};
 
-const searchKb = (searchQuery) => {
-    let route = `https://dev37410.service-now.com/api/now/v1/table/kb_knowledge?sysparm_query=short_descriptionLIKE${searchQuery}&sysparm_display_value=true&sysparm_exclude_reference_link=true&sysparm_fields=short_description%2Cnumber&&sysparm_limit=10`;
+const searchKnowledgeBase = (searchQuery) => {
+    let route = `https://dev37410.service-now.com/api/now/table/kb_knowledge?sysparm_query=kb_knowledge_base=d54448954f58124034368d9f9310c72a^workflow_state=published^meta*${searchQuery}^ORtext*${searchQuery}&sysparm_exclude_reference_link=true&sysparm_fields=sys_id%2Cshort_description%2Cworkflow_state%2Ckb_knowledge_base%2Cmeta%2Ctext%2Cnumber&sysparm_limit=10`;
     return axios.get(route, config);
-}
+};
+
+const getIncidents = (userId) => {
+    let route = `https://dev37410.service-now.com/api/now/table/incident?sysparm_query=caller_id=${userId}^active=true^ORDERBYDESCsys_created_on&sysparm_fields=sys_id%2Csys_created_on%2Cnumber%2Copened_at%2Ccaller_id%2Cshort_description&sysparm_limit=5`;
+    return axios.get(route, config);
+};
 
 module.exports = {
-    createTicket: createTicket,
-    listTickets: listTickets,
-    closeTicket: closeTicket,
-    updateTicket: updateTicket,
-    reOpenTicket: reOpenTicket,
+    createIncident: createIncident,
+    resolveIncident: resolveIncident,
+    updateIncident: updateIncident,
+    reopenIncident: reopenIncident,
+    getIncidentByNumber: getIncidentByNumber,
     getUserRecord: getUserRecord,
-    getTicketByNumber: getTicketByNumber,
-    searchKb: searchKb
-}
+    getIncidents: getIncidents,
+    searchKnowledgeBase: searchKnowledgeBase
+};
