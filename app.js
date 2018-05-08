@@ -352,6 +352,11 @@ bot
                         session,
                         "Resolve Incident",
                         "Resolve your ServiceNow Incident"
+                    ),
+                    builder.CardAction.imBack(
+                        session,
+                        "Search for a Knowledge Article",
+                        "Search for a Knowledge Article"
                     )
                 ]);
             var message = new builder.Message(session).addAttachment(card);
@@ -671,9 +676,8 @@ bot
                     );
                     feed.forEach(function(result, i) {
                             var url =
-                                "https://dev37410.service-now.com/sp?sys_id=" +
-                                result.sys_id +
-                                "&view=sp&id=ticket&table=incident#home";
+                                "https://dev37410.service-now.com/nav_to.do?uri=incident.do?sys_id=" +
+                                result.sys_id;
                             msg.addAttachment(
                                 new builder.HeroCard(session)
                                 .title(result.short_description)
@@ -754,9 +758,8 @@ bot
                     );
                     feed.forEach(function(result, i) {
                             var url =
-                                "https://dev37410..service-now.com/sp?sys_id=" +
-                                result.sys_id +
-                                "&view=sp&id=ticket&table=incident#home";
+                                "https://dev37410.service-now.com/nav_to.do?uri=incident.do?sys_id=" +
+                                result.sys_id;
                             msg.addAttachment(
                                 new builder.HeroCard(session)
                                 .title(result.short_description)
@@ -864,9 +867,8 @@ bot
                     );
                     feed.forEach(function(result, i) {
                             var url =
-                                "https://dev37410.service-now.com/sp?sys_id=" +
-                                result.sys_id +
-                                "&view=sp&id=ticket&table=incident#home";
+                                "https://dev37410.service-now.com/nav_to.do?uri=incident.do?sys_id=" +
+                                result.sys_id;
                             msg.addAttachment(
                                 new builder.HeroCard(session)
                                 .title(result.short_description)
