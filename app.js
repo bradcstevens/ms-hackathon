@@ -934,7 +934,7 @@ bot
                     next();
                 } else {
                     session.send(
-                        "You don't have any incidents reported! Good for you!\""
+                        "You don't have any incidents reported! Good for you!"
                     );
                 }
             });
