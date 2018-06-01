@@ -10,6 +10,8 @@ var dotenv = require("dotenv");
 var uuid = require("uuid");
 dotenv.load();
 
+// This is a demo bot
+
 // Setup Restify Server
 var server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, function() {
