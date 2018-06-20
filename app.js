@@ -1,13 +1,9 @@
-"use strict";
-
 var restify = require("restify");
 var builder = require("botbuilder");
-var cognitiveServices = require("botbuilder-cognitiveservices");
-var https = require("https");
-var serviceNow = require("./dialogs/serviceNow");
-var axios = require("axios");
-var dotenv = require("dotenv");
-var uuid = require("uuid");
+const serviceNow = require("./dialogs/serviceNow");
+const axios = require("axios");
+var builder_cognitiveservices = require("botbuilder-cognitiveservices");
+const dotenv = require("dotenv");
 dotenv.load();
 
 // This is a demo bot
@@ -18,27 +14,38 @@ server.listen(process.env.port || process.env.PORT || 3978, function() {
     console.log("%s listening to %s", server.name, server.url);
 });
 
-// Create chat connector instance
+// Create chat connector for communicating with the Bot Framework Service
 var connector = new builder.ChatConnector({
-    appId: process.env.MICROSOFT_APP_ID, //process.env.MICROSOFT_APP_ID,
-    appPassword: process.env.MICROSOFT_APP_PASSWORD //    process.env.MICROSOFT_APP_PASSWORD,
+    appId: process.env.MicrosoftAppId,
+    appPassword: process.env.MicrosoftAppPassword,
+    openIdMetadata: process.env.BotOpenIdMetadata
 });
 
-// Listen for messages from users
-server.post("/api/messages", connector.listen());
+// Listen for messages from users 
+server.post('/api/messages', connector.listen());
 
-// Bot instance, pass in the connector to receive messages from the user
+/*----------------------------------------------------------------------------------------
+ * Bot Storage: This is a great spot to register the private state storage for your bot. 
+ * We provide adapters for Azure Table, CosmosDb, SQL Azure, or you can implement your own!
+ * For samples and documentation, see: https://github.com/Microsoft/BotBuilder-Azure
+ * ---------------------------------------------------------------------------------------- */
+
+// Create your bot with a function to receive messages from the user
 var bot = new builder.UniversalBot(connector, {
     storage: new builder.MemoryBotStorage()
 });
 
-//=========================================================
-// Recognizers
-//=========================================================
+// Recognizer and and Dialog for GA QnAMaker service
+var recognizer = new builder_cognitiveservices.QnAMakerRecognizer({
+    knowledgeBaseId: process.env.QnAKnowledgebaseId,
+    authKey: process.env.QnAAuthKey || process.env.QnASubscriptionKey, // Backward compatibility with QnAMaker (Preview)
+    endpointHostName: process.env.QnAEndpointHostName
+});
 
-var qnarecognizer = new cognitiveServices.QnAMakerRecognizer({
-    knowledgeBaseId: process.env.QNA_KNOWLEDGE_BASE_ID,
-    subscriptionKey: process.env.QNA_SUBSCRIPTION_KEY
+var basicQnAMakerDialog = new builder_cognitiveservices.QnAMakerDialog({
+    recognizers: [recognizer],
+    defaultMessage: 'No match! Try changing the query terms!',
+    qnaThreshold: 0.3
 });
 
 var model =
@@ -48,25 +55,17 @@ var model =
     process.env.LUIS_KEY +
     "&verbose=true&timezoneOffset=-8.0&q=";
 
-var recognizer = new builder.LuisRecognizer(model);
-
-//=========================================================
-// Register QnAMakerTools Library to enable the feedback dialog
-//=========================================================
-
-var qnaMakerTools = new cognitiveServices.QnAMakerTools();
-bot.library(qnaMakerTools.createLibrary());
-
-//=========================================================
-// Bot Dialogs
-//=========================================================
+var luisRecognizer = new builder.LuisRecognizer(model);
 
 var intents = new builder.IntentDialog({
-    recognizers: [recognizer, qnarecognizer]
+    recognizers: [recognizer, luisRecognizer]
 });
 bot.dialog("/", intents);
 
-intents.matches("greeting", builder.DialogAction.beginDialog("/greeting"));
+intents.matches(
+    "greeting", 
+    builder.DialogAction.beginDialog("/greeting")
+);
 
 intents.matches(
     "getIncident",
@@ -103,22 +102,28 @@ intents.matches(
     builder.DialogAction.beginDialog("/serviceNowMenu")
 );
 
-intents.matches("ThankYou", builder.DialogAction.beginDialog("/thankYou"));
+intents.matches(
+    "ThankYou", 
+    builder.DialogAction.beginDialog("/thankYou")
+);
 
-intents.matches("qna", builder.DialogAction.beginDialog("/QnA"));
+intents.matches(
+    "qna", 
+    builder.DialogAction.beginDialog("basicQnAMakerDialog")
+);
 
-/* intents.onDefault([
-    function(session) {
-        session.send("Oops! I didn't understand your question, " + session.message.user.name + ". I may not have the answer right now, but you could always try to rephrase your question and I'll try again to find you an answer!");
-    }
-]); */
-
-var basicQnAMakerDialog = new cognitiveServices.QnAMakerDialog({
-    recognizers: [qnarecognizer],
-    defaultMessage: "No match! Try changing the query terms!",
-    qnaThreshold: 0.4,
-    feedbackLib: qnaMakerTools
-});
+intents.onDefault(
+    [
+        function(session) {
+            session.send(
+                "Oops! I didn't understand your question, " + 
+                session.message.user.name + 
+                ". I may not have the answer right now, but you could always \
+                try to rephrase your question and I'll try again to find you an answer!"
+            );
+        }
+    ]
+); 
 
 // override
 basicQnAMakerDialog.respondFromQnAMakerResult = function(
@@ -189,7 +194,7 @@ basicQnAMakerDialog.defaultWaitNextMessage = function(session, qnaMakerResult) {
     session.endDialog();
 };
 
-bot.dialog("/QnA", basicQnAMakerDialog);
+bot.dialog('basicQnAMakerDialog', basicQnAMakerDialog);
 
 bot
     .dialog("/greeting", [
