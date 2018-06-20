@@ -816,6 +816,7 @@ bot
                     session.send(
                         "You don't have any incidents reported! Good for you!\""
                     );
+                    session.endDialog();
                 }
             });
         }
