@@ -1,8 +1,9 @@
-var restify = require("restify");
-var builder = require("botbuilder");
+const restify = require("restify");
+const builder = require("botbuilder");
 const serviceNow = require("./dialogs/serviceNow");
+const botbuilder_azure = require("botbuilder-azure");
+const builder_cognitiveservices = require("botbuilder-cognitiveservices");
 const axios = require("axios");
-var builder_cognitiveservices = require("botbuilder-cognitiveservices");
 const dotenv = require("dotenv");
 dotenv.load();
 
@@ -30,10 +31,13 @@ server.post('/api/messages', connector.listen());
  * For samples and documentation, see: https://github.com/Microsoft/BotBuilder-Azure
  * ---------------------------------------------------------------------------------------- */
 
+var tableName = 'botdata';
+var azureTableClient = new botbuilder_azure.AzureTableClient(tableName, process.env['AzureWebJobsStorage']);
+var tableStorage = new botbuilder_azure.AzureBotStorage({ gzipData: false }, azureTableClient);
+
 // Create your bot with a function to receive messages from the user
-var bot = new builder.UniversalBot(connector, {
-    storage: new builder.MemoryBotStorage()
-});
+var bot = new builder.UniversalBot(connector);
+bot.set('storage', tableStorage);
 
 // Recognizer and and Dialog for GA QnAMaker service
 var recognizer = new builder_cognitiveservices.QnAMakerRecognizer({
