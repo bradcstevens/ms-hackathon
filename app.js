@@ -118,13 +118,15 @@ intents.matches(
 
 intents.onDefault(
     [
-        function(session) {
+        function(session, results, next) {
+            session.send("Hi! I'm Mr. Meeseeks! Look at me!");
             session.send(
-                "Oops! I didn't understand your question, " + 
-                session.message.user.name + 
-                ". I may not have the answer right now, but you could always \
-                try to rephrase your question and I'll try again to find you an answer!"
+                "I'm a bot that can help you manage incidents in ServiceNow!"
             );
+            session.send(
+                "Go ahead! Ask me a question! Try saying something like: 'What can you do?'"
+            );
+            session.replaceDialog("/");
         }
     ]
 ); 
