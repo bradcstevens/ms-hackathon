@@ -1,0 +1,23 @@
+{
+    "name": "ms-teams-demo-bot",
+    "description": "",
+    "secretKey": "",
+    "services": [
+        {
+            "appId": "6f74b15c-1283-45fc-a453-99249829b5da",
+            "id": "aa699cd0-74de-11e8-8086-8fb3840a05ae",
+            "type": "endpoint",
+            "appPassword": "vfpvNVHUPJ7$?bjmG2174~!",
+            "endpoint": "https://demo-wus-wab-bs.azurewebsites.net/api/messages",
+            "name": "https://demo-wus-wab-bs.azurewebsites.net/api/messages"
+        },
+        {
+            "id": "115a26d0-74df-11e8-b619-cbdb6b312a41",
+            "name": "local",
+            "type": "endpoint",
+            "appId": "6f74b15c-1283-45fc-a453-99249829b5da",
+            "appPassword": "vfpvNVHUPJ7$?bjmG2174~!",
+            "endpoint": "http://localhost:3978/api/messages"
+        }
+    ]
+}

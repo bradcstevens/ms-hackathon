@@ -1,6 +1,7 @@
 const restify = require("restify");
 const builder = require("botbuilder");
 const serviceNow = require("./dialogs/serviceNow");
+
 const botbuilder_azure = require("botbuilder-azure");
 const builder_cognitiveservices = require("botbuilder-cognitiveservices");
 const axios = require("axios");
@@ -62,7 +63,8 @@ var model =
 var luisRecognizer = new builder.LuisRecognizer(model);
 
 var intents = new builder.IntentDialog({
-    recognizers: [recognizer, luisRecognizer]
+    recognizers: [luisRecognizer, recognizer],
+    recognizeOrder: builder.RecognizeOrder.series
 });
 bot.dialog("/", intents);
 
@@ -116,13 +118,20 @@ intents.matches(
     builder.DialogAction.beginDialog("basicQnAMakerDialog")
 );
 
+intents.matches(
+    "none",
+    builder.DialogAction.beginDialog("/None")
+);
+
 intents.onDefault(
     [
-        function(session, results, next) {
+        function(session) {
+            var message = session.message.text
             session.send(
-                "Hi! I'm Mr. Meeseeks! Look at me!",
-                "I'm a bot that can help you manage incidents in ServiceNow!",
-                "Go ahead! Ask me a question! Try saying something like: 'What can you do?'"
+                "Oops! I didn't understand **'" + message  + "'** " +
+                session.message.user.name + 
+                "! Either I'm not sure how to respond, or I may not have the answer right now. You could always \
+                try to rephrase your question and I'll try again to find you an answer!"
             );
         }
     ]
@@ -201,14 +210,12 @@ bot.dialog('basicQnAMakerDialog', basicQnAMakerDialog);
 
 bot
     .dialog("/greeting", [
-        function(session, results, next) {
-            session.send("Hi! I'm Mr. Meeseeks! Look at me!");
+        function(session) {
             session.send(
-                "I'm a bot that can help you manage incidents in ServiceNow!"
-            );
-            session.send(
-                "Go ahead! Ask me a question! Try saying something like: 'What can you do?'"
-            );
+                "Hi! I'm Mr. Meeseeks! Look at me! \
+                I'm a bot that can help you manage incidents in ServiceNow! \
+                Go ahead! Ask me a question! Try saying something like: 'What can you do?'"
+        );
             session.replaceDialog("/");
         }
     ])
@@ -222,7 +229,7 @@ bot
 
 bot
     .dialog("/thankYou", [
-        function(session, results, next) {
+        function(session) {
             session.send("Of course, " + session.message.user.name + "!");
             session.replaceDialog("/");
         }
@@ -232,17 +239,17 @@ bot
     });
 
 bot.dialog("/specifyCredentials", [
-    function(session, results, next) {
+    function(session) {
         builder.Prompts.text(
             session,
             "What is the first name you use to log in to Service Now?"
         );
     },
-    function(session, results, next) {
+    function(session, results) {
         session.dialogData.firstName = results.response;
         builder.Prompts.text(session, "Thanks! And your last name?");
     },
-    function(session, results, next) {
+    function(session, results) {
         session.dialogData.lastName = results.response;
         serviceNow
             .getUserRecord(session.dialogData.firstName, session.dialogData.lastName)
@@ -261,7 +268,7 @@ bot.dialog("/specifyCredentials", [
 ]);
 
 bot.dialog("/login", [
-    function(session, args, next) {
+    function(session) {
         if (session.message.address.channelId === "msteams") {
             //There are 2 steps to get the user info from a chat
             //1. Get an access token
@@ -383,14 +390,14 @@ bot
 
 bot
     .dialog("/createIncident", [
-        function(session, results, next) {
+        function(session, next) {
             if (!session.userData.caller_id) {
                 session.beginDialog("/login");
             } else {
                 next();
             }
         },
-        function(session, results, next) {
+        function(session) {
             session.send(
                 "I understand that you want to open a new incident in ServiceNow"
             );
@@ -420,7 +427,7 @@ bot
                 session.endDialog();
             }
         },
-        function(session, results, next) {
+        function(session, results) {
             session.dialogData.short_description = results.response;
             session.send("Got it! I just need a little more information.");
             builder.Prompts.text(
@@ -428,14 +435,14 @@ bot
                 "Please describe the problem in more detail"
             );
         },
-        function(session, results, next) {
+        function(session, results) {
             session.dialogData.description = results.response;
             builder.Prompts.choice(
                 session,
                 "Would you like to add any additional notes?", ["Yes", "No"], { listStyle: builder.ListStyle.button }
             );
         },
-        function(session, results, next) {
+        function(session, results) {
             if (results.response.entity === "Yes") {
                 builder.Prompts.text(
                     session,
@@ -468,7 +475,7 @@ bot
                     });
             }
         },
-        function(session, results, next) {
+        function(session, results) {
             session.dialogData.notes = results.response;
             session.send(
                 "Thanks! I was successfully able to submit your issue as an incident in ServiceNow!"
@@ -503,14 +510,14 @@ bot
 
 bot
     .dialog("/searchKnowledgeBase", [
-        function(session, results, next) {
+        function(session, next) {
             if (!session.userData.caller_id) {
                 session.beginDialog("/login");
             } else {
                 next();
             }
         },
-        function(session, results, next) {
+        function(session) {
             session.send(
                 "I understand that you need help finding a knowledge article in ServiceNow."
             );
@@ -533,7 +540,7 @@ bot
                 session.endDialog();
             }
         },
-        function(session, results, next) {
+        function(session, results) {
             session.dialogData.searchQuery = results.response;
             serviceNow
                 .searchKnowledgeBase(session.dialogData.searchQuery)
@@ -585,13 +592,13 @@ bot
 
 bot
     .dialog("/getResultFeedback", [
-        function(session, args, next) {
+        function(session) {
             builder.Prompts.choice(
                 session,
                 "Did that help?", ["Yes, Thanks!", "I need to rephrase what I want to search."], { listStyle: builder.ListStyle.button }
             );
         },
-        function(session, results, next) {
+        function(session, results) {
             if (results.response.entity === "Yes, Thanks!") {
                 session.send(
                     "Awesome! Let me know if I can help you find anything else!"
@@ -615,13 +622,13 @@ bot
 
 bot
     .dialog("/getResultFailFeedback", [
-        function(session, args, next) {
+        function(session) {
             builder.Prompts.choice(
                 session,
                 "Would you like me search for something else?", ["Yes, I'll rephrase my search query.", "No, Thanks."], { listStyle: builder.ListStyle.button }
             );
         },
-        function(session, results, next) {
+        function(session, results) {
             if (results.response.entity === "Yes, I'll rephrase my search query.") {
                 session.send("Ok!");
                 session.replaceDialog("/searchKnowledgeBase");
@@ -643,14 +650,14 @@ bot
 
 bot
     .dialog("/updateIncident", [
-        function(session, results, next) {
+        function(session, next) {
             if (!session.userData.caller_id) {
                 session.beginDialog("/login");
             } else {
                 next();
             }
         },
-        function(session, results, next) {
+        function(session) {
             session.dialogData.user_name = session.userData.user_name;
             console.log(session.userData.user_name);
             session.send(
@@ -671,7 +678,7 @@ bot
                 session.endDialog();
             }
         },
-        function(session, results, next) {
+        function(session, next) {
             serviceNow.getIncidents(session.userData.caller_id).then(function(res) {
                 console.log("Successfully queried Incidents");
                 console.log(res);
@@ -715,7 +722,7 @@ bot
                 }
             });
         },
-        function(session, results, next) {
+        function(session, results) {
             session.dialogData.incidentNumber = results.response;
             serviceNow
                 .getIncidentByNumber(session.dialogData.incidentNumber)
@@ -725,7 +732,7 @@ bot
                     builder.Prompts.text(session, "What comments would you like to add?");
                 });
         },
-        function(session, results, next) {
+        function(session, results) {
             session.dialogData.comments = results.response;
 
             console.log("Caller_ID " + session.userData.caller_id);
@@ -749,14 +756,14 @@ bot
 
 bot
     .dialog("/getIncident", [
-        function(session, results, next) {
+        function(session, next) {
             if (!session.userData.caller_id) {
                 session.beginDialog("/login");
             } else {
                 next();
             }
         },
-        function(session, results, next) {
+        function(session) {
             session.dialogData.user_name = session.userData.user_name;
             console.log(session.userData.user_name);
             session.send(
@@ -777,7 +784,7 @@ bot
                 session.endDialog();
             }
         },
-        function(session, results, next) {
+        function(session) {
             serviceNow.getIncidents(session.userData.caller_id).then(function(res) {
                 console.log("Successfully queried Incidents");
                 console.log(res);
@@ -823,7 +830,7 @@ bot
 
 bot
     .dialog("/reopenIncident", [
-        function(session, results, next) {
+        function(session, next) {
             if (!session.userData.caller_id) {
                 session.beginDialog("/login");
             } else {
@@ -837,14 +844,14 @@ bot
                 "What incident number would you like to re-open?"
             );
         },
-        function(session, results, next) {
+        function(session, results) {
             session.dialogData.number = results.response;
             builder.Prompts.choice(
                 session,
                 "Would you like to add any notes to the incident?", ["Yes", "No"], { listStyle: builder.ListStyle.button }
             );
         },
-        function(session, results, next) {
+        function(session, results) {
             if (results.response.entity === "Yes") {
                 builder.Prompts.text(session, "Go ahead");
             } else {
@@ -884,7 +891,7 @@ bot
                 next();
             }
         },
-        function(session, results, next) {
+        function(session) {
             session.dialogData.user_name = session.userData.user_name;
             console.log(session.userData.user_name);
             session.send(
@@ -905,7 +912,7 @@ bot
                 session.endDialog();
             }
         },
-        function(session, results, next) {
+        function(session, next) {
             serviceNow.getIncidents(session.userData.caller_id).then(function(res) {
                 console.log("Successfully queried Incidents");
                 console.log(res);
@@ -964,7 +971,7 @@ bot
                     next();
                 });
         },
-        function(session, results, next) {
+        function(session) {
             console.log(
                 "Dialog Data Incident ID is: " + session.dialogData.incidentId
             );
@@ -989,9 +996,12 @@ bot
 
 bot
     .dialog("/None", [
-        function(session, results, next) {
+        function(session) {
             session.send(
-                "Uh oh! I'm not sure I understood what you said. I may not be able to respond to your input, but you could always try to re-phrase what you said!"
+                            "Oops! I didn't understand what you said, " + 
+                            session.message.user.name + 
+                            "! Either I'm not sure how to respond, or I may not have the answer right now. You could always \
+                            try to rephrase your question and I'll try again to find you an answer!"
             );
             session.beginDialog("/");
         }
