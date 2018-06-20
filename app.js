@@ -50,9 +50,9 @@ var basicQnAMakerDialog = new builder_cognitiveservices.QnAMakerDialog({
 
 var model =
     "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/" +
-    process.env.LUIS_ID +
+    process.env.LuisId +
     "?subscription-key=" +
-    process.env.LUIS_KEY +
+    process.env.LuisKey +
     "&verbose=true&timezoneOffset=-8.0&q=";
 
 var luisRecognizer = new builder.LuisRecognizer(model);
