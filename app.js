@@ -119,14 +119,11 @@ intents.matches(
 intents.onDefault(
     [
         function(session, results, next) {
-            session.send("Hi! I'm Mr. Meeseeks! Look at me!");
             session.send(
-                "I'm a bot that can help you manage incidents in ServiceNow!"
-            );
-            session.send(
+                "Hi! I'm Mr. Meeseeks! Look at me!",
+                "I'm a bot that can help you manage incidents in ServiceNow!",
                 "Go ahead! Ask me a question! Try saying something like: 'What can you do?'"
             );
-            session.replaceDialog("/");
         }
     ]
 ); 
