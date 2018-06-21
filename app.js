@@ -1,7 +1,7 @@
 const restify = require("restify");
 const builder = require("botbuilder");
 const serviceNow = require("./dialogs/serviceNow");
-
+const teams = require("botbuilder-teams");
 const botbuilder_azure = require("botbuilder-azure");
 const builder_cognitiveservices = require("botbuilder-cognitiveservices");
 const axios = require("axios");
@@ -37,8 +37,9 @@ var azureTableClient = new botbuilder_azure.AzureTableClient(tableName, process.
 var tableStorage = new botbuilder_azure.AzureBotStorage({ gzipData: false }, azureTableClient);
 
 // Create your bot with a function to receive messages from the user
-var bot = new builder.UniversalBot(connector);
-bot.set('storage', tableStorage);
+var bot = new builder.UniversalBot(connector, {
+    storage: new builder.MemoryBotStorage()
+});
 
 // Recognizer and and Dialog for GA QnAMaker service
 var recognizer = new builder_cognitiveservices.QnAMakerRecognizer({
@@ -66,10 +67,15 @@ var intents = new builder.IntentDialog({
     recognizers: [luisRecognizer, recognizer],
     recognizeOrder: builder.RecognizeOrder.series
 });
+
+var stripBotAtMentions = new teams.StripBotAtMentions();
+
+bot.use(stripBotAtMentions);
+
 bot.dialog("/", intents);
 
 intents.matches(
-    "greeting", 
+    "greeting",
     builder.DialogAction.beginDialog("/greeting")
 );
 
@@ -109,12 +115,12 @@ intents.matches(
 );
 
 intents.matches(
-    "ThankYou", 
+    "ThankYou",
     builder.DialogAction.beginDialog("/thankYou")
 );
 
 intents.matches(
-    "qna", 
+    "qna",
     builder.DialogAction.beginDialog("basicQnAMakerDialog")
 );
 
@@ -128,14 +134,14 @@ intents.onDefault(
         function(session) {
             var message = session.message.text
             session.send(
-                "Oops! I didn't understand **'" + message  + "'** " +
-                session.message.user.name + 
+                "Oops! I didn't understand **'" + message + "'** " +
+                session.message.user.name +
                 "! Either I'm not sure how to respond, or I may not have the answer right now. You could always \
                 try to rephrase your question and I'll try again to find you an answer!"
             );
         }
     ]
-); 
+);
 
 // override
 basicQnAMakerDialog.respondFromQnAMakerResult = function(
@@ -215,7 +221,7 @@ bot
                 "Hi! I'm Mr. Meeseeks! Look at me! \
                 I'm a bot that can help you manage incidents in ServiceNow! \
                 Go ahead! Ask me a question! Try saying something like: 'What can you do?'"
-        );
+            );
             session.replaceDialog("/");
         }
     ])
@@ -999,9 +1005,9 @@ bot
     .dialog("/None", [
         function(session) {
             session.send(
-                            "Oops! I didn't understand what you said, " + 
-                            session.message.user.name + 
-                            "! Either I'm not sure how to respond, or I may not have the answer right now. You could always \
+                "Oops! I didn't understand what you said, " +
+                session.message.user.name +
+                "! Either I'm not sure how to respond, or I may not have the answer right now. You could always \
                             try to rephrase your question and I'll try again to find you an answer!"
             );
             session.beginDialog("/");
