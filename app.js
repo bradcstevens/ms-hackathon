@@ -279,8 +279,8 @@ bot.dialog("/login", [
             //There are 2 steps to get the user info from a chat
             //1. Get an access token
             //2. Use the access token to pull the user
-            var appId = process.env.MICROSOFT_APP_ID;
-            var appPassword = process.env.MICROSOFT_APP_PASSWORD;
+            var appId = process.env.MicrosoftAppId;
+            var appPassword = process.env.MicrosoftAppPassword;
             var tokenUrl =
                 "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token";
             var tokenBody =
@@ -312,6 +312,7 @@ bot.dialog("/login", [
                 axios
                     .get(route, authorizedConfig)
                     .then(function(res) {
+                        console.log(res.data);
                         //RESULTANT PAYLOAD -
                         // [{ id: '29:1GEnGoPgXQBlHio0KwoUwxhqLfMAvdLQXpFOn7PEIsBjrKBgnYmwJeepucBpCT6fSkCQF7LXW2IWqJgnT3lYiyw',
                         // objectId: 'c49fe892-7d11-4ef8-a551-a755a2471b4a',
@@ -320,6 +321,7 @@ bot.dialog("/login", [
                         // surname: 'Huet-Hudson',
                         // email: 'lucashh@microsoft.com',
                         // userPrincipalName: 'lucashh@microsoft.com' } ]
+
                         var firstName = res.data[0].givenName;
                         var lastName = res.data[0].surname;
                         serviceNow
