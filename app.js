@@ -169,10 +169,11 @@ basicQnAMakerDialog.respondFromQnAMakerResult = function(
 
         var msg = new builder.Message(session);
         msg.attachments([
-            new builder.HeroCard(session)
+            new builder.ThumbnailCard(session)
+            .images([builder.CardImage.create(session, imageURL)])
             .title(title)
             .subtitle(description)
-            .images([builder.CardImage.create(session, imageURL)])
+
             .buttons([builder.CardAction.openUrl(session, url, "Learn More")])
         ]);
     }
