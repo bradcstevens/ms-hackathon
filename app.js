@@ -37,9 +37,19 @@ var azureTableClient = new botbuilder_azure.AzureTableClient(tableName, process.
 var tableStorage = new botbuilder_azure.AzureBotStorage({ gzipData: false }, azureTableClient);
 
 // Create your bot with a function to receive messages from the user
+
+var bot = new builder.UniversalBot(connector);
+bot.set('storage', tableStorage);
+
+// For Local Development Use The below Code
+
+/*
+
 var bot = new builder.UniversalBot(connector, {
     storage: new builder.MemoryBotStorage()
 });
+
+*/
 
 // Recognizer and and Dialog for GA QnAMaker service
 var recognizer = new builder_cognitiveservices.QnAMakerRecognizer({
@@ -169,11 +179,10 @@ basicQnAMakerDialog.respondFromQnAMakerResult = function(
 
         var msg = new builder.Message(session);
         msg.attachments([
-            new builder.ThumbnailCard(session)
-            .images([builder.CardImage.create(session, imageURL)])
+            new builder.HeroCard(session)
             .title(title)
             .subtitle(description)
-
+            .images([builder.CardImage.create(session, imageURL)])
             .buttons([builder.CardAction.openUrl(session, url, "Learn More")])
         ]);
     }
