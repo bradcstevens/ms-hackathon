@@ -275,7 +275,7 @@ bot.dialog("/specifyCredentials", [
 
 bot.dialog("/login", [
     function(session) {
-        if (session.message.address.channelId === "msteams") {
+        if (session.message.address.channelId === "msteams" || "emulator") {
             //There are 2 steps to get the user info from a chat
             //1. Get an access token
             //2. Use the access token to pull the user
@@ -419,7 +419,7 @@ bot
                 }
             );
         },
-        function(session, results, next) {
+        function(session, results) {
             if (
                 results.response.entity === "Yes, please help me create an incident."
             ) {
@@ -427,7 +427,6 @@ bot
                     session,
                     "What's your short description of the problem?"
                 );
-                next();
             } else {
                 session.send(
                     "Sorry I misunderstood! Maybe I can help with something else?"
@@ -518,11 +517,10 @@ bot
 
 bot
     .dialog("/searchKnowledgeBase", [
-        function(session, next) {
+        function(session) {
             if (!session.userData.caller_id) {
                 session.beginDialog("/login");
-            } else {
-                next();
+
             }
         },
         function(session) {
@@ -658,11 +656,9 @@ bot
 
 bot
     .dialog("/updateIncident", [
-        function(session, next) {
+        function(session) {
             if (!session.userData.caller_id) {
                 session.beginDialog("/login");
-            } else {
-                next();
             }
         },
         function(session) {
@@ -764,11 +760,9 @@ bot
 
 bot
     .dialog("/getIncident", [
-        function(session, next) {
+        function(session) {
             if (!session.userData.caller_id) {
                 session.beginDialog("/login");
-            } else {
-                next();
             }
         },
         function(session) {
@@ -839,11 +833,9 @@ bot
 
 bot
     .dialog("/reopenIncident", [
-        function(session, next) {
+        function(session) {
             if (!session.userData.caller_id) {
                 session.beginDialog("/login");
-            } else {
-                next();
             }
         },
         function(session, args, next) {
@@ -893,11 +885,9 @@ bot
 
 bot
     .dialog("/resolveIncident", [
-        function(session, results, next) {
+        function(session) {
             if (!session.userData.caller_id) {
                 session.beginDialog("/login");
-            } else {
-                next();
             }
         },
         function(session) {

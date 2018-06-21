@@ -23,75 +23,62 @@
         "full": "\"Demo Microsoft Teams Node.js Bot that leverages LUIS and QnAMaker Microsoft Cognitive Services as well as make calls to a ServiceNow Instance API for basic ServiceNow Incident management."
     },
     "accentColor": "#235EA5",
-    "bots": [
-        {
-            "botId": "6f74b15c-1283-45fc-a453-99249829b5da",
-            "scopes": [
-                "personal",
-                "team"
-            ],
-            "commandLists": [
-                {
-                    "scopes": [
-                        "personal"
-                    ],
-                    "commands": [
-                        {
-                            "title": "Get Incidents",
-                            "description": "Tells Mr. Meeseeks to retrieve your most recent unresolved ServiceNow Incidents with links to the Incidents."
-                        },
-                        {
-                            "title": "Create Incident",
-                            "description": "Starts the \"/createIncident\" dialog and assists you with creating a new ServiceNow Incident from within Microsoft Teams"
-                        },
-                        {
-                            "title": "Search for a Knowledge Article",
-                            "description": "Starts the \"/searchKnowledgeBase\" dialog and submits a search query to ServiceNow,"
-                        },
-                        {
-                            "title": "Update Incident",
-                            "description": "Starts the \"/updateIncident\" dialog and assists with updating an Incident in ServiceNow. "
-                        },
-                        {
-                            "title": "Resolve Incident",
-                            "description": "Starts the \"/resolveIncident\" dialog and assists with setting an unresolved Incident to Resolved in ServiceNow"
-                        }
-                    ]
-                },
-                {
-                    "scopes": [
-                        "team"
-                    ],
-                    "commands": [
-                        {
-                            "title": "Get Incidents",
-                            "description": "View recently created ServiceNow Incidents"
-                        },
-                        {
-                            "title": "Create Incident",
-                            "description": "Starts the \"/createIncident\" dialog and assists you with creating a new ServiceNow Incident from within Microsoft Teams"
-                        },
-                        {
-                            "title": "Get Incidents",
-                            "description": "Tells Mr. Meeseeks to retrieve your most recent unresolved ServiceNow Incidents with links to the Incidents."
-                        },
-                        {
-                            "title": "Search for a Knowledge Article",
-                            "description": "Starts the \"/searchKnowledgeBase\" dialog and submits a search query to ServiceNow,"
-                        },
-                        {
-                            "title": "Update Incident",
-                            "description": "Starts"
-                        },
-                        {
-                            "title": "Update Incident",
-                            "description": "Starts the \"/updateIncident\" dialog and assists with updating an Incident in ServiceNow. "
-                        }
-                    ]
-                }
-            ]
-        }
-    ],
+    "bots": [{
+        "botId": "6f74b15c-1283-45fc-a453-99249829b5da",
+        "scopes": [
+            "personal",
+            "team"
+        ],
+        "commandLists": [{
+                "scopes": [
+                    "personal"
+                ],
+                "commands": [{
+                        "title": "Get Incidents",
+                        "description": "Tells Mr. Meeseeks to retrieve your most recent unresolved ServiceNow Incidents with links to the Incidents."
+                    },
+                    {
+                        "title": "Create Incident",
+                        "description": "Starts the \"/createIncident\" dialog and assists you with creating a new ServiceNow Incident from within Microsoft Teams"
+                    },
+                    {
+                        "title": "Search for a Knowledge Article",
+                        "description": "Starts the \"/searchKnowledgeBase\" dialog and submits a search query to ServiceNow,"
+                    },
+                    {
+                        "title": "Update Incident",
+                        "description": "Starts the \"/updateIncident\" dialog and assists with updating an Incident in ServiceNow. "
+                    },
+                    {
+                        "title": "Resolve Incident",
+                        "description": "Starts the \"/resolveIncident\" dialog and assists with setting an unresolved Incident to Resolved in ServiceNow"
+                    }
+                ]
+            },
+            {
+                "scopes": [
+                    "team"
+                ],
+                "commands": [{
+                        "title": "Create Incident",
+                        "description": "Starts the \"/createIncident\" dialog and assists you with creating a new ServiceNow Incident from within Microsoft Teams"
+                    },
+                    {
+                        "title": "Get Incidents",
+                        "description": "Tells Mr. Meeseeks to retrieve your most recent unresolved ServiceNow Incidents with links to the Incidents."
+                    },
+                    {
+                        "title": "Search for a Knowledge Article",
+                        "description": "Starts the \"/searchKnowledgeBase\" dialog and submits a search query to ServiceNow,"
+                    },
+                    {
+                        "title": "Update Incident",
+                        "description": "Starts the \"/updateIncident\" dialog and assists with updating an Incident in ServiceNow. "
+                    }
+                ]
+            }
+        ]
+    }],
     "permissions": [
         "identity",
         "messageTeamMembers"
