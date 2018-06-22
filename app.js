@@ -1,10 +1,7 @@
 const restify = require("restify");
 const builder = require("botbuilder");
 const serviceNow = require("./dialogs/serviceNow");
-<<<<<<< HEAD
-=======
 const teams = require("botbuilder-teams");
->>>>>>> 123b356c0fe8225adc8f95f22421c853861d6b91
 const botbuilder_azure = require("botbuilder-azure");
 const builder_cognitiveservices = require("botbuilder-cognitiveservices");
 const axios = require("axios");
@@ -38,18 +35,17 @@ var azureTableClient = new botbuilder_azure.AzureTableClient(tableName, process.
 var tableStorage = new botbuilder_azure.AzureBotStorage({ gzipData: false }, azureTableClient);
 
 // Create your bot with a function to receive messages from the user
-/*
 
 var bot = new builder.UniversalBot(connector);
 bot.set('storage', tableStorage);
-*/
+
 // For Local Development Use The below Code
 
-
+/*
 var bot = new builder.UniversalBot(connector, {
     storage: new builder.MemoryBotStorage()
 });
-
+*/
 
 
 // Recognizer and and Dialog for GA QnAMaker service
@@ -530,10 +526,6 @@ bot
         function(session) {
             if (!session.userData.caller_id) {
                 session.beginDialog("/login");
-<<<<<<< HEAD
-=======
-
->>>>>>> 123b356c0fe8225adc8f95f22421c853861d6b91
             }
         },
         function(session) {
@@ -1025,17 +1017,10 @@ bot
     .dialog("/None", [
         function(session) {
             session.send(
-<<<<<<< HEAD
-                "Oops! I didn't understand what you said, " + 
-                session.message.user.name + 
-                "! Either I'm not sure how to respond, or I may not have the answer right now. You could always \
-                try to rephrase your question and I'll try again to find you an answer!"
-=======
                 "Oops! I didn't understand what you said, " +
                 session.message.user.name +
                 "! Either I'm not sure how to respond, or I may not have the answer right now. You could always \
                             try to rephrase your question and I'll try again to find you an answer!"
->>>>>>> 123b356c0fe8225adc8f95f22421c853861d6b91
             );
             session.beginDialog("/");
         }
