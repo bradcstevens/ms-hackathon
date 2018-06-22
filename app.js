@@ -7,11 +7,9 @@ const builder_cognitiveservices = require("botbuilder-cognitiveservices");
 const axios = require("axios");
 
 // Uncomment for local development
-
-/*
 let dotenv = require("dotenv");
 dotenv.load();
-*/
+
 
 // Setup Restify Server
 const server = restify.createServer();
