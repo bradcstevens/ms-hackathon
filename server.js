@@ -51,7 +51,7 @@ var basicQnAMakerDialog = new builder_cognitiveservices.QnAMakerDialog({
 });
 
 var model =
-    "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/" +
+    "https://eastus2.api.cognitive.microsoft.com/luis/v2.0/apps/" +
     process.env.LuisId +
     "?subscription-key=" +
     process.env.LuisKey +
@@ -136,7 +136,7 @@ intents.onDefault(
 
 // override
 basicQnAMakerDialog.respondFromQnAMakerResult = function(
-    session,
+    session, 
     qnaMakerResult
 ) {
     // Save the question
@@ -147,7 +147,7 @@ basicQnAMakerDialog.respondFromQnAMakerResult = function(
     var isCardFormat = qnaMakerResult.answers[0].answer.includes(";");
     console.log(isCardFormat);
     if (!isCardFormat) {
-        // Not semi colon delimited, send a normal text response
+        // Not semi colon delimited, send a normal text response 
         session.send(qnaMakerResult.answers[0].answer);
     } else if (qnaMakerResult.answers && qnaMakerResult.score >= 0.5) {
         var qnaAnswer = qnaMakerResult.answers[0].answer;
@@ -176,28 +176,28 @@ basicQnAMakerDialog.defaultWaitNextMessage = function(session, qnaMakerResult) {
 
     if (!qnaMakerResult.answers) {
         var msg = new builder.Message(session).addAttachment({
-            contentType: "application/vnd.microsoft.card.adaptive",
-            content: {
-                type: "AdaptiveCard",
-                body: [{
-                        type: "TextBlock",
-                        text: "" + session.conversationData.userQuestion,
-                        size: "large",
-                        weight: "bolder",
-                        color: "accent",
-                        wrap: true
-                    },
-                    {
-                        type: "TextBlock",
-                        text: "Sorry, no answer found in QnA service",
-                        size: "large",
-                        weight: "regular",
-                        color: "dark",
-                        wrap: true
-                    }
-                ]
-            }
-        });
+                contentType: "application/vnd.microsoft.card.adaptive",
+                content: {
+                    type: "AdaptiveCard",
+                    body: [{
+                            type: "TextBlock",
+                            text: "" + session.conversationData.userQuestion,
+                            size: "large",
+                            weight: "bolder",
+                            color: "accent",
+                            wrap: true
+                        },
+                        {
+                            type: "TextBlock",
+                            text: "Sorry, no answer found in QnA service",
+                            size: "large",
+                            weight: "regular",
+                            color: "dark",
+                            wrap: true
+                        }
+                    ]
+                }
+            });
         session.send(msg);
     }
     session.endDialog();
@@ -205,14 +205,15 @@ basicQnAMakerDialog.defaultWaitNextMessage = function(session, qnaMakerResult) {
 
 bot.dialog('basicQnAMakerDialog', basicQnAMakerDialog);
 
+
 bot
     .dialog("/greeting", [
-        function(session) {
+         function(session) {
             session.send(
-                "Hi! I'm Mr. Meeseeks! Look at me! \
-                I'm a bot that can help you manage incidents in ServiceNow! \
-                Go ahead! Ask me a question! Try saying something like: 'What can you do?'"
-        );
+                "Hi! I'm EcoBot!",
+                "I'm a bot that can help you manage incidents in ServiceNow!",
+                "Go ahead! Ask me a question! Try saying something like: 'What can you do?'"
+            );
             session.replaceDialog("/");
         }
     ])
@@ -220,9 +221,9 @@ bot
         matches: "greeting"
     })
     .endConversationAction("endHello", "Ok. Goodbye.", {
-        matches: /^cancel$|^goodbye$|^nevermind$|^never mind$|^exit$|^quit$|^start over$/i,
-        confirmPrompt: "Are you sure?"
-    });
+            matches: /^cancel$|^goodbye$|^nevermind$|^never mind$|^exit$|^quit$|^start over$/i,
+            confirmPrompt: "Are you sure?"
+        });
 
 bot
     .dialog("/thankYou", [
@@ -238,7 +239,7 @@ bot
 bot.dialog("/specifyCredentials", [
     function(session) {
         builder.Prompts.text(
-            session,
+            session, 
             "What is the first name you use to log in to Service Now?"
         );
     },
@@ -272,9 +273,9 @@ bot.dialog("/login", [
             //2. Use the access token to pull the user
             var appId = process.env.MICROSOFT_APP_ID;
             var appPassword = process.env.MICROSOFT_APP_PASSWORD;
-            var tokenUrl =
+            var tokenUrl = 
                 "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token";
-            var tokenBody =
+            var tokenBody = 
                 "grant_type=client_credentials&client_id=" +
                 appId +
                 "&client_secret=" +
@@ -288,52 +289,52 @@ bot.dialog("/login", [
             };
             //This request will return the access token
             axios.post(tokenUrl, tokenBody, tokenConfig).then(function(res) {
-                var accessToken = res.data.access_token;
-                var root = session.message.address.serviceUrl;
-                var conversationID = session.message.address.conversation.id;
-                var route = root.concat(
-                    "/v3/conversations/" + conversationID + "/members"
-                );
-                var authorizedConfig = {
-                    headers: {
-                        Authorization: "Bearer " + accessToken
-                    }
-                };
-                //This request will return the user
-                axios
-                    .get(route, authorizedConfig)
-                    .then(function(res) {
-                        //RESULTANT PAYLOAD -
-                        // [{ id: '29:1GEnGoPgXQBlHio0KwoUwxhqLfMAvdLQXpFOn7PEIsBjrKBgnYmwJeepucBpCT6fSkCQF7LXW2IWqJgnT3lYiyw',
-                        // objectId: 'c49fe892-7d11-4ef8-a551-a755a2471b4a',
-                        // name: 'Lucas Huet-Hudson',
-                        // givenName: 'Lucas',
-                        // surname: 'Huet-Hudson',
-                        // email: 'lucashh@microsoft.com',
-                        // userPrincipalName: 'lucashh@microsoft.com' } ]
-                        var firstName = res.data[0].givenName;
-                        var lastName = res.data[0].surname;
-                        serviceNow
-                            .getUserRecord(firstName, lastName)
-                            .then(function(res) {
-                                session.userData.caller_id = res.data.result[0].sys_id;
-                                session.userData.user_name = res.data.result[0].user_name;
-                                session.endDialog();
-                            })
-                            .catch(function(err) {
-                                session.send(
-                                    "Hmm, I can't find your user account with your teams credentials."
-                                );
-                                session.replaceDialog("/specifyCredentials");
-                            });
-                    })
-                    .catch(function(err) {
-                        session.send(
-                            "Hmm, I can't find your user account with your teams credentials."
-                        );
-                        session.replaceDialog("/specifyCredentials");
-                    });
-            });
+                    var accessToken = res.data.access_token;
+                    var root = session.message.address.serviceUrl;
+                    var conversationID = session.message.address.conversation.id;
+                    var route = root.concat(
+                        "/v3/conversations/" + conversationID + "/members"
+                    );
+                    var authorizedConfig = {
+                        headers: {
+                            Authorization: "Bearer " + accessToken
+                        }
+                    };
+                    //This request will return the user
+                    axios
+                        .get(route, authorizedConfig)
+                        .then(function(res) {
+                            //RESULTANT PAYLOAD - 
+                            // [{ id: '29:1GEnGoPgXQBlHio0KwoUwxhqLfMAvdLQXpFOn7PEIsBjrKBgnYmwJeepucBpCT6fSkCQF7LXW2IWqJgnT3lYiyw',
+                            // objectId: 'c49fe892-7d11-4ef8-a551-a755a2471b4a',
+                            // name: 'Lucas Huet-Hudson',
+                            // givenName: 'Lucas',
+                            // surname: 'Huet-Hudson',
+                            // email: 'lucashh@microsoft.com',
+                            // userPrincipalName: 'lucashh@microsoft.com' } ]
+                            var firstName = res.data[0].givenName;
+                            var lastName = res.data[0].surname;
+                            serviceNow
+                                .getUserRecord(firstName, lastName)
+                                .then(function(res) {
+                                    session.userData.caller_id = res.data.result[0].sys_id;
+                                    session.userData.user_name = res.data.result[0].user_name;
+                                    session.endDialog();
+                                })
+                                .catch(function(err) {
+                                    session.send(
+                                        "Hmm, I can't find your user account with your teams credentials."
+                                    );
+                                    session.replaceDialog("/specifyCredentials");
+                                });
+                        })
+                        .catch(function(err) {
+                            session.send(
+                                "Hmm, I can't find your user account with your teams credentials."
+                            );
+                            session.replaceDialog("/specifyCredentials");
+                        });
+                });
         } else {
             session.replaceDialog("/specifyCredentials");
         }
@@ -344,35 +345,30 @@ bot
     .dialog("/serviceNowMenu", [
         function(session) {
             var card = new builder.ThumbnailCard(session)
-                .title("ServiceNow")
+                .title("EcoBot")
                 .text("Here's a few things I can do:")
                 .buttons([
-                    builder.CardAction.imBack(
-                        session,
-                        "Get Incidents",
-                        "View recently created ServiceNow Incidents"
-                    ),
-                    builder.CardAction.imBack(
-                        session,
-                        "Create a new ServiceNow Incident",
-                        "Create a new ServiceNow Incident"
-                    ),
-                    builder.CardAction.imBack(
-                        session,
-                        "Update Incident",
-                        "Add comments to a ServiceNow Incident"
-                    ),
-                    builder.CardAction.imBack(
-                        session,
-                        "Resolve Incident",
-                        "Resolve your ServiceNow Incident"
-                    ),
-                    builder.CardAction.imBack(
-                        session,
-                        "Search for a Knowledge Article",
-                        "Search for a Knowledge Article"
-                    )
-                ]);
+                builder.CardAction.imBack(
+                    session, 
+                    "Get Incidents", 
+                    "View recently created ServiceNow Incidents"
+                 ),
+                builder.CardAction.imBack(
+                    session, 
+                    "Create a new ServiceNow Incident", 
+                    "Create a new ServiceNow Incident"
+                ),
+                builder.CardAction.imBack(
+                    session, 
+                    "Update Incident", 
+                    "Add comments to a ServiceNow Incident"
+                ),
+                builder.CardAction.imBack(
+                    session, 
+                    "Resolve Incident", 
+                    "Resolve your ServiceNow Incident"
+                ),
+            ]);
             var message = new builder.Message(session).addAttachment(card);
             session.endConversation(message);
         }
@@ -387,9 +383,11 @@ bot
 
 bot
     .dialog("/createIncident", [
-        function(session) {
+        function(session, next) {
             if (!session.userData.caller_id) {
                 session.beginDialog("/login");
+            } else {
+                next();
             }
         },
         function(session) {
@@ -397,88 +395,60 @@ bot
                 "I understand that you want to open a new incident in ServiceNow"
             );
             builder.Prompts.choice(
-                session,
+                session, 
                 "Did I understand you correctly?", [
-                    "Yes, please help me create an incident.",
+                    "Yes, please help me create an incident.", 
                     "No, I do not need to create an incident right now."
-                ], {
-                    listStyle: builder.ListStyle.button
-                }
-            );
-        },
-        function(session, results, next) {
-            if (
-                results.response.entity === "Yes, please help me create an incident."
-            ) {
-                builder.Prompts.text(
-                    session,
-                    "What's your short description of the problem?"
-                );
-                next();
-            } else {
-                session.send(
-                    "Sorry I misunderstood! Maybe I can help with something else?"
-                );
-                session.endDialog();
+                ], { 
+                listStyle: builder.ListStyle.button 
             }
-        },
-        function(session, results) {
-            session.dialogData.short_description = results.response;
-            session.send("Got it! I just need a little more information.");
+        );
+    },
+    function(session, results, next) {
+        if (
+            results.response.entity === "Yes, please help me create an incident."
+        ) {
             builder.Prompts.text(
-                session,
-                "Please describe the problem in more detail"
+                session, 
+                "What's your short description of the problem?"
             );
-        },
-        function(session, results) {
-            session.dialogData.description = results.response;
-            builder.Prompts.choice(
-                session,
-                "Would you like to add any additional notes?", ["Yes", "No"], { listStyle: builder.ListStyle.button }
+            next();
+        } else {
+            session.send(
+                "Sorry I misunderstood! Maybe I can help with something else?"
             );
-        },
-        function(session, results) {
-            if (results.response.entity === "Yes") {
-                builder.Prompts.text(
-                    session,
-                    "What other notes should I add to the incident?"
-                );
-            } else {
-                session.send(
-                    "Thanks! I was successfully able to submit your issue as an incident in ServiceNow!"
-                );
-                var url =
-                    "https://dev59625.service-now.com/nav_to.do?uri=%2Fincident_list.do%3Factive%3Dtrue%26sysparm_query%3Dactive%3Dtrue%5EEQ%26sysparm_userpref_module%3D4fed4395c0a8016400fcf06c27b1e6c6%26sysparm_clear_stack%3Dtrue";
-                var imageURL =
-                    "https://az818438.vo.msecnd.net/icons/service-now.png";
-                var msg = new builder.Message(session);
-                msg.attachments([
-                    new builder.HeroCard(session)
-                    .images([builder.CardImage.create(session, imageURL)])
-                    .buttons([
-                        builder.CardAction.openUrl(session, url, "View My Incidents")
-                    ])
-                ]);
-                session.send(msg);
-                serviceNow
-                    .createIncident(session.dialogData, session.userData.caller_id)
-                    .then(function(res) {
-                        session.endDialog();
-                    })
-                    .catch(function(err) {
-                        console.log("ERR", err);
-                    });
-            }
-        },
-        function(session, results) {
-            session.dialogData.notes = results.response;
+            session.endDialog();
+        }
+    },
+    function(session, results) {
+        session.dialogData.short_description = results.response;
+        session.send("Got it! I just need a little more information.");
+        builder.Prompts.text(
+            session, 
+            "Please describe the problem in more detail"
+        );
+    },
+    function(session, results) {
+        session.dialogData.description = results.response;
+        builder.Prompts.choice(
+            session, 
+            "Would you like to add any additional notes?", ["Yes", "No"], { listStyle: builder.ListStyle.button }
+        );
+    },
+    function(session, results) {
+        if (results.response.entity === "Yes") {
+            builder.Prompts.text(
+                session, 
+                "What other notes should I add to the incident?"
+            );
+        } else {
             session.send(
                 "Thanks! I was successfully able to submit your issue as an incident in ServiceNow!"
             );
-            var url =
-                "https://dev59625.service-now.com/nav_to.do?uri=%2Fincident_list.do%3Factive%3Dtrue%26sysparm_query%3Dactive%3Dtrue%5EEQ%26sysparm_userpref_module%3D4fed4395c0a8016400fcf06c27b1e6c6%26sysparm_clear_stack%3Dtrue";
-            var imageURL =
-                "https://az818438.vo.msecnd.net/icons/service-now.png";
+            var url = 
+                "https://ecolabstage.service-now.com/sp?id=all_tickets&table=incident&filter=opened_by%3Djavascript:gs.getUserID()%5EORcaller_id%3Djavascript:gs.getUserID()%5EORwatch_listLIKEjavascript:gs.getUserID()%5Eactive%3Dtrue&d=desc#home";
+            var imageURL = 
+                "https://eclcdwbotwabsa.blob.core.windows.net/images/Ecolab-IT-Help-Center.png";
             var msg = new builder.Message(session);
             msg.attachments([
                 new builder.HeroCard(session)
@@ -492,22 +462,52 @@ bot
                 .createIncident(session.dialogData, session.userData.caller_id)
                 .then(function(res) {
                     session.endDialog();
+                })
+                .catch(function(err) {
+                    console.log("ERR", err);
                 });
         }
-    ])
-    .triggerAction({
-        matches: "createIncident"
-    })
-    .endConversationAction("endIncidentCreate", "Ok. Goodbye.", {
+    },
+    function(session, results) {
+        session.dialogData.notes = results.response;
+        session.send(
+            "Thanks! I was successfully able to submit your issue as an incident in ServiceNow!"
+        );
+        var url = 
+        "https://ecolabstage.service-now.com/sp?id=all_tickets&table=incident&filter=opened_by%3Djavascript:gs.getUserID()%5EORcaller_id%3Djavascript:gs.getUserID()%5EORwatch_listLIKEjavascript:gs.getUserID()%5Eactive%3Dtrue&d=desc#home";
+        var imageURL = 
+        "https://eclcdwbotwabsa.blob.core.windows.net/images/Ecolab-IT-Help-Center.png";
+        var msg = new builder.Message(session);
+        msg.attachments([
+            new builder.HeroCard(session)
+            .images([builder.CardImage.create(session, imageURL)])
+            .buttons([
+                builder.CardAction.openUrl(session, url, "View My Incidents")
+            ])
+        ]);
+        session.send(msg);
+        serviceNow
+            .createIncident(session.dialogData, session.userData.caller_id)
+            .then(function(res) {
+                session.endDialog();
+            });
+    }
+])
+.triggerAction({
+    matches: "createIncident"
+})
+.endConversationAction("endIncidentCreate", "Ok. Goodbye.", {
         matches: /^cancel$|^goodbye$|^nevermind$|^never mind$|^exit$|^quit$|^start over$/i,
         confirmPrompt: "Are you sure?"
     });
 
 bot
     .dialog("/searchKnowledgeBase", [
-        function(session) {
+        function(session, next) {
             if (!session.userData.caller_id) {
                 session.beginDialog("/login");
+            } else {
+                next();
             }
         },
         function(session) {
@@ -515,14 +515,14 @@ bot
                 "I understand that you need help finding a knowledge article in ServiceNow."
             );
             builder.Prompts.choice(
-                session,
-                "Did I understand you correctly?", ["Yes, please search ServiceNow.", "No, not now."], { listStyle: builder.ListStyle.button }
+                session, 
+                "Did I understand you correctly?", ["Yes, please search IT Help Center.", "No, not now."], { listStyle: builder.ListStyle.button }
             );
         },
         function(session, results, next) {
-            if (results.response.entity === "Yes, please search ServiceNow.") {
+            if (results.response.entity === "Yes, please search IT Help Center.") {
                 builder.Prompts.text(
-                    session,
+                    session, 
                     "What would you like to search for? I will be able to provide the first 10 results of what I find."
                 );
                 next();
@@ -549,8 +549,8 @@ bot
                                 builder.AttachmentLayout.carousel
                             );
                             feed.forEach(function(result, i) {
-                                    var url =
-                                        "https://dev59625.service-now.com/sp?id=kb_article&sys_id=" +
+                                    var url = 
+                                        "https://ecolabstage.service-now.com/sp?id=kb_article&sys_id=" +
                                         result.sys_id;
                                     msg.addAttachment(
                                         new builder.HeroCard(session)
@@ -582,8 +582,8 @@ bot
     }
 )
     .endConversationAction("endSearchKnowledgeBase", "Ok. Goodbye.", {
-        matches: /^cancel$|^goodbye$|^nevermind$|^never mind$|^exit$|^quit$|^start over$/i,
-        confirmPrompt: "Are you sure?"
+            matches: /^cancel$|^goodbye$|^nevermind$|^never mind$|^exit$|^quit$|^start over$/i,
+            confirmPrompt: "Are you sure?"
     }
 );
 
@@ -591,7 +591,7 @@ bot
     .dialog("/getResultFeedback", [
         function(session) {
             builder.Prompts.choice(
-                session,
+                session, 
                 "Did that help?", ["Yes, Thanks!", "I need to rephrase what I want to search."], { listStyle: builder.ListStyle.button }
             );
         },
@@ -623,7 +623,7 @@ bot
     .dialog("/getResultFailFeedback", [
         function(session) {
             builder.Prompts.choice(
-                session,
+                session, 
                 "Would you like me search for something else?", ["Yes, I'll rephrase my search query.", "No, Thanks."], { listStyle: builder.ListStyle.button }
             );
         },
@@ -651,9 +651,11 @@ bot
 
 bot
     .dialog("/updateIncident", [
-        function(session) {
+        function(session, next) {
             if (!session.userData.caller_id) {
                 session.beginDialog("/login");
+            } else {
+                next();
             }
         },
         function(session) {
@@ -663,7 +665,7 @@ bot
                 "I understand that you need help updating an incident in ServiceNow."
             );
             builder.Prompts.choice(
-                session,
+                session, 
                 "Did I understand you correctly?", ["Yes, update an incident for me.", "No, not now."], { listStyle: builder.ListStyle.button }
             );
         },
@@ -679,70 +681,70 @@ bot
         },
         function(session, next) {
             serviceNow.getIncidents(session.userData.caller_id).then(function(res) {
-                console.log("Successfully queried Incidents");
-                console.log(res);
-                if (res.data.result.length > 0) {
-                    session.dialogData.searchResults = res.data.result;
-                    session.send(
-                        "Here are your 5 most recently unresolved incidents in ServiceNow:"
-                    );
-                    var feed = session.dialogData.searchResults;
-                    var msg = new builder.Message(session)
-                        .attachmentLayout(
-                            builder.AttachmentLayout.list
-                    );
-                    feed.forEach(function(result, i) {
-                            var url =
-                                "https://dev59625.service-now.com/sp?sys_id=" +
-                                result.sys_id +
-                                "&view=sp&id=ticket&table=incident";
-                            msg.addAttachment(
-                                new builder.HeroCard(session)
-                                .title(result.short_description)
-                                .subtitle("Created " + result.opened_at)
-                                .text(result.description)
-                                .buttons([
-                                    builder.CardAction.imBack(
-                                        session,
-                                        "" + result.number,
-                                        "" + result.number
-                                    )
-                                ])
-                            );
-                        }),
-                        builder.Prompts.text(
-                            session.send(msg),
-                            "Select the incident you would like to add comments to."
+                    console.log("Successfully queried Incidents");
+                    console.log(res);
+                    if (res.data.result.length > 0) {
+                        session.dialogData.searchResults = res.data.result;
+                        session.send(
+                            "Here are your 5 most recently unresolved incidents in ServiceNow:"
                         );
-                    next();
-                } else {
-                    session.send(
-                        "You don't have any incidents reported! Good for you!"
+                        var feed = session.dialogData.searchResults;
+                        var msg = new builder.Message(session)
+                            .attachmentLayout(
+                                builder.AttachmentLayout.list
+                        );
+                        feed.forEach(function(result, i) {
+                                var url = 
+                                    "https://ecolabstage.service-now.com/sp?sys_id=" +
+                                    result.sys_id +
+                                    "&view=sp&id=ticket&table=incident#home";
+                                msg.addAttachment(
+                                    new builder.HeroCard(session)
+                                    .title(result.short_description)
+                                    .subtitle("Created " + result.opened_at)
+                                    .text(result.description)
+                                    .buttons([
+                                        builder.CardAction.imBack(
+                                            session, 
+                                            "" + result.number, 
+                                            "" + result.number
+                                        )
+                                    ])
+                                );
+                            }),
+                            builder.Prompts.text(
+                                session.send(msg), 
+                                "Select the incident you would like to add comments to."
+                            );
+                        next();
+                    } else {
+                        session.send(
+                            "You don't have any incidents reported! Good for you!"
                     );
                 }
             });
         },
-        function(session, results) {
-            session.dialogData.incidentNumber = results.response;
-            serviceNow
-                .getIncidentByNumber(session.dialogData.incidentNumber)
-                .then(function(res) {
-                    session.dialogData.incidentId = res.data.result[0].sys_id;
-                    console.log("Incident Sys_ID " + session.dialogData.incidentId);
-                    builder.Prompts.text(session, "What comments would you like to add?");
-                });
-        },
-        function(session, results) {
-            session.dialogData.comments = results.response;
-            console.log("Caller_ID " + session.userData.caller_id);
-            serviceNow
-                .updateIncident(session.dialogData, session.userData.caller_id)
-                .then(function(res) {
-                    session.send(
-                        "Thanks! I was successfully able to add your comments to your incident!"
-                    );
-                    session.endDialog();
-                });
+    function(session, results) {
+        session.dialogData.incidentNumber = results.response;
+        serviceNow
+            .getIncidentByNumber(session.dialogData.incidentNumber)
+            .then(function(res) {
+                session.dialogData.incidentId = res.data.result[0].sys_id;
+                console.log("Incident Sys_ID " + session.dialogData.incidentId);
+                builder.Prompts.text(session, "What comments would you like to add?");
+            });
+    },
+    function(session, results) {
+        session.dialogData.comments = results.response;
+        console.log("Caller_ID " + session.userData.caller_id);
+        serviceNow
+            .updateIncident(session.dialogData, session.userData.caller_id)
+            .then(function(res) {
+                session.send(
+                    "Thanks! I was successfully able to add your comments to your incident!"
+                );
+                session.endDialog();
+            });
         }
     ])
     .triggerAction({
@@ -756,9 +758,11 @@ bot
 
 bot
     .dialog("/getIncident", [
-        function(session) {
+        function(session, next) {
             if (!session.userData.caller_id) {
                 session.beginDialog("/login");
+            } else {
+                next();
             }
         },
         function(session) {
@@ -782,8 +786,8 @@ bot
                 session.endDialog();
             }
         },
-        function(session) {
-            serviceNow.getIncidents(session.userData.caller_id)
+    function(session) {
+        serviceNow.getIncidents(session.userData.caller_id)
             .then(function(res) {
                 console.log("Successfully queried Incidents");
                 console.log(res);
@@ -795,10 +799,10 @@ bot
                         builder.AttachmentLayout.list
                     );
                     feed.forEach(function(result, i) {
-                            var url =
-                                "https://dev59625.service-now.com/sp?sys_id=" +
+                            var url = 
+                                "https://ecolabstage.service-now.com/sp?sys_id=" +
                                 result.sys_id +
-                                "&view=sp&id=ticket&table=incident";
+                                "&view=sp&id=ticket&table=incident#home"
                             msg.addAttachment(
                                 new builder.HeroCard(session)
                                 .title(result.short_description)
@@ -824,28 +828,30 @@ bot
         matches: "getIncident"
     })
     .endConversationAction("endGetIncident", "Ok. Goodbye.", {
-        matches: /^cancel$|^goodbye$|^nevermind$|^never mind$|^exit$|^quit$|^start over$/i,
-        confirmPrompt: "Are you sure?"
+            matches: /^cancel$|^goodbye$|^nevermind$|^never mind$|^exit$|^quit$|^start over$/i,
+            confirmPrompt: "Are you sure?"
     });
 
 bot
     .dialog("/reopenIncident", [
-        function(session) {
+        function(session, next) {
             if (!session.userData.caller_id) {
                 session.beginDialog("/login");
+            } else {
+                next();
             }
         },
         function(session) {
             session.send("Great, I see that you want to re-open an incident");
             builder.Prompts.text(
-                session,
+                session, 
                 "What incident number would you like to re-open?"
             );
         },
         function(session, results) {
             session.dialogData.number = results.response;
             builder.Prompts.choice(
-                session,
+                session, 
                 "Would you like to add any notes to the incident?", ["Yes", "No"], { listStyle: builder.ListStyle.button }
             );
         },
@@ -886,51 +892,53 @@ bot
 
 bot
     .dialog("/resolveIncident", [
-        function(session) {
+        function(session, next) {
             if (!session.userData.caller_id) {
                 session.beginDialog("/login");
-            }
-        },
-        function(session) {
-            session.dialogData.user_name = session.userData.user_name;
-            console.log(session.userData.user_name);
-            session.send(
-                "I understand that you want to resolve a ServiceNow incident"
-            );
-            builder.Prompts.choice(
-                session,
-                "Did I understand you correctly?", ["Yes, resolve an incident for me.", "No, not now."], { listStyle: builder.ListStyle.button }
-            );
-        },
-        function(session, results, next) {
-            if (results.response.entity === "Yes, resolve an incident for me.") {
-                next();
             } else {
-                session.send(
-                    "Sorry I misunderstood! Maybe I can help with something else?"
-                );
-                session.endDialog();
+                next();
             }
-        },
-        function(session, next) {
-            serviceNow.getIncidents(session.userData.caller_id)
-                .then(function(res) {
-                    console.log("Successfully queried Incidents");
-                    console.log(res);
-                    if (res.data.result.length > 0) {
-                        session.dialogData.searchResults = res.data.result;
-                        session.send(
-                            "Here are your 5 most recently unresolved incidents in ServiceNow:"
-                        );
-                        var feed = session.dialogData.searchResults;
-                        var msg = new builder.Message(session)
-                            .attachmentLayout(builder.AttachmentLayout.list
-                        );
-                        feed.forEach(function(result, i) {
+    },
+    function(session) {
+        session.dialogData.user_name = session.userData.user_name;
+        console.log(session.userData.user_name);
+        session.send(
+            "I understand that you want to resolve a ServiceNow incident"
+        );
+        builder.Prompts.choice(
+            session,
+            "Did I understand you correctly?", ["Yes, resolve an incident for me.", "No, not now."], { listStyle: builder.ListStyle.button }
+        );
+    },
+    function(session, results, next) {
+        if (results.response.entity === "Yes, resolve an incident for me.") {
+            next();
+        } else {
+            session.send(
+                "Sorry I misunderstood! Maybe I can help with something else?"
+            );
+            session.endDialog();
+        }
+    },
+    function(session, next) {
+        serviceNow.getIncidents(session.userData.caller_id)
+            .then(function(res) {
+                console.log("Successfully queried Incidents");
+                console.log(res);
+                if (res.data.result.length > 0) {
+                    session.dialogData.searchResults = res.data.result;
+                    session.send(
+                        "Here are your 5 most recently unresolved incidents in ServiceNow:"
+                    );
+                    var feed = session.dialogData.searchResults;
+                    var msg = new builder.Message(session)
+                        .attachmentLayout(builder.AttachmentLayout.list
+                    );
+                    feed.forEach(function(result, i) {
                             var url =
-                                "https://dev59625.service-now.com/sp?sys_id=" +
-                                result.sys_id +
-                                "&view=sp&id=ticket&table=incident";
+                                "https://ecolabstage.service-now.com/sp?sys_id=" +
+                                result.sys_id + 
+                                "&view=sp&id=ticket&table=incident#home";
                             msg.addAttachment(
                                 new builder.HeroCard(session)
                                 .title(result.short_description)
@@ -938,38 +946,38 @@ bot
                                 .text(result.description)
                                 .buttons([
                                     builder.CardAction.imBack(
-                                        session,
-                                        "" + result.number,
+                                        session, 
+                                        "" + result.number, 
                                         "" + result.number
                                     )
                                 ])
                             );
                         }),
                         builder.Prompts.text(
-                            session.send(msg),
+                            session.send(msg), 
                             "Select the incident you would like to resolve"
                         );
-                    next();
+                    next();    
                 } else {
                     session.send(
                         "You don't have any incidents reported! Good for you!"
                     );
                 }
             });
-        },
-        function(session, results, next) {
-            session.dialogData.incidentNumber = results.response;
-            console.log(
-                "Dialog Data Incident Number is: " + session.dialogData.incidentNumber
-            );
-            serviceNow
-                .getIncidentByNumber(session.dialogData.incidentNumber)
-                .then(function(res) {
-                    session.dialogData.incidentId = res.data.result[0].sys_id;
-                    console.log(
-                        "Dialog Data Incident ID is: " + session.dialogData.incidentId
-                    );
-                    next();
+    },
+    function(session, results, next) {
+        session.dialogData.incidentNumber = results.response;
+        console.log(
+            "Dialog Data Incident Number is: " + session.dialogData.incidentNumber
+        );
+        serviceNow
+            .getIncidentByNumber(session.dialogData.incidentNumber)
+            .then(function(res) {
+                session.dialogData.incidentId = res.data.result[0].sys_id;
+                console.log(
+                    "Dialog Data Incident ID is: " + session.dialogData.incidentId
+                );
+                next();
             });
         },
         function(session) {
@@ -983,16 +991,16 @@ bot
                     session.send(
                         "You got it! I was successfully able to resolve your incident!"
                     );
-                    session.endDialog();
-                });
+                session.endDialog();
+            });
         }
     ])
     .triggerAction({
         matches: "resolveIncident"
     })
     .endConversationAction("endResolveIncident", "Ok. Goodbye.", {
-        matches: /^cancel$|^goodbye$|^nevermind$|^never mind$|^exit$|^quit$|^start over$/i,
-        confirmPrompt: "Are you sure?"
+            matches: /^cancel$|^goodbye$|^nevermind$|^never mind$|^exit$|^quit$|^start over$/i,
+            confirmPrompt: "Are you sure?"
     });
 
 bot
