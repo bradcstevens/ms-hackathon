@@ -362,7 +362,7 @@ bot
     .dialog("/serviceNowMenu", [
         (session) => {
             let card = new builder.ThumbnailCard(session)
-                .title("EcoBot")
+                .title("ServiceNow")
                 .text("Here's a few things I can do:")
                 .buttons([
                 builder.CardAction.imBack(
