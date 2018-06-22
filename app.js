@@ -1,6 +1,10 @@
 const restify = require("restify");
 const builder = require("botbuilder");
 const serviceNow = require("./dialogs/serviceNow");
+<<<<<<< HEAD
+=======
+const teams = require("botbuilder-teams");
+>>>>>>> 123b356c0fe8225adc8f95f22421c853861d6b91
 const botbuilder_azure = require("botbuilder-azure");
 const builder_cognitiveservices = require("botbuilder-cognitiveservices");
 const axios = require("axios");
@@ -34,8 +38,19 @@ var azureTableClient = new botbuilder_azure.AzureTableClient(tableName, process.
 var tableStorage = new botbuilder_azure.AzureBotStorage({ gzipData: false }, azureTableClient);
 
 // Create your bot with a function to receive messages from the user
+/*
+
 var bot = new builder.UniversalBot(connector);
 bot.set('storage', tableStorage);
+*/
+// For Local Development Use The below Code
+
+
+var bot = new builder.UniversalBot(connector, {
+    storage: new builder.MemoryBotStorage()
+});
+
+
 
 // Recognizer and and Dialog for GA QnAMaker service
 var recognizer = new builder_cognitiveservices.QnAMakerRecognizer({
@@ -63,10 +78,15 @@ var intents = new builder.IntentDialog({
     recognizers: [luisRecognizer, recognizer],
     recognizeOrder: builder.RecognizeOrder.series
 });
+
+var stripBotAtMentions = new teams.StripBotAtMentions();
+
+bot.use(stripBotAtMentions);
+
 bot.dialog("/", intents);
 
 intents.matches(
-    "greeting", 
+    "greeting",
     builder.DialogAction.beginDialog("/greeting")
 );
 
@@ -106,12 +126,12 @@ intents.matches(
 );
 
 intents.matches(
-    "ThankYou", 
+    "ThankYou",
     builder.DialogAction.beginDialog("/thankYou")
 );
 
 intents.matches(
-    "qna", 
+    "qna",
     builder.DialogAction.beginDialog("basicQnAMakerDialog")
 );
 
@@ -125,14 +145,14 @@ intents.onDefault(
         function(session) {
             var message = session.message.text
             session.send(
-                "Oops! I didn't understand **'" + message  + "'** " +
-                session.message.user.name + 
+                "Oops! I didn't understand **'" + message + "'** " +
+                session.message.user.name +
                 "! Either I'm not sure how to respond, or I may not have the answer right now. You could always \
                 try to rephrase your question and I'll try again to find you an answer!"
             );
         }
     ]
-); 
+);
 
 // override
 basicQnAMakerDialog.respondFromQnAMakerResult = function(
@@ -151,10 +171,11 @@ basicQnAMakerDialog.respondFromQnAMakerResult = function(
         session.send(qnaMakerResult.answers[0].answer);
     } else if (qnaMakerResult.answers && qnaMakerResult.score >= 0.5) {
         var qnaAnswer = qnaMakerResult.answers[0].answer;
-
+        console.log(qnaAnswer);
         var qnaAnswerData = qnaAnswer.split(";");
         var title = qnaAnswerData[0];
         var description = qnaAnswerData[1];
+        console.log(description);
         var url = qnaAnswerData[2];
         var imageURL = qnaAnswerData[3];
 
@@ -212,7 +233,7 @@ bot
                 "Hi! I'm Mr. Meeseeks! Look at me! \
                 I'm a bot that can help you manage incidents in ServiceNow! \
                 Go ahead! Ask me a question! Try saying something like: 'What can you do?'"
-        );
+            );
             session.replaceDialog("/");
         }
     ])
@@ -266,12 +287,12 @@ bot.dialog("/specifyCredentials", [
 
 bot.dialog("/login", [
     function(session) {
-        if (session.message.address.channelId === "msteams") {
+        if (session.message.address.channelId === "msteams" || "emulator") {
             //There are 2 steps to get the user info from a chat
             //1. Get an access token
             //2. Use the access token to pull the user
-            var appId = process.env.MICROSOFT_APP_ID;
-            var appPassword = process.env.MICROSOFT_APP_PASSWORD;
+            var appId = process.env.MicrosoftAppId;
+            var appPassword = process.env.MicrosoftAppPassword;
             var tokenUrl =
                 "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token";
             var tokenBody =
@@ -303,6 +324,7 @@ bot.dialog("/login", [
                 axios
                     .get(route, authorizedConfig)
                     .then(function(res) {
+                        console.log(res.data);
                         //RESULTANT PAYLOAD -
                         // [{ id: '29:1GEnGoPgXQBlHio0KwoUwxhqLfMAvdLQXpFOn7PEIsBjrKBgnYmwJeepucBpCT6fSkCQF7LXW2IWqJgnT3lYiyw',
                         // objectId: 'c49fe892-7d11-4ef8-a551-a755a2471b4a',
@@ -311,6 +333,7 @@ bot.dialog("/login", [
                         // surname: 'Huet-Hudson',
                         // email: 'lucashh@microsoft.com',
                         // userPrincipalName: 'lucashh@microsoft.com' } ]
+
                         var firstName = res.data[0].givenName;
                         var lastName = res.data[0].surname;
                         serviceNow
@@ -406,7 +429,7 @@ bot
                 }
             );
         },
-        function(session, results, next) {
+        function(session, results) {
             if (
                 results.response.entity === "Yes, please help me create an incident."
             ) {
@@ -414,7 +437,6 @@ bot
                     session,
                     "What's your short description of the problem?"
                 );
-                next();
             } else {
                 session.send(
                     "Sorry I misunderstood! Maybe I can help with something else?"
@@ -508,6 +530,10 @@ bot
         function(session) {
             if (!session.userData.caller_id) {
                 session.beginDialog("/login");
+<<<<<<< HEAD
+=======
+
+>>>>>>> 123b356c0fe8225adc8f95f22421c853861d6b91
             }
         },
         function(session) {
@@ -999,10 +1025,17 @@ bot
     .dialog("/None", [
         function(session) {
             session.send(
+<<<<<<< HEAD
                 "Oops! I didn't understand what you said, " + 
                 session.message.user.name + 
                 "! Either I'm not sure how to respond, or I may not have the answer right now. You could always \
                 try to rephrase your question and I'll try again to find you an answer!"
+=======
+                "Oops! I didn't understand what you said, " +
+                session.message.user.name +
+                "! Either I'm not sure how to respond, or I may not have the answer right now. You could always \
+                            try to rephrase your question and I'll try again to find you an answer!"
+>>>>>>> 123b356c0fe8225adc8f95f22421c853861d6b91
             );
             session.beginDialog("/");
         }
