@@ -2,9 +2,10 @@ module.exports = () => {
     const restify = require("restify");
     const botbuilder_azure = require("botbuilder-azure");
     const teams = require("botbuilder-teams");
-    const builder_cognitiveservices = require("botbuilder-cognitiveservices");
     global.builder = require("botbuilder");
     global.serviceNow = require("./routes/serviceNow");
+    require("./recognizers/luis/luisRecognizer")();
+    require("./recognizers/qnaMaker/qnaRecognizer")();
 
     // Create chat connector for communicating with the Bot Framework Service
     const connector = new builder.ChatConnector({
@@ -27,26 +28,9 @@ module.exports = () => {
     global.bot = new builder.UniversalBot(connector).set('storage', tableStorage);
 
     // Recognizer and and Dialog for GA QnAMaker service
-    qnaRecognizer = new builder_cognitiveservices.QnAMakerRecognizer({
-        knowledgeBaseId: process.env.QnAKnowledgebaseId,
-        authKey: process.env.QnAAuthKey || process.env.QnASubscriptionKey, // Backward compatibility with QnAMaker (Preview)
-        endpointHostName: process.env.QnAEndpointHostName
-    });
 
-    const model =
-        "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/" +
-        process.env.LuisId +
-        "?subscription-key=" +
-        process.env.LuisKey +
-        "&verbose=true&timezoneOffset=-8.0&q=";
 
-    const luisRecognizer = new builder.LuisRecognizer(model);
 
-    global.basicQnAMakerDialog = new builder_cognitiveservices.QnAMakerDialog({
-        recognizers: [qnaRecognizer],
-        defaultMessage: 'No match! Try changing the query terms!',
-        qnaThreshold: 0.3
-    });
 
     global.intents = new builder.IntentDialog({
         recognizers: [luisRecognizer, qnaRecognizer],

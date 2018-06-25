@@ -1,4 +1,5 @@
 module.exports = () => {
+    require("./basicQnAMakerDialog")();
     basicQnAMakerDialog.defaultWaitNextMessage = (session, qnaMakerResult) => {
         // saves the user's question
         session.conversationData.userQuestion = session.message.text;

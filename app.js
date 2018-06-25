@@ -3,19 +3,20 @@ require("./connectorSetup")();
 require("./dialogs/general/none")();
 require("./dialogs/general/greeting")();
 require("./dialogs/general/thankYou")();
-require("./dialogs/serviceNow/getIncident")();
+require("./dialogs/serviceNow/incidents/getIncident")();
 require("./dialogs/serviceNow/serviceNowMenu")();
-require("./dialogs/serviceNow/createIncident")();
-require("./dialogs/serviceNow/resolveIncident")();
-require("./dialogs/serviceNow/updateIncident")();
+require("./dialogs/serviceNow/incidents/createIncident")();
+require("./dialogs/serviceNow/incidents/resolveIncident")();
+require("./dialogs/serviceNow/incidents/updateIncident")();
 require("./dialogs/serviceNow/auth/login")();
 require("./dialogs/serviceNow/auth/specifyCredentials")();
 require("./dialogs/serviceNow/searchKnowledgeBase")();
-require("./dialogs/getResultFeedback")();
-require("./dialogs/getResultFailFeedback")();
+require("./dialogs/serviceNow/knowledge/getResultFeedback")();
+require("./dialogs/serviceNow/knowledge/getResultFailFeedback")();
 require("./dialogs/qnaMaker/basicQnAMakerDialog")();
-require("./dialogs/qnaMaker/defaultWaitNextMessage")();
-require("./dialogs/qnaMaker/respondFromQnAMakerResult")();
+
+
+
 
 // For Local Development Use The below Code
 /*

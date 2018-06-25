@@ -1,4 +1,5 @@
 module.exports = () => {
+    require("./basicQnAMakerDialog")();
     basicQnAMakerDialog.respondFromQnAMakerResult = (session, qnaMakerResult) => {
         // Save the question
         let question = session.message.text;

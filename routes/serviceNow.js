@@ -1,5 +1,7 @@
 global.axios = require('axios');
+
 let auth = `Basic ${Buffer.from(process.env.SERVICENOW_SA_ID + ':' + process.env.SERVICENOW_SA_PASSWORD).toString('base64')}`;
+
 const config = {
     headers: {
         "Content-Type": "application/json",
