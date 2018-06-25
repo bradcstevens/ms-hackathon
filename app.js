@@ -10,20 +10,10 @@ require("./dialogs/serviceNow/incidents/resolveIncident")();
 require("./dialogs/serviceNow/incidents/updateIncident")();
 require("./dialogs/serviceNow/auth/login")();
 require("./dialogs/serviceNow/auth/specifyCredentials")();
-require("./dialogs/serviceNow/searchKnowledgeBase")();
+require("./dialogs/serviceNow/knowledge/searchKnowledgeBase")();
 require("./dialogs/serviceNow/knowledge/getResultFeedback")();
 require("./dialogs/serviceNow/knowledge/getResultFailFeedback")();
 require("./dialogs/qnaMaker/basicQnAMakerDialog")();
-
-
-
-
-// For Local Development Use The below Code
-/*
-const bot = new builder.UniversalBot(connector, {
-    storage: new builder.MemoryBotStorage()
-});
-*/
 
 bot.dialog("/", intents);
 

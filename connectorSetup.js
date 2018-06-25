@@ -27,11 +27,6 @@ module.exports = () => {
     // Create your bot with a function to receive messages from the user
     global.bot = new builder.UniversalBot(connector).set('storage', tableStorage);
 
-    // Recognizer and and Dialog for GA QnAMaker service
-
-
-
-
     global.intents = new builder.IntentDialog({
         recognizers: [luisRecognizer, qnaRecognizer],
         recognizeOrder: builder.RecognizeOrder.series
