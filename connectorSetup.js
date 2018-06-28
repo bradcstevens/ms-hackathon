@@ -7,7 +7,6 @@ module.exports = () => {
     require("./recognizers/luis/luisRecognizer")();
     require("./recognizers/qnaMaker/qnaRecognizer")();
 
-
     global.adalConfig = {
         'clientId' : process.env.AadClientId, // The client Id retrieved from the Azure AD App
         'clientSecret' : process.env.AadClientSecret, // The client secret retrieved from the Azure AD App
