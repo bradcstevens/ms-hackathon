@@ -4,9 +4,6 @@ module.exports = () => {
     const teams = require("botbuilder-teams");
     global.builder = require("botbuilder");
     global.serviceNow = require("./routes/serviceNow");
-    global.Promise = require('es6-promise').Promise;
-    global.AuthenticationContext = require('adal-node').AuthenticationContext;
-    const _ = require('lodash');
     require("./recognizers/luis/luisRecognizer")();
     require("./recognizers/qnaMaker/qnaRecognizer")();
 
@@ -26,7 +23,7 @@ module.exports = () => {
     adalConfig.clientId + 
     '&resource=' + 
     adalConfig.resource + 
-    '&response_mode=form_post' + //We want response as POST http request (see callback to see why)
+    '&response_mode=post_form' + //We want response as POST http request (see callback to see why)
     '&redirect_uri=' + adalConfig.redirectUri  // If not specified, the adalConfigured reply URL of the Azure AD App will be used tor for communicating with the Bot Framework Service
     const connector = new builder.ChatConnector({
         appId: process.env.MicrosoftAppId,

@@ -14,8 +14,8 @@ require("./dialogs/serviceNow/knowledge/searchKnowledgeBase")();
 require("./dialogs/serviceNow/knowledge/getResultFeedback")();
 require("./dialogs/serviceNow/knowledge/getResultFailFeedback")();
 require("./dialogs/qnaMaker/basicQnAMakerDialog")();
-
-
+const Promise = require('es6-promise').Promise;
+const AuthenticationContext = require('adal-node').AuthenticationContext;
 
 bot.dialog("/intents", intents);
 
