@@ -21,7 +21,7 @@ module.exports = () => {
     adalConfig.templateAuthzUrl =  adalConfig.authorityUrl +
     '/oauth2/authorize?response_type=code&client_id=' + // Optionally, we can get an Open Id Connect id_token to get more info on the user (some additional parameters are required if so https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-protocols-openid-connect-code)
     adalConfig.clientId + 
-    '&resource=' + 
+    '&state=<state>&resource=' + 
     adalConfig.resource + 
     '&response_mode=post_form' + //We want response as POST http request (see callback to see why)
     '&redirect_uri=' + adalConfig.redirectUri  // If not specified, the adalConfigured reply URL of the Azure AD App will be used tor for communicating with the Bot Framework Service
