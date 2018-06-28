@@ -4,6 +4,7 @@
   "description": "Demo Microsoft Teams Node.js Bot that leverages LUIS and QnAMaker Microsoft Cognitive Services as well as make calls to a ServiceNow Instance API for basic ServiceNow Incident management. ",
   "main": "app.js",
   "dependencies": {
+    "adal-node": "^0.1.28",
     "axios": "^0.18.0",
     "botbuilder": "^3.15.0",
     "botbuilder-azure": "^3.1.0",
@@ -11,6 +12,8 @@
     "botbuilder-teams": "^0.2.1",
     "dotenv": "^6.0.0",
     "dotenv-extended": "^2.0.2",
+    "es6-promise": "^4.2.4",
+    "lodash": "^4.17.10",
     "restify": "^7.2.1"
   },
   "devDependencies": {},

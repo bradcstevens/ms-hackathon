@@ -1,98 +1,10 @@
-require("dotenv-extended").load();
-require("./connectorSetup")();
-require("./dialogs/general/none")();
-require("./dialogs/general/greeting")();
-require("./dialogs/general/thankYou")();
-require("./dialogs/serviceNow/incidents/getIncident")();
-require("./dialogs/serviceNow/serviceNowMenu")();
-require("./dialogs/serviceNow/incidents/createIncident")();
-require("./dialogs/serviceNow/incidents/resolveIncident")();
-require("./dialogs/serviceNow/incidents/updateIncident")();
-require("./dialogs/serviceNow/auth/login")();
-require("./dialogs/serviceNow/auth/specifyCredentials")();
-require("./dialogs/serviceNow/knowledge/searchKnowledgeBase")();
-require("./dialogs/serviceNow/knowledge/getResultFeedback")();
-require("./dialogs/serviceNow/knowledge/getResultFailFeedback")();
-require("./dialogs/qnaMaker/basicQnAMakerDialog")();
-
-
-
-bot.dialog("/intents", intents);
-
-intents.matches(
-    "greeting",
-    builder.DialogAction.beginDialog("/greeting")
-);
-
-intents.matches(
-    "getIncident",
-    builder.DialogAction.beginDialog("/getIncident")
-);
-
-intents.matches(
-    "createIncident",
-    builder.DialogAction.beginDialog("/createIncident")
-);
-
-intents.matches(
-    "updateIncident",
-    builder.DialogAction.beginDialog("/updateIncident")
-);
-
-intents.matches(
-    "resolveIncident",
-    builder.DialogAction.beginDialog("/resolveIncident")
-);
-
-intents.matches(
-    "reopenIncident",
-    builder.DialogAction.beginDialog("/reopenIncident")
-);
-
-intents.matches(
-    "searchKnowledgeBase",
-    builder.DialogAction.beginDialog("/searchKnowledgeBase")
-);
-
-intents.matches(
-    "serviceNowMenu",
-    builder.DialogAction.beginDialog("/serviceNowMenu")
-);
-
-intents.matches(
-    "ThankYou",
-    builder.DialogAction.beginDialog("/thankYou")
-);
-
-intents.matches(
-    "qna",
-    builder.DialogAction.beginDialog("basicQnAMakerDialog")
-);
-
-intents.matches(
-    "none",
-    builder.DialogAction.beginDialog("/None")
-);
-
-intents.onDefault(
-    [
-        (session) => {
-            let message = session.message.text
-            session.send(
-                "Oops! I didn't understand **'" + message + "'** " +
-                session.message.user.name +
-                "! Either I'm not sure how to respond, or I may not have the answer right now. You could always \
-                try to rephrase your question and I'll try again to find you an answer!"
-            );
-        }
-    ]
-);
-
-    
+module.exports = () => {
+    const builder = require("botbuilder");
+    const AuthenticationContext = require('adal-node').AuthenticationContext;
     //=========================================================
     // Bot authorization delegation middleware
     //=========================================================
-    let getAuthorization = (session, args, next) => {
+    global.getAuthorization = (session, args, next) => {
 
         // User is not already signed-in
         if (!session.privateConversationData['accessToken']) {
@@ -183,7 +95,7 @@ intents.onDefault(
         return p;
     }
 
-    let acquireTokenWithRefreshToken = (refreshToken) => {
+    const acquireTokenWithRefreshToken = (refreshToken) => {
 
         var authenticationContext = new AuthenticationContext(adalConfig.authorityUrl);
 
@@ -212,26 +124,4 @@ intents.onDefault(
 
         return p;
     }
-    bot.dialog('/', 
-    [   getAuthorization,
-        (session) => {
-
-            const keywords = session.message.text
-
-            // Check if a a message has been typed
-            if (keywords) {
-
-                // For debugging purpose, we add an arbitrary command to reset the bot state (we also could have implement a logout mechanism).
-                // Initially the native /deleteprofile command was used but it is not available in the Bot Framework v3 anymore.
-                if (keywords === "reset") {
-                    session.privateConversationData = {};
-
-                    // Get back to the main dialog route and prompt for a sign in
-                    session.beginDialog("/");
-                } else {
-
-                    session.beginDialog("/intents");
-                }
-            }
-        }
-    ]);
+}

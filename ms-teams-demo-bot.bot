@@ -1,0 +1,15 @@
+{
+    "name": "ms-teams-demo-bot",
+    "description": "",
+    "secretKey": "",
+    "services": [
+        {
+            "appId": "6f74b15c-1283-45fc-a453-99249829b5da",
+            "id": "d7f61380-7a2f-11e8-839c-8df3c4de97ab",
+            "type": "endpoint",
+            "appPassword": "vfpvNVHUPJ7$?bjmG2174~!",
+            "endpoint": "http://localhost:3978/api/messages",
+            "name": "http://localhost:3978/api/messages"
+        }
+    ]
+}
