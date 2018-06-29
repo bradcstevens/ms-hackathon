@@ -1,4 +1,6 @@
 require("dotenv-extended").load();
+const https = require('https');
+const request = require('request');
 require("./connectorSetup")();
 require("./dialogs/general/none")();
 require("./dialogs/general/greeting")();
