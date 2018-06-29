@@ -36,7 +36,7 @@ module.exports = () => {
             });
     });
 
-    const getAccessTokenWithRefreshToken = (refreshToken, callback) => {
+    global.getAccessTokenWithRefreshToken = (refreshToken, callback) => {
         var data = 'grant_type=refresh_token' +
             '&refresh_token=' + refreshToken +
             '&client_id=' + 
@@ -69,7 +69,7 @@ module.exports = () => {
         });
     }
 
-    const getUserLatestEmail = (accessToken, callback) => {
+    global.getUserLatestEmail = (accessToken, callback) => {
         var options = {
             host: 'outlook.office.com', //https://outlook.office.com/api/v2.0/me/messages
             path: '/api/v2.0/me/MailFolders/Inbox/messages?$top=1',

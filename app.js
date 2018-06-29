@@ -17,10 +17,6 @@ require("./dialogs/qnaMaker/basicQnAMakerDialog")();
 require('./connectorSetup');
 require('./middleware/botauth');
 
-
-
-
-
 bot.dialog("/", intents);
 
 intents.matches(
