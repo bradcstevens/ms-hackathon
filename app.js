@@ -103,6 +103,9 @@ bot.dialog("/signIn", [].concat(
     ba.authenticate("aadv2"),
     (session, args, skip) => {
         let user = ba.profile(session, "aadv2");
+        session.send(
+            "Thanks!" + user.displayName + "!"
+        );
         session.endDialog(user.displayName);
         session.userData.accessToken = user.accessToken;
         session.userData.refreshToken = user.refreshToken;
