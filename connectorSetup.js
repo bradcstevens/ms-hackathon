@@ -10,7 +10,6 @@ module.exports = () => {
     const https = require('https');
     const request = require('request');
     const OIDCStrategy = require('passport-azure-ad').OIDCStrategy;
-    require('./middleware/botauth');
     require("./recognizers/luis/luisRecognizer")();
     require("./recognizers/qnaMaker/qnaRecognizer")();
     const botAuthSecret = process.env.botAuthSecret;
