@@ -7,6 +7,8 @@ module.exports = () => {
     global.builder = require("botbuilder");
     global.serviceNow = require("./routes/serviceNow");
     const expressSession = require('express-session');
+    const https = require('https');
+    const request = require('request');
     const OIDCStrategy = require('passport-azure-ad').OIDCStrategy;
     require('./middleware/botauth');
     require("./recognizers/luis/luisRecognizer")();
