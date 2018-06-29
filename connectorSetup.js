@@ -13,7 +13,7 @@ module.exports = () => {
     const botAuthSecret = process.env.botAuthSecret;
     const tableName = 'MrMeeseeksData';
     const azureTableClient = new botbuilder_azure.AzureTableClient(tableName, process.env.StorageAccountConnectionString);
-    const tableStorage = new botbuilder_azure.AzureBotStorage({ gzipData: true }, azureTableClient);
+    const tableStorage = new botbuilder_azure.AzureBotStorage({ gzipData: false }, azureTableClient);
 
     // Setup Restify Server
     const server = restify.createServer();

@@ -123,10 +123,11 @@ bot.dialog("/signIn", [].concat(
 
 bot.dialog("/logout", (session) => {
     ba.logout(session, "aadv2");
-    session.endDialog("logged_out");
+    session.endDialog();
+
 });
 
-bot.dialog('/workPrompt', [
+bot.dialog("/workPrompt", [
     (session, results, next) => {
         if (!session.userData.accessToken) {
             session.beginDialog("/signIn");
@@ -170,6 +171,7 @@ bot.dialog('/workPrompt', [
                             if (err || body.error) {
                                 session.send("Error while getting a new access token. Please try logout and login again. Error: " + err);
                                 session.endDialog();
+                                session.beginDialog("/logout");
                             } else {
                                 session.userData.accessToken = body.accessToken;
                                 getUserLatestEmail(session.userData.accessToken,
