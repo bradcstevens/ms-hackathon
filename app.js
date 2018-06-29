@@ -17,6 +17,8 @@ require("./dialogs/serviceNow/knowledge/getResultFeedback")();
 require("./dialogs/serviceNow/knowledge/getResultFailFeedback")();
 require("./dialogs/qnaMaker/basicQnAMakerDialog")();
 require('./connectorSetup');
+const AadClientId = process.env.AadClientId;
+const AadClientSecret = process.env.AadClientSecret;
 
 bot.dialog("/", intents);
 
@@ -137,9 +139,26 @@ bot.dialog('/workPrompt', [
             function(requestError, result) {
                 if (result && result.value && result.value.length > 0) {
                     
-                    const responseMessage = 'Your latest email is: "' + result.value[0].Subject + '"';
+                    session.send("Here's what I found:");
+                            let feed = result.value;
+                            let msg = new builder.Message(session).attachmentLayout(
+                                builder.AttachmentLayout.list
+                            );
+                            feed.forEach((result, i) => {
+                                    let url = result.WebLink
+                                    msg.addAttachment(
+                                        new builder.HeroCard(session)
+                                        .title(result.Subject)
+                                        .subtitle("Received Date " + result.ReceivedDateTime)
+                                        .text(result.BodyPreview)
+                                        .buttons([
+                                            builder.CardAction.openUrl(session, url, "View in Outlook on the Web")
+                                        ])
+                                    );
+                                }),
+                                session.send(msg);
+                                
                     session.send(responseMessage);
-                    builder.Prompts.confirm(session, "Retrieve the latest email again?");
                 } else {
                     console.log('no user returned');
                     if (requestError) {
@@ -217,7 +236,7 @@ const getAccessTokenWithRefreshToken = (refreshToken, callback) => {
 const getUserLatestEmail = (accessToken, callback) => {
     var options = {
         host: 'outlook.office.com', //https://outlook.office.com/api/v2.0/me/messages
-        path: '/api/v2.0/me/MailFolders/Inbox/messages?$top=1',
+        path: '/api/v2.0/me/MailFolders/Inbox/messages?$top=5',
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',

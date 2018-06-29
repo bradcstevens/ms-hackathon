@@ -13,7 +13,7 @@ module.exports = () => {
     const botAuthSecret = process.env.botAuthSecret;
     const tableName = 'MrMeeseeksData';
     const azureTableClient = new botbuilder_azure.AzureTableClient(tableName, process.env.StorageAccountConnectionString);
-    const tableStorage = new botbuilder_azure.AzureBotStorage({ gzipData: false }, azureTableClient);
+    const tableStorage = new botbuilder_azure.AzureBotStorage({ gzipData: true }, azureTableClient);
 
     // Setup Restify Server
     const server = restify.createServer();
@@ -57,7 +57,7 @@ module.exports = () => {
 
     ba = new botauth.BotAuthenticator(server, bot, {
         session: true,
-        baseUrl: "https://demo-wus-wab-bs.azurewebsites.net",
+        baseUrl: process.env.botBaseUrl,
         secret: process.env.botAuthSecret,
         successRedirect: '/code'
     });

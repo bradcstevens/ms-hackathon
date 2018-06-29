@@ -3,7 +3,7 @@ module.exports = () => {
         (session) => {
             session.send(
                 "Hi! I'm Mr. Meeseeks! Look at me! \
-                I'm a bot that can help you manage incidents in ServiceNow! \
+                I'm a bot that can help you do things! \
                 Go ahead! Ask me a question! Try saying something like: 'What can you do?'"
             );
             session.replaceDialog("/");
