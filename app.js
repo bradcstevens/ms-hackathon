@@ -125,10 +125,18 @@ bot.dialog("/logout", (session) => {
 });
 
 bot.dialog('/workPrompt', [
+    (session, results, next) => {
+        if (!session.userData.accessToken) {
+            session.beginDialog("/signIn");
+        } else {
+            next();
+        }
+    },
     (session) => {
         getUserLatestEmail(session.userData.accessToken,
             function(requestError, result) {
                 if (result && result.value && result.value.length > 0) {
+                    
                     const responseMessage = 'Your latest email is: "' + result.value[0].Subject + '"';
                     session.send(responseMessage);
                     builder.Prompts.confirm(session, "Retrieve the latest email again?");
@@ -148,6 +156,7 @@ bot.dialog('/workPrompt', [
                                 getUserLatestEmail(session.userData.accessToken,
                                     function(requestError, result) {
                                         if (result && result.value && result.value.length > 0) {
+                                            console.log(result);
                                             const responseMessage = 'Your latest email is: "' + result.value[0].Subject + '"';
                                             session.send(responseMessage);
                                             builder.Prompts.confirm(session, "Retrieve the latest email again?");
@@ -224,6 +233,7 @@ const getUserLatestEmail = (accessToken, callback) => {
         response.on('end', function() {
             var error;
             if (response.statusCode === 200) {
+                console.log(response);
                 callback(null, JSON.parse(body));
             } else {
                 error = new Error();
