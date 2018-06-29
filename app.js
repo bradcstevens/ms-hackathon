@@ -3,6 +3,7 @@ require("./connectorSetup")();
 require("./dialogs/general/none")();
 require("./dialogs/general/greeting")();
 require("./dialogs/general/thankYou")();
+require("./dialogs/botauth/workPrompt")();
 require("./dialogs/serviceNow/incidents/getIncident")();
 require("./dialogs/serviceNow/serviceNowMenu")();
 require("./dialogs/serviceNow/incidents/createIncident")();
@@ -14,8 +15,20 @@ require("./dialogs/serviceNow/knowledge/searchKnowledgeBase")();
 require("./dialogs/serviceNow/knowledge/getResultFeedback")();
 require("./dialogs/serviceNow/knowledge/getResultFailFeedback")();
 require("./dialogs/qnaMaker/basicQnAMakerDialog")();
+require('./connectorSetup');
+bot.dialog("/", [].concat(
 
-bot.dialog("/", intents);
+    ba.authenticate("aadv2"),
+    (session, args, skip) => {
+        let user = ba.profile(session, "aadv2");
+        session.endDialog(user.displayName);
+        session.userData.accessToken = user.accessToken;
+        session.userData.refreshToken = user.refreshToken;
+        session.beginDialog('/workPrompt');
+    }
+));
+
+bot.dialog("/intents", intents);
 
 intents.matches(
     "greeting",
@@ -70,6 +83,11 @@ intents.matches(
 intents.matches(
     "none",
     builder.DialogAction.beginDialog("/None")
+);
+
+intents.matches(
+    "workPrompt",
+    builder.DialogAction.beginDialog("/workPrompt")
 );
 
 intents.onDefault(
