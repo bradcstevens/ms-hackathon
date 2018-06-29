@@ -180,7 +180,6 @@ bot.dialog("/workPrompt", [
                                             console.log(result);
                                             const responseMessage = 'Your latest email is: "' + result.value[0].Subject + '"';
                                             session.send(responseMessage);
-                                            builder.Prompts.confirm(session, "Retrieve the latest email again?");
                                         }
                                     }
                                 );
