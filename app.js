@@ -83,6 +83,11 @@ intents.matches(
     builder.DialogAction.beginDialog("/signIn")
 );
 
+intents.matches(
+    "logout",
+    builder.DialogAction.beginDialog("/logout")
+);
+
 intents.onDefault(
     [
         (session) => {
