@@ -7,6 +7,7 @@ module.exports = () => {
     global.builder = require("botbuilder");
     global.serviceNow = require("./routes/serviceNow");
     const expressSession = require('express-session');
+    const OIDCStrategy = require('passport-azure-ad').OIDCStrategy;
     require('./middleware/botauth');
     require("./recognizers/luis/luisRecognizer")();
     require("./recognizers/qnaMaker/qnaRecognizer")();
@@ -33,12 +34,7 @@ module.exports = () => {
     // Create your bot with a function to receive messages from the user
     global.bot = new builder.UniversalBot(connector).set('storage', tableStorage);
 
-    ba = new botauth.BotAuthenticator(server, bot, {
-        session: true,
-        baseUrl: "https://localhost:3978",
-        secret: process.env.botAuthSecret,
-        successRedirect: '/code'
-    });
+
 
     global.intents = new builder.IntentDialog({
         recognizers: [luisRecognizer, qnaRecognizer],
@@ -60,6 +56,43 @@ module.exports = () => {
     server.use(expressSession({ secret: botAuthSecret, resave: true, saveUninitialized: false }));
     //server.use(passport.initialize());
 
+    ba = new botauth.BotAuthenticator(server, bot, {
+        session: true,
+        baseUrl: "https://demo-wus-wab-bs.azurewebsites.net",
+        secret: process.env.botAuthSecret,
+        successRedirect: '/code'
+    });
+
+    ba.provider("aadv2", (options) => {
+        // Use the v2 endpoint (applications configured by apps.dev.microsoft.com)
+        // For passport-azure-ad v2.0.0, had to set realm = 'common' to ensure authbot works on azure app service
+        let oidStrategyv2 = {
+            redirectUrl: options.callbackURL, //  redirect: /botauth/aadv2/callback
+            realm: process.env.realm,
+            clientID: process.env.AadClientId,
+            clientSecret: process.env.AadClientSecret,
+            identityMetadata: 'https://login.microsoftonline.com/' + process.env.realm + '/v2.0/.well-known/openid-configuration',
+            skipUserProfile: false,
+            validateIssuer: false,
+            //allowHttpForRedirectUrl: true,
+            responseType: 'code',
+            responseMode: 'query',
+            scope: ['email', 'profile', 'offline_access', 'https://outlook.office.com/mail.read'],
+            passReqToCallback: true
+        };
+
+        let strategy = oidStrategyv2;
+
+        return new OIDCStrategy(strategy,
+            (req, iss, sub, profile, accessToken, refreshToken, done) => {
+                if (!profile.displayName) {
+                    return done(new Error("No oid found"), null);
+                }
+                profile.accessToken = accessToken;
+                profile.refreshToken = refreshToken;
+                done(null, profile);
+            });
+    });
 
 
 }

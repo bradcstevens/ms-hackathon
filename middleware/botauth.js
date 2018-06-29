@@ -1,40 +1,11 @@
 module.exports = () => {
-    const OIDCStrategy = require('passport-azure-ad').OIDCStrategy;
+    
     const https = require('https');
     const request = require('request');
 
 
 
-    ba.provider("aadv2", (options) => {
-        // Use the v2 endpoint (applications configured by apps.dev.microsoft.com)
-        // For passport-azure-ad v2.0.0, had to set realm = 'common' to ensure authbot works on azure app service
-        let oidStrategyv2 = {
-            redirectUrl: options.callbackURL, //  redirect: /botauth/aadv2/callback
-            realm: process.env.realm,
-            clientID: process.env.AadClientId,
-            clientSecret: process.env.AadClientSecret,
-            identityMetadata: 'https://login.microsoftonline.com/' + process.env.realm + '/v2.0/.well-known/openid-configuration',
-            skipUserProfile: false,
-            validateIssuer: false,
-            //allowHttpForRedirectUrl: true,
-            responseType: 'code',
-            responseMode: 'query',
-            scope: ['email', 'profile', 'offline_access', 'https://outlook.office.com/mail.read'],
-            passReqToCallback: true
-        };
-
-        let strategy = oidStrategyv2;
-
-        return new OIDCStrategy(strategy,
-            (req, iss, sub, profile, accessToken, refreshToken, done) => {
-                if (!profile.displayName) {
-                    return done(new Error("No oid found"), null);
-                }
-                profile.accessToken = accessToken;
-                profile.refreshToken = refreshToken;
-                done(null, profile);
-            });
-    });
+    
 
     global.getAccessTokenWithRefreshToken = (refreshToken, callback) => {
         var data = 'grant_type=refresh_token' +
