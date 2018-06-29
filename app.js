@@ -3,7 +3,6 @@ require("./connectorSetup")();
 require("./dialogs/general/none")();
 require("./dialogs/general/greeting")();
 require("./dialogs/general/thankYou")();
-require("./dialogs/botauth/workPrompt")();
 require("./dialogs/serviceNow/incidents/getIncident")();
 require("./dialogs/serviceNow/serviceNowMenu")();
 require("./dialogs/serviceNow/incidents/createIncident")();
@@ -16,19 +15,13 @@ require("./dialogs/serviceNow/knowledge/getResultFeedback")();
 require("./dialogs/serviceNow/knowledge/getResultFailFeedback")();
 require("./dialogs/qnaMaker/basicQnAMakerDialog")();
 require('./connectorSetup');
-bot.dialog("/", [].concat(
+require('./middleware/botauth');
 
-    ba.authenticate("aadv2"),
-    (session, args, skip) => {
-        let user = ba.profile(session, "aadv2");
-        session.endDialog(user.displayName);
-        session.userData.accessToken = user.accessToken;
-        session.userData.refreshToken = user.refreshToken;
-        session.beginDialog('/workPrompt');
-    }
-));
 
-bot.dialog("/intents", intents);
+
+
+
+bot.dialog("/", intents);
 
 intents.matches(
     "greeting",
@@ -90,6 +83,11 @@ intents.matches(
     builder.DialogAction.beginDialog("/workPrompt")
 );
 
+intents.matches(
+    "signIn",
+    builder.DialogAction.beginDialog("/signIn")
+);
+
 intents.onDefault(
     [
         (session) => {
@@ -103,3 +101,68 @@ intents.onDefault(
         }
     ]
 );
+
+bot.dialog("/signIn", [].concat(
+
+    ba.authenticate("aadv2"),
+    (session, args, skip) => {
+        let user = ba.profile(session, "aadv2");
+        session.endDialog(user.displayName);
+        session.userData.accessToken = user.accessToken;
+        session.userData.refreshToken = user.refreshToken;
+        session.beginDialog('/workPrompt');
+    }
+));
+
+bot.dialog("/logout", (session) => {
+    ba.logout(session, "aadv2");
+    session.endDialog("logged_out");
+});
+
+bot.dialog('/workPrompt', [
+    (session) => {
+        getUserLatestEmail(session.userData.accessToken,
+            function(requestError, result) {
+                if (result && result.value && result.value.length > 0) {
+                    const responseMessage = 'Your latest email is: "' + result.value[0].Subject + '"';
+                    session.send(responseMessage);
+                    builder.Prompts.confirm(session, "Retrieve the latest email again?");
+                } else {
+                    console.log('no user returned');
+                    if (requestError) {
+                        console.error(requestError);
+                        session.send(requestError);
+                        // Get a new valid access token with refresh token
+                        getAccessTokenWithRefreshToken(session.userData.refreshToken, (err, body, res) => {
+
+                            if (err || body.error) {
+                                session.send("Error while getting a new access token. Please try logout and login again. Error: " + err);
+                                session.endDialog();
+                            } else {
+                                session.userData.accessToken = body.accessToken;
+                                getUserLatestEmail(session.userData.accessToken,
+                                    function(requestError, result) {
+                                        if (result && result.value && result.value.length > 0) {
+                                            const responseMessage = 'Your latest email is: "' + result.value[0].Subject + '"';
+                                            session.send(responseMessage);
+                                            builder.Prompts.confirm(session, "Retrieve the latest email again?");
+                                        }
+                                    }
+                                );
+                            }
+
+                        });
+                    }
+                }
+            }
+        );
+    },
+    (session, results) => {
+        var prompt = results.response;
+        if (prompt) {
+            session.replaceDialog('/workPrompt');
+        } else {
+            session.endDialog();
+        }
+    }
+]);

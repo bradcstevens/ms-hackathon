@@ -1,15 +1,16 @@
 module.exports = () => {
-    const restify = require("restify");
-    const botauth = require("botauth");
-    const botbuilder_azure = require("botbuilder-azure");
-    const teams = require("botbuilder-teams");
     const path = require('path');
-    const expressSession = require('express-session');
+    const botauth = require("botauth");
+    const restify = require("restify");
+    const teams = require("botbuilder-teams");
+    const botbuilder_azure = require("botbuilder-azure");
     global.builder = require("botbuilder");
     global.serviceNow = require("./routes/serviceNow");
+    const expressSession = require('express-session');
+    require('./middleware/botauth');
     require("./recognizers/luis/luisRecognizer")();
     require("./recognizers/qnaMaker/qnaRecognizer")();
-
+    const botAuthSecret = process.env.botAuthSecret;
     const tableName = 'MrMeeseeksData';
     const azureTableClient = new botbuilder_azure.AzureTableClient(tableName, process.env.StorageAccountConnectionString);
     const tableStorage = new botbuilder_azure.AzureBotStorage({ gzipData: false }, azureTableClient);
@@ -34,7 +35,7 @@ module.exports = () => {
 
     ba = new botauth.BotAuthenticator(server, bot, {
         session: true,
-        baseUrl: "https://localhost",
+        baseUrl: "https://localhost:3978",
         secret: process.env.botAuthSecret,
         successRedirect: '/code'
     });
@@ -56,7 +57,7 @@ module.exports = () => {
     }));
     server.use(restify.plugins.queryParser());
     server.use(restify.plugins.bodyParser());
-
+    server.use(expressSession({ secret: botAuthSecret, resave: true, saveUninitialized: false }));
     //server.use(passport.initialize());
 
 

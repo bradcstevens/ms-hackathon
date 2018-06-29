@@ -39,8 +39,9 @@ module.exports = () => {
     const getAccessTokenWithRefreshToken = (refreshToken, callback) => {
         var data = 'grant_type=refresh_token' +
             '&refresh_token=' + refreshToken +
-            '&client_id=' + AZUREAD_APP_ID +
-            '&client_secret=' + encodeURIComponent(AZUREAD_APP_PASSWORD)
+            '&client_id=' + 
+            AadClientId +
+            '&client_secret=' + encodeURIComponent(AadClientSecret)
 
         var options = {
             method: 'POST',
