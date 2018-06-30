@@ -147,14 +147,14 @@ bot.dialog("/workPrompt", [
                     session.send("Here are your 5 most recent e-mails:");
                             let feed = result.value;
                             let msg = new builder.Message(session).attachmentLayout(
-                                builder.AttachmentLayout.list
+                                builder.AttachmentLayout.carousel
                             );
                             feed.forEach((result, i) => {
                                     let url = result.WebLink
                                     msg.addAttachment(
                                         new builder.HeroCard(session)
                                         .title(result.Subject)
-                                        .subtitle("Received Date " + result.ReceivedDateTime)
+                                        .subtitle("Received Date: " + result.ReceivedDateTime)
                                         .text(result.BodyPreview)
                                         .buttons([
                                             builder.CardAction.openUrl(session, url, "View in Outlook on the Web")
