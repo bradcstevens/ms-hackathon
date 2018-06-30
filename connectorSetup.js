@@ -44,6 +44,34 @@ module.exports = () => {
 
     bot.use(stripBotAtMentions);
 
+    bot.on('conversationUpdate', (message) => {
+        if (message.membersAdded && message.membersAdded.length > 0) {
+            let membersAdded = message.membersAdded
+                .map( (m) =>{
+                    let isSelf = m.id === message.address.bot.id;
+                    return (isSelf ? message.address.bot.name : m.name) || '' + ' (Id: ' + m.id + ')';
+                })
+                .join(',');
+
+            bot.send(new builder.Message()
+                .address(message.address)
+                .text('Welcome ' + membersAdded));
+            }
+            
+            if (message.membersRemoved && message.membersRemoved.length > 0) {
+                var membersRemoved = message.membersRemoved
+                    .map(function (m) {
+                        var isSelf = m.id === message.address.bot.id;
+                        return (isSelf ? message.address.bot.name : m.name) || '' + ' (Id: ' + m.id + ')';
+                    })
+                    .join(', ');
+        
+                bot.send(new builder.Message()
+                    .address(message.address)
+                    .text('The following members ' + membersRemoved + ' were removed or left the conversation :('));
+            }
+    });
+
     // Listen for messages from users 
     server.post('/api/messages', connector.listen());
     server.get('/code', restify.plugins.serveStatic({

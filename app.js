@@ -182,9 +182,25 @@ bot.dialog("/workPrompt", [
                                 getUserLatestEmail(session.userData.accessToken,
                                     function(requestError, result) {
                                         if (result && result.value && result.value.length > 0) {
-                                            console.log(result);
-                                            const responseMessage = 'Your latest email is: "' + result.value[0].Subject + '"';
-                                            session.send(responseMessage);
+                                            session.send("Here are your 5 most recent e-mails:");
+                                            let feed = result.value;
+                                            let msg = new builder.Message(session).attachmentLayout(
+                                                builder.AttachmentLayout.carousel
+                                            );
+                                            feed.forEach((result, i) => {
+                                                    let url = result.WebLink
+                                                    msg.addAttachment(
+                                                        new builder.HeroCard(session)
+                                                        .title(result.Subject)
+                                                        .subtitle("Received Date: " + result.ReceivedDateTime)
+                                                        .text(result.BodyPreview)
+                                                        .buttons([
+                                                            builder.CardAction.openUrl(session, url, "View in Outlook on the Web")
+                                                        ])
+                                                    );
+                                                }),
+                                                session.send(msg);
+                                                session.endDialog();
                                         }
                                     }
                                 );
