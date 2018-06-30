@@ -51,7 +51,34 @@ module.exports = () => {
 
     bot.on('conversationUpdate', (message) => {
         console.log(message);
-        let event = teams.TeamsMessage.getConversationUpdateData(message);
+
+            if (message.membersAdded && message.membersAdded.length > 0) {
+                let toMention = {
+                    id: message.address.user.id,
+                    name: message.address.user.name
+                };
+                let mention = new teams.UserMention(toMention);
+                var isGroup = message.address.conversation.isGroup;
+                var txt = isGroup ? "Hello everyone! I'm Mr. Meeseeks! I'm a bot who can help you do things! Ask me something!" : "Welcome " + message.address.user.name + "!";
+                var reply = new teams.TeamsMessage()
+                        .address(message.address)
+                        .addEntity(toMention)
+                        .text('Welcome ' + mention.text + '!');
+                bot.send(reply);
+            } else if (message.membersRemoved) {
+                // See if bot was removed
+                var botId = message.address.bot.id;
+                for (var i = 0; i < message.membersRemoved.length; i++) {
+                    if (message.membersRemoved[i].id === botId) {
+                        // Say goodbye
+                        var reply = new builder.Message()
+                                .address(message.address)
+                                .text("Goodbye");
+                        bot.send(reply);
+                        break;
+                    }
+                }
+            }
     });
 
     // Listen for messages from users 
