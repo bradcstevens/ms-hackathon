@@ -50,7 +50,6 @@ module.exports = () => {
     bot.use(stripBotAtMentions);
 
     bot.on('conversationUpdate', (message) => {
-        console.log(message);
         if (message.membersAdded && message.membersAdded.length > 0) {
             
             let membersAdded = message.membersAdded
@@ -63,10 +62,11 @@ module.exports = () => {
                 id: message.address.user.id,
                 name: message.address.user.name
             }
+            console.log(user);
             let mention = new teams.UserMention(user);
             bot.send(new teams.TeamsMessage()
                 .addEntity(mention)
-                .text('Welcome ' + membersAdded)
+                .text(mention.text + 'Welcome ' + teams.TeamsMessage.getTenantId(message))
                 .address(message.address)
                 );
             }
