@@ -60,7 +60,7 @@ module.exports = () => {
                 let mention = new teams.UserMention(toMention);
                 var isGroup = message.address.conversation.isGroup;
                 var txt = isGroup ? "Hello everyone! I'm Mr. Meeseeks! I'm a bot who can help you do things! Ask me something!" : "Welcome " + message.address.user.name + "!";
-                var reply = new teams.TeamsMessage()
+                var reply = new builder.Message()
                         .address(message.address)
                         .addEntity(toMention)
                         .text('Welcome ' + mention.text + '!');
