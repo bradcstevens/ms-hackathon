@@ -162,6 +162,7 @@ bot.dialog("/workPrompt", [
                                     );
                                 }),
                                 session.send(msg);
+                                session.endDialog();
                                 
                     
                 } else {
