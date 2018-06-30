@@ -30,6 +30,11 @@ module.exports = () => {
         openIdMetadata: process.env.BotOpenIdMetadata
     });
 
+    const teamsConnector = new teams.TeamsChatConnector({
+        appId: process.env.MicrosoftAppId,
+        appPassword: process.env.MicrosoftAppPassword,
+    });
+
     // Create your bot with a function to receive messages from the user
     global.bot = new builder.UniversalBot(connector).set('storage', tableStorage);
 
@@ -45,17 +50,25 @@ module.exports = () => {
     bot.use(stripBotAtMentions);
 
     bot.on('conversationUpdate', (message) => {
+        console.log(message);
         if (message.membersAdded && message.membersAdded.length > 0) {
+            
             let membersAdded = message.membersAdded
                 .map( (m) =>{
                     let isSelf = m.id === message.address.bot.id;
                     return (isSelf ? message.address.bot.name : m.name) || '' + ' (Id: ' + m.id + ')';
                 })
                 .join(',');
-
-            bot.send(new builder.Message()
+            let user = {
+                id: message.address.user.id,
+                name: message.address.user.name
+            }
+            let mention = new teams.UserMention(user);
+            bot.send(new teams.TeamsMessage()
+                .addEntity(mention)
+                .text('Welcome ' + membersAdded)
                 .address(message.address)
-                .text('Welcome ' + membersAdded));
+                );
             }
             
             if (message.membersRemoved && message.membersRemoved.length > 0) {
