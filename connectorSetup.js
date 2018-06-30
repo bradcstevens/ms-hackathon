@@ -50,39 +50,8 @@ module.exports = () => {
     bot.use(stripBotAtMentions);
 
     bot.on('conversationUpdate', (message) => {
-        if (message.membersAdded && message.membersAdded.length > 0) {
-            
-            let membersAdded = message.membersAdded
-                .map( (m) =>{
-                    let isSelf = m.id === message.address.bot.id;
-                    return (isSelf ? message.address.bot.name : m.name) || '' + ' (Id: ' + m.id + ')';
-                })
-                .join(',');
-            let user = {
-                id: message.address.user.id,
-                name: message.address.user.name
-            }
-            console.log(user);
-            let mention = new teams.UserMention(user);
-            bot.send(new teams.TeamsMessage()
-                .addEntity(mention)
-                .text(mention.text + 'Welcome ' + teams.TeamsMessage.getTenantId(message))
-                .address(message.address)
-                );
-            }
-            
-            if (message.membersRemoved && message.membersRemoved.length > 0) {
-                var membersRemoved = message.membersRemoved
-                    .map(function (m) {
-                        var isSelf = m.id === message.address.bot.id;
-                        return (isSelf ? message.address.bot.name : m.name) || '' + ' (Id: ' + m.id + ')';
-                    })
-                    .join(', ');
-        
-                bot.send(new builder.Message()
-                    .address(message.address)
-                    .text('The following members ' + membersRemoved + ' were removed or left the conversation :('));
-            }
+        console.log(message);
+        let event = teams.TeamsMessage.getConversationUpdateData(message);
     });
 
     // Listen for messages from users 
