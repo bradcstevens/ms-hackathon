@@ -106,18 +106,29 @@ intents.onDefault(
     ]
 );
 
-bot.dialog("/signIn", [].concat(
-
+bot.dialog("/signIn", (session, results, next) => {
+        if (session.userData.accessToken) {
+            session.send(
+                "You're already signed in " + session.message.user.name + "!"
+            );
+            session.endDialog();
+        } else {
+            next();
+        }
+    },
+    
+    [].concat(
     ba.authenticate("aadv2"),
     (session, args, skip) => {
         let user = ba.profile(session, "aadv2");
+        console.log(user);
         session.send(
             "Thanks! " + user.displayName + "!"
         );
         session.endDialog();
         session.userData.accessToken = user.accessToken;
         session.userData.refreshToken = user.refreshToken;
-        session.beginDialog('/workPrompt');
+        session.beginDialog('/');
     }
 ));
 
@@ -128,19 +139,12 @@ bot.dialog("/logout", (session) => {
 });
 
 bot.dialog("/workPrompt", [
-    (session, results, next) => {
-        if (!session.userData.accessToken) {
-            session.beginDialog("/signIn");
-        } else {
-            next();
-        }
-    },
     (session) => {
         getUserLatestEmail(session.userData.accessToken,
             function(requestError, result) {
                 if (result && result.value && result.value.length > 0) {
                     
-                    session.send("Here's what I found:");
+                    session.send("Here are your 5 most recent e-mails:");
                             let feed = result.value;
                             let msg = new builder.Message(session).attachmentLayout(
                                 builder.AttachmentLayout.list
@@ -159,7 +163,7 @@ bot.dialog("/workPrompt", [
                                 }),
                                 session.send(msg);
                                 
-                    session.send(responseMessage);
+                    
                 } else {
                     console.log('no user returned');
                     if (requestError) {
