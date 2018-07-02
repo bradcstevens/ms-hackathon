@@ -106,7 +106,15 @@ intents.onDefault(
     ]
 );
 
-bot.dialog("/signIn", [].concat(
+bot.dialog("/signIn", 
+(session, results, next) => {
+    if (session.userData.accessToken || session.userData.refreshToken) {
+        sesion.endDialog("Looks like you are already logged in to Office 365! If I can't access Office 365 for you, I can log you out so you can try signing in again. Just say 'logout' or 'sign out' followed by 'sign in'");
+    } else {
+        next();
+    }
+}, 
+[].concat(
     ba.authenticate("aadv2"),
     (session, args, skip) => {
         let user = ba.profile(session, "aadv2");
