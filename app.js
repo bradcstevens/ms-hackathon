@@ -132,7 +132,7 @@ bot.dialog("/workPrompt",
             next();
         }
     }, 
-  [  
+    
     (session) => {
         getUserLatestEmail(session.userData.accessToken,
             function(requestError, result) {
@@ -214,7 +214,7 @@ bot.dialog("/workPrompt",
             session.endDialog();
         }
     }
-  ]);
+  );
 
 const getAccessTokenWithRefreshToken = (refreshToken, callback) => {
     var data = 'grant_type=refresh_token' +
