@@ -56,10 +56,10 @@
         <script type="text/javascript">
             document.getElementById("magic_code").innerText = (window.location.hash || '').replace('#', '');
             function copy(){
+                var code = document.createElement('input'),
+                text = window.location.hash;
 
-                
-                var code = (window.location.hash || '').replace('#', '');
-                console.log(code);
+                code.value = text;
                 code.select();
                 document.execCommand("copy");
             }
