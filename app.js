@@ -123,7 +123,14 @@ bot.dialog("/logout", (session) => {
 
 });
 
-bot.dialog("/workPrompt", 
+bot.dialog("/workPrompt",
+    (session, results, next) => {
+        if (!session.userData.accessToken || !session.userData.refreshToken) {
+            session.beginDialog("/signIn");
+        } else {
+            next();
+        }
+    }, 
   [  
     (session) => {
         getUserLatestEmail(session.userData.accessToken,
