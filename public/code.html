@@ -48,7 +48,7 @@
                 You're almost done. Please type 
                 <div id="magic_code"></div>
                 in our chat to complete your authentication.
-                <button onclick="copyToClipboard()">Copy Code</button>
+                <button id="copy">Copy Code</button>
             </div>
             
         </div>
@@ -57,8 +57,7 @@
             document.getElementById("magic_code").innerText = (window.location.hash || '').replace('#', '');
 
             function copyToClipboard() {
-                var copyText = document.getElementById("magic_code");
-                copyText.select();
+                document.querySelector('magic_code').select();
                 document.execCommand("copy");
 
 
