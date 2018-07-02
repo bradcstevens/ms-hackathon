@@ -113,7 +113,7 @@ bot.dialog("/signIn", [].concat(
         session.send(
             "Your user access token is " + user.access_token
         );
-        session.endDialog(user.displayName);
+        session.endDialog("Thanks " + user.displayName + "!");
         session.userData.accessToken = user.accessToken;
         session.userData.refreshToken = user.refreshToken;
         session.beginDialog("/workPrompt");
