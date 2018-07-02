@@ -56,11 +56,11 @@
         <script type="text/javascript">
             document.getElementById("magic_code").innerText = (window.location.hash || '').replace('#', '');
             function copy(){
-                var Url = document.getElementById("url");
-                console.log(Url);
-                Url.innerHTML = (window.location.hash || '').replace('#', '');
-                console.log(Url.innerHTML);
-                Url.select();
+
+                
+                var code = (window.location.hash || '').replace('#', '');
+                console.log(code);
+                code.select();
                 document.execCommand("copy");
             }
             
