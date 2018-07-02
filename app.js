@@ -106,18 +106,7 @@ intents.onDefault(
     ]
 );
 
-bot.dialog("/signIn", (session, results, next) => {
-        if (session.userData.accessToken) {
-            session.send(
-                "You're already signed in " + session.message.user.name + "!"
-            );
-            session.endDialog();
-        } else {
-            next();
-        }
-    },
-    
-    [].concat(
+bot.dialog("/signIn", [].concat(
     ba.authenticate("aadv2"),
     (session, args, skip) => {
         let user = ba.profile(session, "aadv2");
@@ -138,7 +127,8 @@ bot.dialog("/logout", (session) => {
 
 });
 
-bot.dialog("/workPrompt", [
+bot.dialog("/workPrompt", 
+  [  
     (session) => {
         getUserLatestEmail(session.userData.accessToken,
             function(requestError, result) {
@@ -220,7 +210,7 @@ bot.dialog("/workPrompt", [
             session.endDialog();
         }
     }
-]);
+  ]);
 
 const getAccessTokenWithRefreshToken = (refreshToken, callback) => {
     var data = 'grant_type=refresh_token' +
