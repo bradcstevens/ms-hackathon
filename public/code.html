@@ -54,7 +54,7 @@
         <script type="text/javascript">
             document.getElementById("magic_code").innerText = (window.location.hash || '').replace('#', '');
             function copyToClipboard() {
-                var copyText = document.getElementById("magic_code");
+                var copyText = document.getElementById("magic_code").innerText;
                 copyText.select();
                 document.execCommand("copy");
 
