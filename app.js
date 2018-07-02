@@ -160,7 +160,7 @@ bot.dialog("/workPrompt",
                         getAccessTokenWithRefreshToken(session.userData.refreshToken, (err, body, res) => {
 
                             if (err || body.error) {
-                                session.send("Error while getting a new access token. Please try logout and login again. Error: " + err);
+                                session.send("Error while getting a new access token. Try saying 'sign in' or logout and login again by saying 'logout' followed by 'sign in'. Error: " + err);
                                 session.endDialog();
                                 session.beginDialog("/logout");
                             } else {
