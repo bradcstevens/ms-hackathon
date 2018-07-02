@@ -114,10 +114,10 @@ bot.dialog("/signIn", [].concat(
         session.send(
             "Thanks! " + user.displayName + "!"
         );
-
+        session.endDialog();
         session.userData.accessToken = user.accessToken;
         session.userData.refreshToken = user.refreshToken;
-        session.endDialog();
+        session.beginDialog("/workPrompt");
     }
 ));
 
