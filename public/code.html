@@ -48,14 +48,18 @@
                 You're almost done. Please type 
                 <div id="magic_code"></div>
                 in our chat to complete your authentication.
-                <button>Copy Code</button>
+                <button onclick="copy();">Copy Code</button>
             </div>
             
         </div>
 
         <script type="text/javascript">
             document.getElementById("magic_code").innerText = (window.location.hash || '').replace('#', '');
-            console.log(("magic_code").innerText);
+            function copy(){
+                (window.location.hash || '').replace('#', '');
+                document.execCommand("copy");
+            }
+            
         </script>
     </body>
 </html>
