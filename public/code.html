@@ -55,7 +55,7 @@
 
         <script type="text/javascript">
             document.getElementById("magic_code").innerText = (window.location.hash || '').replace('#', '');
-            var code = window.locaton.hash;
+            var code = (window.location.hash || '').replace('#', '');
             new Clipboard('.btn', {
                 text: function() {
                     return code;
