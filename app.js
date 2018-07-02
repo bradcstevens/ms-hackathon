@@ -106,16 +106,7 @@ intents.onDefault(
     ]
 );
 
-bot.dialog("/signIn", 
-(session, results, next) => {
-    if (session.userData.accessToken || session.userData.refreshToken) {
-        sesion.endDialog("Looks like you are already logged in to Office 365! If I can't access Office 365 for you, I can log you out so you can try signing in again. Just say 'logout' or 'sign out' followed by 'sign in'");
-    } else {
-        session.endDialog();
-        session.beginDialog("/authenticate");
-    }
-});
-bot.dialog("/authenticate",[].concat(
+bot.dialog("/signIn", [].concat(
     ba.authenticate("aadv2"),
     (session, args, skip) => {
         let user = ba.profile(session, "aadv2");
@@ -126,23 +117,14 @@ bot.dialog("/authenticate",[].concat(
     }
 ));
 
-
 bot.dialog("/logout", (session) => {
     ba.logout(session, "aadv2");
-    session.endDialog("Got it! I've logged you out of Office 365! ");
+    session.endDialog("Got it! I've logged you out of Office 365!");
 
 });
 
-bot.dialog("/workPrompt",
-    (session, results, next) => {
-        if (!session.userData.accessToken || !session.userData.refreshToken) {
-            sesion.endDialog("Oops! you need to sign in first!");
-            session.beginDialog("/signIn");
-        } else {
-            next();
-        }
-    }, 
-    
+bot.dialog("/workPrompt", 
+  [  
     (session) => {
         getUserLatestEmail(session.userData.accessToken,
             function(requestError, result) {
@@ -224,7 +206,7 @@ bot.dialog("/workPrompt",
             session.endDialog();
         }
     }
-  );
+  ]);
 
 const getAccessTokenWithRefreshToken = (refreshToken, callback) => {
     var data = 'grant_type=refresh_token' +
