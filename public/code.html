@@ -14,6 +14,43 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
 
         <style>
+            .tooltip {
+                position: relative;
+                display: inline-block;
+            }
+
+            .tooltip .tooltiptext {
+                visibility: hidden;
+                width: 140px;
+                background-color: #555;
+                color: #fff;
+                text-align: center;
+                border-radius: 6px;
+                padding: 5px;
+                position: absolute;
+                z-index: 1;
+                bottom: 150%;
+                left: 50%;
+                margin-left: -75px;
+                opacity: 0;
+                transition: opacity 0.3s;
+            }
+
+            .tooltip .tooltiptext::after {
+                content: "";
+                position: absolute;
+                top: 100%;
+                left: 50%;
+                margin-left: -5px;
+                border-width: 5px;
+                border-style: solid;
+                border-color: #555 transparent transparent transparent;
+            }
+
+            .tooltip:hover .tooltiptext {
+                visibility: visible;
+                opacity: 1;
+}
             body {
                 -moz-user-select: none;
                 -webkit-user-select: none;
@@ -46,7 +83,14 @@
         <div class="container">
             <div class="jumbotron">
                 You're almost done. Please type 
-                <div id="magic_code"></div><button onclick="copyToClipboard()">Copy Authentication Code</button>
+                <div id="magic_code" class="tooltip">
+                    <button onclick="copyToClipboard()" onmouseout="onMouseOut()">
+                        <span class="tooltiptext" id="copyToolTip">
+                            Copy to clipboard
+                        </span>
+                        Copy Authentication Code
+                    </button>
+                </div>
                 in our chat to complete your authentication.
             </div>
         </div>
@@ -54,9 +98,11 @@
         <script type="text/javascript">
             document.getElementById("magic_code").innerText = (window.location.hash || '').replace('#', '');
             function copyToClipboard() {
-                var copyText = document.getElementById("magic_code").innerText;
+                var copyText = document.getElementById("magic_code");
                 copyText.select();
                 document.execCommand("copy");
+                var tooltip = document.getElementById("copyToolTip");
+                tooltip.innerHTML = "Copy to Clipboard"
 
 
             }
