@@ -48,21 +48,13 @@
                 You're almost done. Please type 
                 <div id="magic_code"></div>
                 in our chat to complete your authentication.
-                <button class="btn" data-clipboard-target=("magic_code").innerText>Copy Code</button>
+                <button class="btn" data-clipboard-target="magic_code">Copy Code</button>
             </div>
             
         </div>
 
         <script type="text/javascript">
             document.getElementById("magic_code").innerText = (window.location.hash || '').replace('#', '');
-
-            var clipboard = new Clipboard('.btn');
-            clipboard.on('success', function(e) {
-                console.log(e);
-            });
-            clipboard.on('error', function(e) {
-                console.log(e);
-            });
         </script>
     </body>
 </html>
