@@ -126,6 +126,7 @@ bot.dialog("/logout", (session) => {
 bot.dialog("/workPrompt",
     (session, results, next) => {
         if (!session.userData.accessToken || !session.userData.refreshToken) {
+            sesion.endDialog("Oops! you need to sign in first!");
             session.beginDialog("/signIn");
         } else {
             next();
