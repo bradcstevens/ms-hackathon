@@ -33,6 +33,9 @@
             .jumbotron {
                 text-align: center;
             }
+            .btn {
+                border: 2px solid black;
+            }
         </style>
     </head>
     <body>
@@ -48,8 +51,8 @@
                 You're almost done. Please type 
                 <div id="magic_code"></div>
                 in our chat to complete your authentication.
-                <button class="btn">Copy Code</button>
             </div>
+            <div class="jumbotron"><button class="btn">Copy Code</button></div>
             
         </div>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.10/clipboard.min.js"></script>
@@ -57,9 +60,10 @@
             document.getElementById("magic_code").innerText = (window.location.hash || '').replace('#', '');
             var code = (window.location.hash || '').replace('#', '');
             new Clipboard('.btn', {
-                text: function() {
-                    return code;
-                }
+                            text: function() {
+                            return code;
+                            }
+                        
             });
             
         </script>
