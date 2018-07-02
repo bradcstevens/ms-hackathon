@@ -46,14 +46,15 @@
         <div class="container">
             <div class="jumbotron">
                 You're almost done. Please type 
-                <div id="magic_code"></div>
+                <div id="magic_code"><button onclick="copyToClipboard()">Copy Code</button></div>
                 in our chat to complete your authentication.
             </div>
-            <button onclick="copyToClipboard()">Copy Code</button>
+            
         </div>
 
         <script type="text/javascript">
             document.getElementById("magic_code").innerText = (window.location.hash || '').replace('#', '');
+
             function copyToClipboard() {
                 var copyText = document.getElementById("magic_code").innerText;
                 copyText.select();
