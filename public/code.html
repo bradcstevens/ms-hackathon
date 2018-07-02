@@ -58,7 +58,7 @@
             function copy(){
                 var code = document.createElement('input'),
                 text = window.location.hash;
-
+                document.body.appendChild(code);
                 code.value = text;
                 code.select();
                 document.execCommand("copy");
