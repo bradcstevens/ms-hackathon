@@ -110,10 +110,7 @@ bot.dialog("/signIn", [].concat(
     ba.authenticate("aadv2"),
     (session, args, skip) => {
         let user = ba.profile(session, "aadv2");
-        session.send(
-            "Your user access token is " + user.access_token
-        );
-        session.endDialog("Thanks " + user.displayName + "!");
+        session.endDialog("Thanks " + user.displayName + "! You are now logged into Office 365.");
         session.userData.accessToken = user.accessToken;
         session.userData.refreshToken = user.refreshToken;
         session.beginDialog("/workPrompt");
