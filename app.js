@@ -119,7 +119,7 @@ bot.dialog("/signIn", [].concat(
 
 bot.dialog("/logout", (session) => {
     ba.logout(session, "aadv2");
-    session.endDialog();
+    session.endDialog("Logged Out!");
 
 });
 
