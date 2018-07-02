@@ -119,7 +119,7 @@ bot.dialog("/signIn", [].concat(
 
 bot.dialog("/logout", (session) => {
     ba.logout(session, "aadv2");
-    session.endDialog("Got it! I've logged you out of Office 365.");
+    session.endDialog("Got it! I've logged you out of Office 365! ");
 
 });
 
@@ -129,14 +129,14 @@ bot.dialog("/workPrompt",
         getUserLatestEmail(session.userData.accessToken,
             function(requestError, result) {
                 if (result && result.value && result.value.length > 0) {
-                    console.log(result.value);
+                    
                     session.send("Here are your 5 most recent e-mails:");
                             let feed = result.value;
                             let msg = new builder.Message(session).attachmentLayout(
                                 builder.AttachmentLayout.carousel
                             );
                             feed.forEach((result, i) => {
-                                    let url = result.value.WebLink
+                                    let url = result.WebLink
                                     msg.addAttachment(
                                         new builder.HeroCard(session)
                                         .title(result.Subject)
