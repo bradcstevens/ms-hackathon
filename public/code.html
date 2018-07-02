@@ -54,16 +54,15 @@
         </div>
 
         <script type="text/javascript">
-                    var clipboard = new Clipboard('.btn');
+            document.getElementById("magic_code").innerText = (window.location.hash || '').replace('#', '');
+
+            var clipboard = new Clipboard('.btn');
             clipboard.on('success', function(e) {
                 console.log(e);
             });
             clipboard.on('error', function(e) {
                 console.log(e);
             });
-            document.getElementById("magic_code").innerText = (window.location.hash || '').replace('#', '');
-
-
         </script>
     </body>
 </html>
