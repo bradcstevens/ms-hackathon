@@ -2,9 +2,24 @@ module.exports = () => {
     bot.dialog("/serviceNowMenu", [
             (session) => {
                 let card = new builder.ThumbnailCard(session)
-                    .title("ServiceNow")
+                    .title("Capabilities")
                     .text("Here's a few things I can do:")
                     .buttons([
+                        builder.CardAction.imBack(
+                            session,
+                            "Login",
+                            "Login to Office 365"
+                        ),
+                        builder.CardAction.imBack(
+                            session,
+                            "Logout",
+                            "Logout of Office 365"
+                        ),
+                        builder.CardAction.imBack(
+                            session,
+                            "Get Email",
+                            "View Recent Exchange Online Emails"
+                        ),
                         builder.CardAction.imBack(
                             session,
                             "Get Incidents",
@@ -12,7 +27,7 @@ module.exports = () => {
                         ),
                         builder.CardAction.imBack(
                             session,
-                            "Create a new ServiceNow Incident",
+                            "Create Incident",
                             "Create a new ServiceNow Incident"
                         ),
                         builder.CardAction.imBack(
@@ -28,7 +43,7 @@ module.exports = () => {
                         builder.CardAction.imBack(
                             session,
                             "Search for a Knowledge Article",
-                            "Search for a Knowledge Article"
+                            "Search for a ServiceNow Knowledge Article"
                         )
                     ]);
                 let message = new builder.Message(session).addAttachment(card);
