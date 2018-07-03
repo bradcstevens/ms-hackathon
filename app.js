@@ -110,10 +110,9 @@ bot.dialog("/signIn", [].concat(
     ba.authenticate("aadv2"),
     (session, args, skip) => {
         let user = ba.profile(session, "aadv2");
-        session.endDialog("Thanks " + user.displayName + "! You are now logged into Office 365.");
+        session.endDialog("Thanks " + user.displayName + "! You are now logged into Office 365! Currently, I can only fetch your 5 most recent e-mails and show them to you here in Teams. All you have to do is say something like 'get email' - Stay tuned for more things that I'll be able to do! ");
         session.userData.accessToken = user.accessToken;
         session.userData.refreshToken = user.refreshToken;
-        session.beginDialog("/workPrompt");
     }
 ));
 
