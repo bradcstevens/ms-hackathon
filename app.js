@@ -63,6 +63,11 @@ intents.matches(
 );
 
 intents.matches(
+    "menu",
+    builder.DialogAction.beginDialog("/menu")
+);
+
+intents.matches(
     "ThankYou",
     builder.DialogAction.beginDialog("/thankYou")
 );
