@@ -43,7 +43,7 @@ module.exports = () => {
                                 .attachmentLayout(builder.AttachmentLayout.list);
                             feed.forEach((result, i) => {
                                     let url =
-                                        "https://dev59625.service-now.com/sp?sys_id=" +
+                                        "https://dev49405.service-now.com/sp?sys_id=" +
                                         result.sys_id +
                                         "&view=sp&id=ticket&table=incident#home";
                                     msg.addAttachment(
