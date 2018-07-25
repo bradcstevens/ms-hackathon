@@ -6,6 +6,7 @@ module.exports = () => {
                     session.beginDialog("/login");
                 } else {
                     session.send(session.userData.caller_id);
+                    session.send(session.userData.user_name);
                     next();
                 }
             },
