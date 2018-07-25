@@ -52,6 +52,7 @@ module.exports = () => {
                                 .getUserRecord(firstName, lastName)
                                 .then((res) => {
                                     session.userData.caller_id = res.data.result[0].sys_id;
+                                    console.log(res.data.result[0].sys_id);
                                     session.userData.user_name = res.data.result[0].user_name;
                                     session.endDialog();
                                 })
