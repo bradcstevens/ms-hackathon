@@ -80,7 +80,7 @@ module.exports = () => {
                     ]);
                     session.send(msg);
                     serviceNow
-                        .createIncident(session.dialogData, session.userData.caller_id)
+                        .createIncident(session.dialogData, session.userData)
                         .then((res) => {
                             session.endDialog();
                         })
@@ -108,7 +108,7 @@ module.exports = () => {
                 ]);
                 session.send(msg);
                 global.serviceNow
-                    .createIncident(session.dialogData, session.userData.caller_id)
+                    .createIncident(session.dialogData, session.userData)
                     .then((res) => {
                         session.endDialog();
                     });
