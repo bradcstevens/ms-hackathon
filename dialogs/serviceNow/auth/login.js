@@ -1,7 +1,7 @@
 module.exports = () => {
     bot.dialog("/login", [
         (session) => {
-            if (session.message.address.channelId === "msteams") {
+            if (session.message.address.channelId === "msteams" || "emulator") {
                 //There are 2 steps to get the user info from a chat
                 //1. Get an access token
                 //2. Use the access token to pull the user
@@ -23,6 +23,7 @@ module.exports = () => {
                 };
                 //This request will return the access token
                 axios.post(tokenUrl, tokenBody, tokenConfig).then((res) => {
+                    console.log(res.data);
                     let accessToken = res.data.access_token;
                     let root = session.message.address.serviceUrl;
                     let conversationID = session.message.address.conversation.id;
@@ -46,13 +47,14 @@ module.exports = () => {
                             // surname: 'Huet-Hudson',
                             // email: 'lucashh@microsoft.com',
                             // userPrincipalName: 'lucashh@microsoft.com' } ]
+                            console.log(res.data[0]);
                             let firstName = res.data[0].givenName;
                             let lastName = res.data[0].surname;
                             serviceNow
                                 .getUserRecord(firstName, lastName)
                                 .then((res) => {
+                                    console.log(res.data.result[0]);
                                     session.userData.caller_id = res.data.result[0].sys_id;
-                                    console.log(res.data.result[0].sys_id);
                                     session.userData.user_name = res.data.result[0].user_name;
                                     session.endDialog();
                                 })

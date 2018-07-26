@@ -1,12 +1,12 @@
 module.exports = () => {
     bot.dialog("/createIncident", [
             (session, results, next) => {
-                if (!session.userData.caller_id) {
-                    session.beginDialog("/login");
-                } else {
-                    console.log(session.userData.caller_id);
-                    next();
-                }
+                // if (!session.userData.caller_id) {
+                session.beginDialog("/login");
+                // } else {
+                //    console.log(session.userData);
+                //    next();
+                // }
             },
             (session) => {
                 session.send(
