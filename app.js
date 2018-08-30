@@ -2,21 +2,37 @@
 const https = require('https');
 const request = require('request');
 require("./connectorSetup")();
-require("./dialogs/general/none")();
+
 require("./dialogs/general/greeting")();
+require("./dialogs/general/integrationMenu")();
 require("./dialogs/general/thankYou")();
+
+require("./dialogs/microsoftOnline/microsoftOnlineMenu")();
+
+require("./dialogs/microsoftOnline/exchangeOnline/exchangeOnlineMenu")();
+
+require("./dialogs/qnaMaker/basicQnAMakerDialog")();
+
+require("./dialogs/serviceNow/auth/specifyCredentials")();
+require("./dialogs/serviceNow/auth/verifyServiceNowUserLogin")();
+
 require("./dialogs/serviceNow/incidents/getIncident")();
-require("./dialogs/serviceNow/serviceNowMenu")();
 require("./dialogs/serviceNow/incidents/createIncident")();
 require("./dialogs/serviceNow/incidents/resolveIncident")();
 require("./dialogs/serviceNow/incidents/updateIncident")();
-require("./dialogs/serviceNow/auth/verifyServiceNowUserLogin")();
-require("./dialogs/serviceNow/auth/specifyCredentials")();
+
 require("./dialogs/serviceNow/knowledge/searchKnowledgeBase")();
 require("./dialogs/serviceNow/knowledge/getResultFeedback")();
 require("./dialogs/serviceNow/knowledge/getResultFailFeedback")();
-require("./dialogs/qnaMaker/basicQnAMakerDialog")();
-require('./connectorSetup');
+
+require("./dialogs/serviceNow/serviceNowMenu")();
+
+require("./recognizers/luis");
+
+require("./recognizers/qnaMaker");
+
+require("./routes/serviceNow");
+
 const AadClientId = process.env.AadClientId;
 const AadClientSecret = process.env.AadClientSecret;
 
