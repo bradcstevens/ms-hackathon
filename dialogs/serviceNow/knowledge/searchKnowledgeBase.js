@@ -2,7 +2,7 @@ module.exports = () => {
     bot.dialog("/searchKnowledgeBase", [
             (session, results, next) => {
                 if (!session.userData.caller_id) {
-                    session.beginDialog("/login");
+                    session.beginDialog("/verifyServiceNowUserLogin");
                 } else {
                     next();
                 }

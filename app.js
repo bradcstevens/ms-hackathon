@@ -10,7 +10,7 @@ require("./dialogs/serviceNow/serviceNowMenu")();
 require("./dialogs/serviceNow/incidents/createIncident")();
 require("./dialogs/serviceNow/incidents/resolveIncident")();
 require("./dialogs/serviceNow/incidents/updateIncident")();
-require("./dialogs/serviceNow/auth/login")();
+require("./dialogs/serviceNow/auth/verifyServiceNowUserLogin")();
 require("./dialogs/serviceNow/auth/specifyCredentials")();
 require("./dialogs/serviceNow/knowledge/searchKnowledgeBase")();
 require("./dialogs/serviceNow/knowledge/getResultFeedback")();
@@ -63,8 +63,18 @@ intents.matches(
 );
 
 intents.matches(
-    "menu",
-    builder.DialogAction.beginDialog("/menu")
+    "exchangeOnlineMenu",
+    builder.DialogAction.beginDialog("/exchangeOnlineMenu")
+);
+
+intents.matches(
+    "microsoftOnlineMenu",
+    builder.DialogAction.beginDialog("/microsoftOnlineMenu")
+);
+
+intents.matches(
+    "integrationMenu",
+    builder.DialogAction.beginDialog("/integrationMenu")
 );
 
 intents.matches(
@@ -78,23 +88,18 @@ intents.matches(
 );
 
 intents.matches(
-    "none",
-    builder.DialogAction.beginDialog("/None")
+    "getExchangeOnlineRecentMail",
+    builder.DialogAction.beginDialog("/getExchangeOnlineRecentMail")
 );
 
 intents.matches(
-    "workPrompt",
-    builder.DialogAction.beginDialog("/workPrompt")
+    "signInMicrosoftOnline",
+    builder.DialogAction.beginDialog("/signInMicrosoftOnline")
 );
 
 intents.matches(
-    "signIn",
-    builder.DialogAction.beginDialog("/signIn")
-);
-
-intents.matches(
-    "logout",
-    builder.DialogAction.beginDialog("/logout")
+    "logoutMicrosoftOnline",
+    builder.DialogAction.beginDialog("/logoutMicrosoftOnline")
 );
 
 intents.onDefault(
@@ -111,7 +116,7 @@ intents.onDefault(
     ]
 );
 
-bot.dialog("/signIn", [].concat(
+bot.dialog("/signInMicrosoftOnline", [].concat(
     ba.authenticate("aadv2"),
     (session, args, skip) => {
         let user = ba.profile(session, "aadv2");
@@ -121,13 +126,13 @@ bot.dialog("/signIn", [].concat(
     }
 ));
 
-bot.dialog("/logout", (session) => {
+bot.dialog("/logoutMicrosoftOnline", (session) => {
     ba.logout(session, "aadv2");
     session.endDialog("Got it! I've logged you out of Office 365!");
 
 });
 
-bot.dialog("/workPrompt", [
+bot.dialog("/getExchangeOnlineRecentMail", [
     (session) => {
         getUserLatestEmail(session.userData.accessToken,
             function(requestError, result) {
@@ -165,7 +170,7 @@ bot.dialog("/workPrompt", [
                             if (err || body.error) {
                                 session.send("Error while getting a new access token. Try saying 'sign in' or logout and login again by saying 'logout' followed by 'sign in'. Error: " + err);
                                 session.endDialog();
-                                session.beginDialog("/logout");
+                                session.beginDialog("/logoutMicrosoftOnline");
                             } else {
                                 session.userData.accessToken = body.accessToken;
                                 getUserLatestEmail(session.userData.accessToken,
@@ -204,7 +209,7 @@ bot.dialog("/workPrompt", [
     (session, results) => {
         var prompt = results.response;
         if (prompt) {
-            session.replaceDialog('/workPrompt');
+            session.replaceDialog('/getExchangeOnlineRecentMail');
         } else {
             session.endDialog();
         }

@@ -1,34 +1,24 @@
 module.exports = () => {
-    bot.dialog("/serviceNowMenu", [
+    bot.dialog("/microsoftOnlineMenu", [
             (session) => {
                 let card = new builder.ThumbnailCard(session)
-                    .title("Capabilities")
+                    .title("Microsoft Online Capabilities")
                     .text("Here's a few things I can do:")
                     .buttons([
                         builder.CardAction.imBack(
                             session,
-                            "Get Incidents",
-                            "View recently created ServiceNow Incidents"
+                            "Login to Microsoft Online",
+                            "Login me into Microsoft Online"
                         ),
                         builder.CardAction.imBack(
                             session,
-                            "Create Incident",
-                            "Create a new ServiceNow Incident"
+                            "Logout of Microsoft Online",
+                            "Logout me out of Microsoft Online"
                         ),
                         builder.CardAction.imBack(
                             session,
-                            "Update Incident",
-                            "Add comments to a ServiceNow Incident"
-                        ),
-                        builder.CardAction.imBack(
-                            session,
-                            "Resolve Incident",
-                            "Resolve your ServiceNow Incident"
-                        ),
-                        builder.CardAction.imBack(
-                            session,
-                            "Search for a Knowledge Article",
-                            "Search for a ServiceNow Knowledge Article"
+                            "Exchange Online Capabilities",
+                            "Show me what you can do with Exchange Online"
                         )
                     ]);
                 let message = new builder.Message(session).addAttachment(card);
@@ -36,7 +26,7 @@ module.exports = () => {
             }
         ])
         .triggerAction({
-            matches: "serviceNowMenu"
+            matches: "microsoftOnlineMenu"
         })
         .endConversationAction("endGreeting", "Ok. Goodbye.", {
             matches: /^cancel$|^goodbye$|^nevermind$|^never mind$|^exit$|^quit$|^start over$/i,

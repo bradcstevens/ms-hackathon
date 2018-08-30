@@ -2,7 +2,7 @@ module.exports = () => {
     bot.dialog("/getIncident", [
             (session, results, next) => {
                 if (!session.userData.caller_id) {
-                    session.beginDialog("/login");
+                    session.beginDialog("/verifyServiceNowUserLogin");
                 } else {
                     next();
                 }
