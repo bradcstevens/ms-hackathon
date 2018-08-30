@@ -27,9 +27,9 @@ require("./dialogs/serviceNow/knowledge/getResultFailFeedback")();
 
 require("./dialogs/serviceNow/serviceNowMenu")();
 
-require("./recognizers/luis");
+require("./recognizers/luis/luisRecognizer");
 
-require("./recognizers/qnaMaker");
+require("./recognizers/qnaMaker/qnaRecognizer");
 
 require("./routes/serviceNow");
 
