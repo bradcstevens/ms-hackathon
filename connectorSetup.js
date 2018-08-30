@@ -15,6 +15,9 @@ module.exports = () => {
     const azureTableClient = new botbuilder_azure.AzureTableClient(tableName, process.env.StorageAccountConnectionString);
     const tableStorage = new botbuilder_azure.AzureBotStorage({ gzipData: false }, azureTableClient);
 
+
+    console.log(azureTableClient);
+
     // Setup Restify Server
     const server = restify.createServer();
     server.listen(process.env.port || process.env.PORT || 3978, () => {
@@ -38,7 +41,7 @@ module.exports = () => {
     // Create your bot with a function to receive messages from the user
     global.bot = new builder.UniversalBot(connector).set('storage', tableStorage);
 
-
+    console.log(tableStorage);
 
     global.intents = new builder.IntentDialog({
         recognizers: [luisRecognizer, qnaRecognizer],
