@@ -11,7 +11,7 @@ module.exports = () => {
     require("./recognizers/luis/luisRecognizer")();
     require("./recognizers/qnaMaker/qnaRecognizer")();
     const botAuthSecret = process.env.botAuthSecret;
-    const tableName = 'ms-teams-demo-bot-data';
+    const tableName = 'msteamsdemobotdata';
     const azureTableClient = new botbuilder_azure.AzureTableClient(tableName, process.env.StorageAccountConnectionString);
     const tableStorage = new botbuilder_azure.AzureBotStorage({ gzipData: false }, azureTableClient);
 
