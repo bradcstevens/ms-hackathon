@@ -1,4 +1,4 @@
-require("dotenv-extended").load();
+// require("dotenv-extended").load();
 const https = require('https');
 const request = require('request');
 require("./connectorSetup")();
@@ -127,34 +127,33 @@ bot.dialog("/logout", (session) => {
 
 });
 
-bot.dialog("/workPrompt", 
-  [  
+bot.dialog("/workPrompt", [
     (session) => {
         getUserLatestEmail(session.userData.accessToken,
             function(requestError, result) {
                 if (result && result.value && result.value.length > 0) {
-                    
+
                     session.send("Here are your 5 most recent e-mails:");
-                            let feed = result.value;
-                            let msg = new builder.Message(session).attachmentLayout(
-                                builder.AttachmentLayout.carousel
+                    let feed = result.value;
+                    let msg = new builder.Message(session).attachmentLayout(
+                        builder.AttachmentLayout.carousel
+                    );
+                    feed.forEach((result, i) => {
+                            let url = result.WebLink
+                            msg.addAttachment(
+                                new builder.HeroCard(session)
+                                .title(result.Subject)
+                                .subtitle("Received Date: " + result.ReceivedDateTime)
+                                .text(result.BodyPreview)
+                                .buttons([
+                                    builder.CardAction.openUrl(session, url, "View in Outlook on the Web")
+                                ])
                             );
-                            feed.forEach((result, i) => {
-                                    let url = result.WebLink
-                                    msg.addAttachment(
-                                        new builder.HeroCard(session)
-                                        .title(result.Subject)
-                                        .subtitle("Received Date: " + result.ReceivedDateTime)
-                                        .text(result.BodyPreview)
-                                        .buttons([
-                                            builder.CardAction.openUrl(session, url, "View in Outlook on the Web")
-                                        ])
-                                    );
-                                }),
-                                session.send(msg);
-                                session.endDialog();
-                                
-                    
+                        }),
+                        session.send(msg);
+                    session.endDialog();
+
+
                 } else {
                     console.log('no user returned');
                     if (requestError) {
@@ -190,7 +189,7 @@ bot.dialog("/workPrompt",
                                                     );
                                                 }),
                                                 session.send(msg);
-                                                session.endDialog();
+                                            session.endDialog();
                                         }
                                     }
                                 );
@@ -210,12 +209,12 @@ bot.dialog("/workPrompt",
             session.endDialog();
         }
     }
-  ]);
+]);
 
 const getAccessTokenWithRefreshToken = (refreshToken, callback) => {
     var data = 'grant_type=refresh_token' +
         '&refresh_token=' + refreshToken +
-        '&client_id=' + 
+        '&client_id=' +
         AadClientId +
         '&client_secret=' + encodeURIComponent(AadClientSecret)
 
