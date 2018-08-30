@@ -1,5 +1,5 @@
 module.exports = () => {
-    bot.dialog("/signInMicrosoftOnline", [
+    bot.dialog("/verifyServiceNowUserLogin", [
         (session) => {
             if (session.message.address.channelId === "msteams" || "emulator") {
                 //There are 2 steps to get the user info from a chat

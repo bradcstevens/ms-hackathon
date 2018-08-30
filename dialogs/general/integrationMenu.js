@@ -8,8 +8,8 @@ module.exports = () => {
                     .buttons([
                         builder.CardAction.imBack(
                             session,
-                            "Office 365",
-                            "Show me what you can do with Office 365"
+                            "Microsoft Online Services",
+                            "Show me what you can do with Microsoft Online Services"
                         ),
                         builder.CardAction.imBack(
                             session,
