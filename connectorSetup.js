@@ -6,6 +6,7 @@ module.exports = () => {
     const botbuilder_azure = require("botbuilder-azure");
     global.builder = require("botbuilder");
     global.serviceNow = require("./routes/serviceNow");
+    const MongoStore = require("express-session-mongo");
     const expressSession = require('express-session');
     const OIDCStrategy = require('passport-azure-ad').OIDCStrategy;
     require("./recognizers/luis/luisRecognizer")();
@@ -62,8 +63,10 @@ module.exports = () => {
     }));
     server.use(restify.plugins.queryParser());
     server.use(restify.plugins.bodyParser());
-    server.use(expressSession({ secret: botAuthSecret, resave: true, saveUninitialized: false }));
+    server.use(expressSession({ secret: botAuthSecret, resave: true, store: new MongoStore() }));
     //server.use(passport.initialize());
+
+    db.sessions.createIndex( { "createdAt": 1 }, { expireAfterSeconds: 3600 } )
 
     ba = new botauth.BotAuthenticator(server, bot, {
         session: true,
