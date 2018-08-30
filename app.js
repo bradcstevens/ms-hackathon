@@ -44,38 +44,13 @@ intents.matches(
 );
 
 intents.matches(
-    "getIncident",
-    builder.DialogAction.beginDialog("/getIncident")
+    "integrationMenu",
+    builder.DialogAction.beginDialog("/integrationMenu")
 );
 
 intents.matches(
-    "createIncident",
-    builder.DialogAction.beginDialog("/createIncident")
-);
-
-intents.matches(
-    "updateIncident",
-    builder.DialogAction.beginDialog("/updateIncident")
-);
-
-intents.matches(
-    "resolveIncident",
-    builder.DialogAction.beginDialog("/resolveIncident")
-);
-
-intents.matches(
-    "reopenIncident",
-    builder.DialogAction.beginDialog("/reopenIncident")
-);
-
-intents.matches(
-    "searchKnowledgeBase",
-    builder.DialogAction.beginDialog("/searchKnowledgeBase")
-);
-
-intents.matches(
-    "serviceNowMenu",
-    builder.DialogAction.beginDialog("/serviceNowMenu")
+    "ThankYou",
+    builder.DialogAction.beginDialog("/thankYou")
 );
 
 intents.matches(
@@ -89,18 +64,38 @@ intents.matches(
 );
 
 intents.matches(
-    "integrationMenu",
-    builder.DialogAction.beginDialog("/integrationMenu")
-);
-
-intents.matches(
-    "ThankYou",
-    builder.DialogAction.beginDialog("/thankYou")
-);
-
-intents.matches(
     "qna",
     builder.DialogAction.beginDialog("basicQnAMakerDialog")
+);
+
+intents.matches(
+    "createIncident",
+    builder.DialogAction.beginDialog("/createIncident")
+);
+
+intents.matches(
+    "getIncident",
+    builder.DialogAction.beginDialog("/getIncident")
+);
+
+intents.matches(
+    "resolveIncident",
+    builder.DialogAction.beginDialog("/resolveIncident")
+);
+
+intents.matches(
+    "updateIncident",
+    builder.DialogAction.beginDialog("/updateIncident")
+);
+
+intents.matches(
+    "searchKnowledgeBase",
+    builder.DialogAction.beginDialog("/searchKnowledgeBase")
+);
+
+intents.matches(
+    "serviceNowMenu",
+    builder.DialogAction.beginDialog("/serviceNowMenu")
 );
 
 intents.matches(
