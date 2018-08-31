@@ -47,7 +47,7 @@ module.exports = () => {
 
     bot.set('persistUserData', false);
 
-    const RedisStore = require('connect-redis')(session);
+    const RedisStore = require('connect-redis')(expressSession);
     const redisClient = require('redis').createClient(6380, process.env.REDISCACHEHOSTNAME,
     {auth_pass: process.env.REDISCACHEKEY, tls: {servername: process.env.REDISCACHEHOSTNAME}});
 
