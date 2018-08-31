@@ -7,7 +7,7 @@ module.exports = () => {
     global.builder = require("botbuilder");
     global.serviceNow = require("./routes/serviceNow");
     const expressSession = require('express-session');
-    const redisStore = require('connect-redis')(session);
+    const redisStore = require('connect-redis');
     const redis = require('redis');
 
     const bluebird = require('bluebird');
