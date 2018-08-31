@@ -16,13 +16,9 @@ module.exports = () => {
     const tableName = 'msteamsdemobotdata';
     const azureTableClient = new botbuilder_azure.AzureTableClient(tableName, process.env.StorageAccountConnectionString);
     const tableStorage = new botbuilder_azure.AzureBotStorage({ gzipData: false }, azureTableClient);
-    const redisOptions = { 
-        client: redisClient, 
-        no_ready_check: true,
-        ttl: 600,
-        logErrors: true
-    };
-    const redisSessionStore = new RedisStore(redisOptions);
+
+    const client = redis.createClient(6380, process.env.REDISCACHEHOSTNAME,
+        {auth_pass: process.env.REDISCACHEKEY, tls: {servername: process.env.REDISCACHEHOSTNAME}});
 
     console.log(azureTableClient);
 
@@ -70,7 +66,7 @@ module.exports = () => {
     }));
     server.use(restify.plugins.queryParser());
     server.use(restify.plugins.bodyParser());
-    server.use(expressSession({ secret: botAuthSecret, resave: true, store: redisSessionStore, saveUninitialized: true }));
+    server.use(expressSession({ secret: botAuthSecret, resave: true, store: client, saveUninitialized: true }));
     //server.use(passport.initialize());
 
     ba = new botauth.BotAuthenticator(server, bot, {
