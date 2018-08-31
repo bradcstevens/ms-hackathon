@@ -16,14 +16,14 @@ module.exports = () => {
     const tableName = 'msteamsdemobotdata';
     const azureTableClient = new botbuilder_azure.AzureTableClient(tableName, process.env.StorageAccountConnectionString);
     const tableStorage = new botbuilder_azure.AzureBotStorage({ gzipData: false }, azureTableClient);
-
-    bluebird.promisifyAll(redis.RedisClient.prototype);
+redis.
+    bluebird.promisifyAll(redis);
     bluebird.promisifyAll(redis.Multi.prototype);
 
     async function testCache() {
 
         // Connect to the Redis cache over the SSL port using the key.
-        var cacheConnection = redis.createClient(6380, process.env.REDISCACHEHOSTNAME, 
+        const cacheConnection = redis.createClient(6380, process.env.REDISCACHEHOSTNAME, 
             {auth_pass: process.env.REDISCACHEKEY, tls: {servername: process.env.REDISCACHEHOSTNAME}});
     
         // Perform cache operations using the cache connection object...
