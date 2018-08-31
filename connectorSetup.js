@@ -7,8 +7,8 @@ module.exports = () => {
     global.builder = require("botbuilder");
     global.serviceNow = require("./routes/serviceNow");
     const expressSession = require('express-session');
-    const redisClient = require('redis').createClient(6380, process.env.REDISCACHEHOSTNAME,
-        {auth_pass: process.env.REDISCACHEKEY, tls: {servername: process.env.REDISCACHEHOSTNAME}});
+    const redisClient = require('redis');
+    const bluebird = require('bluebird');
     const OIDCStrategy = require('passport-azure-ad').OIDCStrategy;
     require("./recognizers/luis/luisRecognizer")();
     require("./recognizers/qnaMaker/qnaRecognizer")();
@@ -17,7 +17,39 @@ module.exports = () => {
     const azureTableClient = new botbuilder_azure.AzureTableClient(tableName, process.env.StorageAccountConnectionString);
     const tableStorage = new botbuilder_azure.AzureBotStorage({ gzipData: false }, azureTableClient);
 
-    console.log(azureTableClient);
+    bluebird.promisifyAll(redis.RedisClient.prototype);
+    bluebird.promisifyAll(redis.Multi.prototype);
+
+    async function testCache() {
+
+        // Connect to the Redis cache over the SSL port using the key.
+        var cacheConnection = redis.createClient(6380, process.env.REDISCACHEHOSTNAME, 
+            {auth_pass: process.env.REDISCACHEKEY, tls: {servername: process.env.REDISCACHEHOSTNAME}});
+    
+        // Perform cache operations using the cache connection object...
+    
+        // Simple PING command
+        console.log("\nCache command: PING");
+        console.log("Cache response : " + await cacheConnection.pingAsync());
+    
+        // Simple get and put of integral data types into the cache
+        console.log("\nCache command: GET Message");
+        console.log("Cache response : " + await cacheConnection.getAsync("Message"));    
+    
+        console.log("\nCache command: SET Message");
+        console.log("Cache response : " + await cacheConnection.setAsync("Message",
+            "Hello! The cache is working from Node.js!"));    
+    
+        // Demostrate "SET Message" executed as expected...
+        console.log("\nCache command: GET Message");
+        console.log("Cache response : " + await cacheConnection.getAsync("Message"));    
+    
+        // Get the client list, useful to see if connection list is growing...
+        console.log("\nCache command: CLIENT LIST");
+        console.log("Cache response : " + await cacheConnection.clientAsync("LIST"));    
+    }
+    
+    testCache();
 
     // Setup Restify Server
     const server = restify.createServer();
@@ -25,6 +57,8 @@ module.exports = () => {
         console.log("%s listening to %s", server.name, server.url);
     });
 
+    const client = redisClient.createClient(6380, process.env.REDISCACHEHOSTNAME,
+        {auth_pass: process.env.REDISCACHEKEY, tls: {servername: process.env.REDISCACHEHOSTNAME}});
 
 
     // Create chat connector for communicating with the Bot Framework Service
@@ -41,8 +75,6 @@ module.exports = () => {
 
     // Create your bot with a function to receive messages from the user
     global.bot = new builder.UniversalBot(connector).set('storage', tableStorage);
-
-    console.log(tableStorage);
 
     global.intents = new builder.IntentDialog({
         recognizers: [luisRecognizer, qnaRecognizer],
