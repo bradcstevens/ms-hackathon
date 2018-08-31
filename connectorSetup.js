@@ -6,8 +6,9 @@ module.exports = () => {
     const botbuilder_azure = require("botbuilder-azure");
     global.builder = require("botbuilder");
     global.serviceNow = require("./routes/serviceNow");
-    const MongoStore = require("express-session-mongo");
     const expressSession = require('express-session');
+    const RedisStore = require('connect-redis')(session);
+    const redisClient = require('redis').createClient(process.env.REDIS_URL);
     const OIDCStrategy = require('passport-azure-ad').OIDCStrategy;
     require("./recognizers/luis/luisRecognizer")();
     require("./recognizers/qnaMaker/qnaRecognizer")();
@@ -15,7 +16,13 @@ module.exports = () => {
     const tableName = 'msteamsdemobotdata';
     const azureTableClient = new botbuilder_azure.AzureTableClient(tableName, process.env.StorageAccountConnectionString);
     const tableStorage = new botbuilder_azure.AzureBotStorage({ gzipData: false }, azureTableClient);
-
+    const redisOptions = { 
+        client: redisClient, 
+        no_ready_check: true,
+        ttl: 600,
+        logErrors: true
+    };
+    const redisSessionStore = new RedisStore(redisOptions);
 
     console.log(azureTableClient);
 
@@ -63,7 +70,7 @@ module.exports = () => {
     }));
     server.use(restify.plugins.queryParser());
     server.use(restify.plugins.bodyParser());
-    server.use(expressSession({ secret: botAuthSecret, resave: true, store: new MongoStore() }));
+    server.use(expressSession({ secret: botAuthSecret, resave: true, store: redisSessionStore, saveUninitialized: true }));
     //server.use(passport.initialize());
 
     ba = new botauth.BotAuthenticator(server, bot, {
