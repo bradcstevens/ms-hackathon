@@ -8,13 +8,13 @@ module.exports = () => {
                     .buttons([
                         builder.CardAction.imBack(
                             session,
-                            "Microsoft Online Services",
-                            "Show me what you can do with Microsoft Online Services"
+                            "Show me what you can do with Microsoft Online Services",
+                            "Microsoft Online Services"                            
                         ),
                         builder.CardAction.imBack(
                             session,
-                            "ServiceNow",
-                            "Show me what you can do with ServiceNow"
+                            "Show me what you can do with ServiceNow",
+                            "ServiceNow"
                         )
                     ]);
                 let message = new builder.Message(session).addAttachment(card);
