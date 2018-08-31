@@ -16,7 +16,7 @@ module.exports = () => {
     const tableName = 'msteamsdemobotdata';
     const azureTableClient = new botbuilder_azure.AzureTableClient(tableName, process.env.StorageAccountConnectionString);
     const tableStorage = new botbuilder_azure.AzureBotStorage({ gzipData: false }, azureTableClient);
-redis.
+
     bluebird.promisifyAll(redis);
     bluebird.promisifyAll(redis.Multi.prototype);
 
