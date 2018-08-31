@@ -22,7 +22,7 @@ module.exports = () => {
     bluebird.promisifyAll(redis);
     bluebird.promisifyAll(redis.Multi.prototype);
     const redisOptions = { 
-        client: redisClient, 
+        client: redis, 
         no_ready_check: true,
         ttl: 600,
         logErrors: true
