@@ -7,8 +7,8 @@ module.exports = () => {
     global.builder = require("botbuilder");
     global.serviceNow = require("./routes/serviceNow");
     const expressSession = require('express-session');
-    const RedisStore = require('connect-redis')(session);
-    const redisClient = require('redis').createClient(process.env.REDIS_URL);
+    const redisClient = require('redis').createClient(6380, process.env.REDISCACHEHOSTNAME,
+        {auth_pass: process.env.REDISCACHEKEY, tls: {servername: process.env.REDISCACHEHOSTNAME}});
     const OIDCStrategy = require('passport-azure-ad').OIDCStrategy;
     require("./recognizers/luis/luisRecognizer")();
     require("./recognizers/qnaMaker/qnaRecognizer")();
@@ -16,9 +16,6 @@ module.exports = () => {
     const tableName = 'msteamsdemobotdata';
     const azureTableClient = new botbuilder_azure.AzureTableClient(tableName, process.env.StorageAccountConnectionString);
     const tableStorage = new botbuilder_azure.AzureBotStorage({ gzipData: false }, azureTableClient);
-
-    const client = redis.createClient(6380, process.env.REDISCACHEHOSTNAME,
-        {auth_pass: process.env.REDISCACHEKEY, tls: {servername: process.env.REDISCACHEHOSTNAME}});
 
     console.log(azureTableClient);
 
