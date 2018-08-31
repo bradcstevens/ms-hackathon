@@ -7,7 +7,9 @@ module.exports = () => {
     global.builder = require("botbuilder");
     global.serviceNow = require("./routes/serviceNow");
     const expressSession = require('express-session');
+    const redisStore = require('connect-redis')(session);
     const redis = require('redis');
+
     const bluebird = require('bluebird');
     const OIDCStrategy = require('passport-azure-ad').OIDCStrategy;
     require("./recognizers/luis/luisRecognizer")();
@@ -19,6 +21,13 @@ module.exports = () => {
 
     bluebird.promisifyAll(redis);
     bluebird.promisifyAll(redis.Multi.prototype);
+    const redisOptions = { 
+        client: redisClient, 
+        no_ready_check: true,
+        ttl: 600,
+        logErrors: true
+    };
+    const redisSessionStore = new redisStore(redisOptions);
 
     async function testCache() {
 
@@ -57,10 +66,6 @@ module.exports = () => {
         console.log("%s listening to %s", server.name, server.url);
     });
 
-    const client = redis.createClient(6380, process.env.REDISCACHEHOSTNAME,
-        {auth_pass: process.env.REDISCACHEKEY, tls: {servername: process.env.REDISCACHEHOSTNAME}});
-
-
     // Create chat connector for communicating with the Bot Framework Service
     const connector = new builder.ChatConnector({
         appId: process.env.MicrosoftAppId,
@@ -95,7 +100,12 @@ module.exports = () => {
     }));
     server.use(restify.plugins.queryParser());
     server.use(restify.plugins.bodyParser());
-    server.use(expressSession({ secret: botAuthSecret, resave: true, store: redis, saveUninitialized: true }));
+    server.use(expressSession({ 
+        secret: botAuthSecret, 
+        resave: true, 
+        store: redisSessionStore, 
+        saveUninitialized: true 
+    }));
     //server.use(passport.initialize());
 
     ba = new botauth.BotAuthenticator(server, bot, {
