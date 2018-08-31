@@ -63,7 +63,7 @@ module.exports = () => {
     }));
     server.use(restify.plugins.queryParser());
     server.use(restify.plugins.bodyParser());
-    server.use(expressSession({ secret: botAuthSecret, resave: true, store: client, saveUninitialized: true }));
+    server.use(expressSession({ secret: botAuthSecret, resave: true, store: redisClient, saveUninitialized: true }));
     //server.use(passport.initialize());
 
     ba = new botauth.BotAuthenticator(server, bot, {
