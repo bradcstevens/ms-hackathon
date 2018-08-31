@@ -32,7 +32,7 @@ module.exports = () => {
                         )
                     ]);
                 let message = new builder.Message(session).addAttachment(card);
-                session.send(message);
+                session.endDialog(message);
             }
         ])
         .triggerAction({
