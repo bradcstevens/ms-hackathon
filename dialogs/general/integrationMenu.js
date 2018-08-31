@@ -13,7 +13,7 @@ module.exports = () => {
                         ),
                         builder.CardAction.imBack(
                             session,
-                            "Show me what you can do with ServiceNow",
+                            "Show me what you can help me do with ServiceNow",
                             "ServiceNow"
                         )
                     ]);
