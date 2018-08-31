@@ -66,8 +66,6 @@ module.exports = () => {
     server.use(expressSession({ secret: botAuthSecret, resave: true, store: new MongoStore() }));
     //server.use(passport.initialize());
 
-    db.sessions.createIndex( { "createdAt": 1 }, { expireAfterSeconds: 3600 } )
-
     ba = new botauth.BotAuthenticator(server, bot, {
         session: true,
         baseUrl: process.env.botBaseUrl,
