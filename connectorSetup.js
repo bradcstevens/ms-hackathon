@@ -7,7 +7,7 @@ module.exports = () => {
     global.builder = require("botbuilder");
     global.serviceNow = require("./routes/serviceNow");
     const expressSession = require('express-session');
-    const redisClient = require('redis');
+    const redis = require('redis');
     const bluebird = require('bluebird');
     const OIDCStrategy = require('passport-azure-ad').OIDCStrategy;
     require("./recognizers/luis/luisRecognizer")();
@@ -57,7 +57,7 @@ module.exports = () => {
         console.log("%s listening to %s", server.name, server.url);
     });
 
-    const client = redisClient.createClient(6380, process.env.REDISCACHEHOSTNAME,
+    const client = redis.createClient(6380, process.env.REDISCACHEHOSTNAME,
         {auth_pass: process.env.REDISCACHEKEY, tls: {servername: process.env.REDISCACHEHOSTNAME}});
 
 
