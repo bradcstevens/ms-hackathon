@@ -3,7 +3,7 @@ module.exports = () => {
             (session) => {
                 let card = new builder.ThumbnailCard(session)
                     .title("Capabilities")
-                    .subtile("Apps I am integrated with")
+                    .subtitle("Apps I am integrated with")
                     .text("Select or say an option below to see what I can do with the applications I'm integrated with")
                     .buttons([
                         builder.CardAction.imBack(
