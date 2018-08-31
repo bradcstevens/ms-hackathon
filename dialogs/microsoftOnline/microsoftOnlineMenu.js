@@ -22,7 +22,7 @@ module.exports = () => {
                         )
                     ]);
                 let message = new builder.Message(session).addAttachment(card);
-                session.endConversation(message);
+                session.send(message);
             }
         ])
         .triggerAction({
