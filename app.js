@@ -1,4 +1,4 @@
-// require("dotenv-extended").load();
+require("dotenv-extended").load();
 const https = require('https');
 const request = require('request');
 require("./connectorSetup")();

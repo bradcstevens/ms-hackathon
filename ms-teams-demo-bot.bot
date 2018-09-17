@@ -4,12 +4,12 @@
     "secretKey": "",
     "services": [
         {
-            "appId": "6f74b15c-1283-45fc-a453-99249829b5da",
-            "id": "d7f61380-7a2f-11e8-839c-8df3c4de97ab",
+            "id": "23f3b590-baa3-11e8-9d59-d32c53224d74",
+            "name": "https://ms-teams-demo-bot.azurewebsites.net",
             "type": "endpoint",
-            "appPassword": "vfpvNVHUPJ7$?bjmG2174~!",
-            "endpoint": "http://localhost:3978/api/messages",
-            "name": "http://localhost:3978/api/messages"
+            "appId": "46309cc3-0c74-4438-bd01-fdd1febeb163",
+            "appPassword": "fctqOLJ589#}[oeoVGLI16#",
+            "endpoint": "http://127.0.0.1:3978"
         }
     ]
 }
