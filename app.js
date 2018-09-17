@@ -31,6 +31,7 @@ require("./recognizers/luis/luisRecognizer");
 
 require("./recognizers/qnaMaker/qnaRecognizer");
 
+require("./routes/azure");
 require("./routes/serviceNow");
 
 const AadClientId = process.env.AadClientId;
