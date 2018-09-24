@@ -1,15 +1,25 @@
 {
     "name": "ms-teams-demo-bot",
     "description": "",
-    "secretKey": "",
     "services": [
         {
-            "id": "23f3b590-baa3-11e8-9d59-d32c53224d74",
-            "name": "https://ms-teams-demo-bot.azurewebsites.net",
             "type": "endpoint",
             "appId": "46309cc3-0c74-4438-bd01-fdd1febeb163",
             "appPassword": "fctqOLJ589#}[oeoVGLI16#",
-            "endpoint": "http://127.0.0.1:3978"
+            "endpoint": "http://localhost:3978",
+            "id": "23f3b590-baa3-11e8-9d59-d32c53224d74",
+            "name": "https://ms-teams-demo-bot.azurewebsites.net"
+        },
+        {
+            "type": "abs",
+            "appId": "46309cc3-0c74-4438-bd01-fdd1febeb163",
+            "serviceName": "46309cc3-0c74-4438-bd01-fdd1febeb163",
+            "id": "184"
         }
-    ]
+    ],
+    "padlock": "",
+    "version": "2.0",
+    "path": "/Users/bradstevens/Git/ms-teams-demo-bot/ms-teams-demo-bot.bot",
+    "overrides": null,
+    "secretKey": ""
 }
