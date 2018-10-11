@@ -1,4 +1,4 @@
-// require("dotenv-extended").load();
+require("dotenv-extended").load();
 const https = require('https');
 const request = require('request');
 require("./connectorSetup")();
@@ -31,6 +31,7 @@ require("./recognizers/luis/luisRecognizer");
 
 require("./recognizers/qnaMaker/qnaRecognizer");
 
+require("./routes/azure");
 require("./routes/serviceNow");
 
 const AadClientId = process.env.AadClientId;
