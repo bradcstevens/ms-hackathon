@@ -44,7 +44,7 @@ module.exports = () => {
                             );
                         feed.forEach((result, i) => {
                                 let url =
-                                    "https://dev58605.service-now.com/sp?sys_id=" +
+                                    "https://dev68819.service-now.com/sp?sys_id=" +
                                     result.sys_id +
                                     "&view=sp&id=ticket&table=incident#home";
                                 msg.addAttachment(

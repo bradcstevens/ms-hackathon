@@ -47,7 +47,7 @@ module.exports = () => {
                                 );
                                 feed.forEach((result, i) => {
                                         let url =
-                                            "https://dev58605.service-now.com/sp?id=kb_article&sys_id=" +
+                                            "https://dev68819.service-now.com/sp?id=kb_article&sys_id=" +
                                             result.sys_id;
                                         msg.addAttachment(
                                             new builder.HeroCard(session)
