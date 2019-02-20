@@ -1,6 +1,6 @@
 module.exports = () => {
     const model =
-        "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/" +
+        "https://westus2.api.cognitive.microsoft.com/luis/v2.0/apps/" +
         process.env.LuisId +
         "?subscription-key=" +
         process.env.LuisKey +
