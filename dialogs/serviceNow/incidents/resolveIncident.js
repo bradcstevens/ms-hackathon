@@ -2,7 +2,7 @@ module.exports = () => {
     bot.dialog("/resolveIncident", [
             (session, results, next) => {
                 if (!session.userData.caller_id) {
-                    session.beginDialog("/login");
+                    session.beginDialog("/verifyServiceNowUserLogin");
                 } else {
                     next();
                 }
@@ -43,7 +43,7 @@ module.exports = () => {
                                 .attachmentLayout(builder.AttachmentLayout.list);
                             feed.forEach((result, i) => {
                                     let url =
-                                        "https://dev59625.service-now.com/sp?sys_id=" +
+                                        "https://dev68819.service-now.com/sp?sys_id=" +
                                         result.sys_id +
                                         "&view=sp&id=ticket&table=incident#home";
                                     msg.addAttachment(

@@ -2,7 +2,7 @@ module.exports = () => {
     bot.dialog("/serviceNowMenu", [
             (session) => {
                 let card = new builder.ThumbnailCard(session)
-                    .title("ServiceNow")
+                    .title("Capabilities")
                     .text("Here's a few things I can do:")
                     .buttons([
                         builder.CardAction.imBack(
@@ -12,7 +12,7 @@ module.exports = () => {
                         ),
                         builder.CardAction.imBack(
                             session,
-                            "Create a new ServiceNow Incident",
+                            "Create Incident",
                             "Create a new ServiceNow Incident"
                         ),
                         builder.CardAction.imBack(
@@ -28,11 +28,11 @@ module.exports = () => {
                         builder.CardAction.imBack(
                             session,
                             "Search for a Knowledge Article",
-                            "Search for a Knowledge Article"
+                            "Search for a ServiceNow Knowledge Article"
                         )
                     ]);
                 let message = new builder.Message(session).addAttachment(card);
-                session.endConversation(message);
+                session.endDialog(message);
             }
         ])
         .triggerAction({

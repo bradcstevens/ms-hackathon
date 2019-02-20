@@ -2,7 +2,7 @@ module.exports = () => {
     bot.dialog("/searchKnowledgeBase", [
             (session, results, next) => {
                 if (!session.userData.caller_id) {
-                    session.beginDialog("/login");
+                    session.beginDialog("/verifyServiceNowUserLogin");
                 } else {
                     next();
                 }
@@ -13,11 +13,11 @@ module.exports = () => {
                 );
                 builder.Prompts.choice(
                     session,
-                    "Did I understand you correctly?", ["Yes, please search IT Help Center.", "No, not now."], { listStyle: builder.ListStyle.button }
+                    "Did I understand you correctly?", ["Yes, please search for ServiceNow Published Knowledge.", "No, not now."], { listStyle: builder.ListStyle.button }
                 );
             },
             (session, results, next) => {
-                if (results.response.entity === "Yes, please search IT Help Center.") {
+                if (results.response.entity === "Yes, please search for ServiceNow Published Knowledge.") {
                     builder.Prompts.text(
                         session,
                         "What would you like to search for? I will be able to provide the first 10 results of what I find."
@@ -47,7 +47,7 @@ module.exports = () => {
                                 );
                                 feed.forEach((result, i) => {
                                         let url =
-                                            "https://dev59625.service-now.com/sp?id=kb_article&sys_id=" +
+                                            "https://dev68819.service-now.com/sp?id=kb_article&sys_id=" +
                                             result.sys_id;
                                         msg.addAttachment(
                                             new builder.HeroCard(session)

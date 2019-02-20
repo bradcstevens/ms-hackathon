@@ -2,23 +2,41 @@ require("dotenv-extended").load();
 const https = require('https');
 const request = require('request');
 require("./connectorSetup")();
-require("./dialogs/general/none")();
+
 require("./dialogs/general/greeting")();
+require("./dialogs/general/integrationMenu")();
 require("./dialogs/general/thankYou")();
+
+require("./dialogs/microsoftOnline/microsoftOnlineMenu")();
+
+require("./dialogs/microsoftOnline/exchangeOnline/exchangeOnlineMenu")();
+
+require("./dialogs/qnaMaker/basicQnAMakerDialog")();
+
+require("./dialogs/serviceNow/auth/specifyCredentials")();
+require("./dialogs/serviceNow/auth/verifyServiceNowUserLogin")();
+
 require("./dialogs/serviceNow/incidents/getIncident")();
-require("./dialogs/serviceNow/serviceNowMenu")();
 require("./dialogs/serviceNow/incidents/createIncident")();
 require("./dialogs/serviceNow/incidents/resolveIncident")();
 require("./dialogs/serviceNow/incidents/updateIncident")();
-require("./dialogs/serviceNow/auth/login")();
-require("./dialogs/serviceNow/auth/specifyCredentials")();
+
 require("./dialogs/serviceNow/knowledge/searchKnowledgeBase")();
 require("./dialogs/serviceNow/knowledge/getResultFeedback")();
 require("./dialogs/serviceNow/knowledge/getResultFailFeedback")();
-require("./dialogs/qnaMaker/basicQnAMakerDialog")();
-require('./connectorSetup');
+
+require("./dialogs/serviceNow/serviceNowMenu")();
+
+require("./recognizers/luis/luisRecognizer");
+
+require("./recognizers/qnaMaker/qnaRecognizer");
+
+require("./routes/azure");
+require("./routes/serviceNow");
+
 const AadClientId = process.env.AadClientId;
 const AadClientSecret = process.env.AadClientSecret;
+
 
 bot.dialog("/", intents);
 
@@ -28,8 +46,28 @@ intents.matches(
 );
 
 intents.matches(
-    "getIncident",
-    builder.DialogAction.beginDialog("/getIncident")
+    "integrationMenu",
+    builder.DialogAction.beginDialog("/integrationMenu")
+);
+
+intents.matches(
+    "ThankYou",
+    builder.DialogAction.beginDialog("/thankYou")
+);
+
+intents.matches(
+    "exchangeOnlineMenu",
+    builder.DialogAction.beginDialog("/exchangeOnlineMenu")
+);
+
+intents.matches(
+    "microsoftOnlineMenu",
+    builder.DialogAction.beginDialog("/microsoftOnlineMenu")
+);
+
+intents.matches(
+    "qna",
+    builder.DialogAction.beginDialog("basicQnAMakerDialog")
 );
 
 intents.matches(
@@ -38,8 +76,8 @@ intents.matches(
 );
 
 intents.matches(
-    "updateIncident",
-    builder.DialogAction.beginDialog("/updateIncident")
+    "getIncident",
+    builder.DialogAction.beginDialog("/getIncident")
 );
 
 intents.matches(
@@ -48,8 +86,8 @@ intents.matches(
 );
 
 intents.matches(
-    "reopenIncident",
-    builder.DialogAction.beginDialog("/reopenIncident")
+    "updateIncident",
+    builder.DialogAction.beginDialog("/updateIncident")
 );
 
 intents.matches(
@@ -63,33 +101,18 @@ intents.matches(
 );
 
 intents.matches(
-    "ThankYou",
-    builder.DialogAction.beginDialog("/thankYou")
+    "getExchangeOnlineRecentMail",
+    builder.DialogAction.beginDialog("/getExchangeOnlineRecentMail")
 );
 
 intents.matches(
-    "qna",
-    builder.DialogAction.beginDialog("basicQnAMakerDialog")
+    "signInMicrosoftOnline",
+    builder.DialogAction.beginDialog("/signInMicrosoftOnline")
 );
 
 intents.matches(
-    "none",
-    builder.DialogAction.beginDialog("/None")
-);
-
-intents.matches(
-    "workPrompt",
-    builder.DialogAction.beginDialog("/workPrompt")
-);
-
-intents.matches(
-    "signIn",
-    builder.DialogAction.beginDialog("/signIn")
-);
-
-intents.matches(
-    "logout",
-    builder.DialogAction.beginDialog("/logout")
+    "logoutMicrosoftOnline",
+    builder.DialogAction.beginDialog("/logoutMicrosoftOnline")
 );
 
 intents.onDefault(
@@ -106,51 +129,49 @@ intents.onDefault(
     ]
 );
 
-bot.dialog("/signIn", [].concat(
+bot.dialog("/signInMicrosoftOnline", [].concat(
     ba.authenticate("aadv2"),
     (session, args, skip) => {
         let user = ba.profile(session, "aadv2");
-        session.endDialog("Thanks " + user.displayName + "! You are now logged into Office 365.");
+        session.endDialog("Thanks " + user.displayName + "! You are now logged into Office 365! Currently, I can only fetch your 5 most recent e-mails and show them to you here in Teams. All you have to do is say something like 'get email' - Stay tuned for more things that I'll be able to do! ");
         session.userData.accessToken = user.accessToken;
         session.userData.refreshToken = user.refreshToken;
-        session.beginDialog("/workPrompt");
     }
 ));
 
-bot.dialog("/logout", (session) => {
+bot.dialog("/logoutMicrosoftOnline", (session) => {
     ba.logout(session, "aadv2");
     session.endDialog("Got it! I've logged you out of Office 365!");
 
 });
 
-bot.dialog("/workPrompt", 
-  [  
+bot.dialog("/getExchangeOnlineRecentMail", [
     (session) => {
         getUserLatestEmail(session.userData.accessToken,
             function(requestError, result) {
                 if (result && result.value && result.value.length > 0) {
-                    
+
                     session.send("Here are your 5 most recent e-mails:");
-                            let feed = result.value;
-                            let msg = new builder.Message(session).attachmentLayout(
-                                builder.AttachmentLayout.carousel
+                    let feed = result.value;
+                    let msg = new builder.Message(session).attachmentLayout(
+                        builder.AttachmentLayout.carousel
+                    );
+                    feed.forEach((result, i) => {
+                            let url = result.WebLink
+                            msg.addAttachment(
+                                new builder.HeroCard(session)
+                                .title(result.Subject)
+                                .subtitle("Received Date: " + result.ReceivedDateTime)
+                                .text(result.BodyPreview)
+                                .buttons([
+                                    builder.CardAction.openUrl(session, url, "View in Outlook on the Web")
+                                ])
                             );
-                            feed.forEach((result, i) => {
-                                    let url = result.WebLink
-                                    msg.addAttachment(
-                                        new builder.HeroCard(session)
-                                        .title(result.Subject)
-                                        .subtitle("Received Date: " + result.ReceivedDateTime)
-                                        .text(result.BodyPreview)
-                                        .buttons([
-                                            builder.CardAction.openUrl(session, url, "View in Outlook on the Web")
-                                        ])
-                                    );
-                                }),
-                                session.send(msg);
-                                session.endDialog();
-                                
-                    
+                        }),
+                        session.send(msg);
+                    session.endDialog();
+
+
                 } else {
                     console.log('no user returned');
                     if (requestError) {
@@ -162,7 +183,7 @@ bot.dialog("/workPrompt",
                             if (err || body.error) {
                                 session.send("Error while getting a new access token. Try saying 'sign in' or logout and login again by saying 'logout' followed by 'sign in'. Error: " + err);
                                 session.endDialog();
-                                session.beginDialog("/logout");
+                                session.beginDialog("/logoutMicrosoftOnline");
                             } else {
                                 session.userData.accessToken = body.accessToken;
                                 getUserLatestEmail(session.userData.accessToken,
@@ -186,7 +207,7 @@ bot.dialog("/workPrompt",
                                                     );
                                                 }),
                                                 session.send(msg);
-                                                session.endDialog();
+                                            session.endDialog();
                                         }
                                     }
                                 );
@@ -201,17 +222,17 @@ bot.dialog("/workPrompt",
     (session, results) => {
         var prompt = results.response;
         if (prompt) {
-            session.replaceDialog('/workPrompt');
+            session.replaceDialog('/getExchangeOnlineRecentMail');
         } else {
             session.endDialog();
         }
     }
-  ]);
+]);
 
 const getAccessTokenWithRefreshToken = (refreshToken, callback) => {
     var data = 'grant_type=refresh_token' +
         '&refresh_token=' + refreshToken +
-        '&client_id=' + 
+        '&client_id=' +
         AadClientId +
         '&client_secret=' + encodeURIComponent(AadClientSecret)
 

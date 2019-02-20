@@ -11,7 +11,7 @@ module.exports = () => {
     require("./recognizers/luis/luisRecognizer")();
     require("./recognizers/qnaMaker/qnaRecognizer")();
     const botAuthSecret = process.env.botAuthSecret;
-    const tableName = 'MrMeeseeksData';
+    const tableName = 'msteamsdemobotdata';
     const azureTableClient = new botbuilder_azure.AzureTableClient(tableName, process.env.StorageAccountConnectionString);
     const tableStorage = new botbuilder_azure.AzureBotStorage({ gzipData: false }, azureTableClient);
 
@@ -20,8 +20,6 @@ module.exports = () => {
     server.listen(process.env.port || process.env.PORT || 3978, () => {
         console.log("%s listening to %s", server.name, server.url);
     });
-
-
 
     // Create chat connector for communicating with the Bot Framework Service
     const connector = new builder.ChatConnector({
@@ -38,8 +36,6 @@ module.exports = () => {
     // Create your bot with a function to receive messages from the user
     global.bot = new builder.UniversalBot(connector).set('storage', tableStorage);
 
-
-
     global.intents = new builder.IntentDialog({
         recognizers: [luisRecognizer, qnaRecognizer],
         recognizeOrder: builder.RecognizeOrder.series
@@ -49,47 +45,35 @@ module.exports = () => {
 
     bot.use(stripBotAtMentions);
 
-    bot.on('conversationUpdate', (message) => {
-        console.log(message);
+    bot.set('persistUserData', false);
 
-            if (message.membersAdded && message.membersAdded.length > 0) {
-                let toMention = {
-                    id: message.address.user.id,
-                    name: message.address.user.name
-                };
-                let mention = new teams.UserMention(toMention);
-                var isGroup = message.address.conversation.isGroup;
-                var txt = isGroup ? "Hello everyone! I'm Mr. Meeseeks! I'm a bot who can help you do things! Ask me something!" : "Welcome " + message.address.user.name + "!";
-                var reply = new builder.Message()
-                        .address(message.address)
-                        .addEntity(toMention)
-                        .text('Welcome ' + mention.text + '!');
-                bot.send(reply);
-            } else if (message.membersRemoved) {
-                // See if bot was removed
-                var botId = message.address.bot.id;
-                for (var i = 0; i < message.membersRemoved.length; i++) {
-                    if (message.membersRemoved[i].id === botId) {
-                        // Say goodbye
-                        var reply = new builder.Message()
-                                .address(message.address)
-                                .text("Goodbye");
-                        bot.send(reply);
-                        break;
-                    }
-                }
-            }
-    });
+    const RedisStore = require('connect-redis')(expressSession);
+    const redisClient = require('redis').createClient(6380, process.env.REDISCACHEHOSTNAME,
+    {auth_pass: process.env.REDISCACHEKEY, tls: {servername: process.env.REDISCACHEHOSTNAME}});
 
+    const redisOptions = { 
+        client: redisClient, 
+        no_ready_check: true,
+        ttl: 600,
+        logErrors: true
+};
+
+    const redisSessionStore = new RedisStore(redisOptions);
     // Listen for messages from users 
     server.post('/api/messages', connector.listen());
     server.get('/code', restify.plugins.serveStatic({
         'directory': path.join(__dirname, 'public'),
         'file': 'code.html'
     }));
+
     server.use(restify.plugins.queryParser());
     server.use(restify.plugins.bodyParser());
-    server.use(expressSession({ secret: botAuthSecret, resave: true, saveUninitialized: false }));
+    server.use(expressSession({ 
+        secret: botAuthSecret, 
+        resave: true, 
+        store: redisSessionStore, 
+        saveUninitialized: true 
+    }));
     //server.use(passport.initialize());
 
     ba = new botauth.BotAuthenticator(server, bot, {

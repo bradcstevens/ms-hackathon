@@ -55,7 +55,7 @@ module.exports = () => {
 
             // Save the QnAMaker Answer
             let qnaAnswer = qnaMakerResult.answers[0].answer;
-            ssession.conversationData.qnaAnswer = qnaAnswer;
+            session.conversationData.qnaAnswer = qnaAnswer;
             let qnaAnswerConversationData = session.conversationData.qnaAnswer;
             console.log(qnaAnswerConversationData);
 

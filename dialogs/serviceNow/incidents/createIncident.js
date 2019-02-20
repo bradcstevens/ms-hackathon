@@ -1,11 +1,12 @@
 module.exports = () => {
     bot.dialog("/createIncident", [
             (session, results, next) => {
-                if (!session.userData.caller_id) {
-                    session.beginDialog("/login");
-                } else {
-                    next();
-                }
+                // if (!session.userData.caller_id) {
+                session.beginDialog("/verifyServiceNowUserLogin");
+                // } else {
+                //    console.log(session.userData);
+                //    next();
+                // }
             },
             (session) => {
                 session.send(
@@ -64,7 +65,7 @@ module.exports = () => {
                         "Thanks! I was successfully able to submit your issue as an incident in ServiceNow!"
                     );
                     let url =
-                        "https://dev59625.service-now.com/nav_to.do?uri=%2Fincident_list.do%3Factive%3Dtrue%26sysparm_query%3Dactive%3Dtrue%5EEQ%26sysparm_userpref_module%3D4fed4395c0a8016400fcf06c27b1e6c6%26sysparm_clear_stack%3Dtrue";
+                        "https://dev68819.service-now.com/nav_to.do?uri=%2Fincident_list.do%3Factive%3Dtrue%26sysparm_query%3Dactive%3Dtrue%5EEQ%26sysparm_userpref_module%3D4fed4395c0a8016400fcf06c27b1e6c6%26sysparm_clear_stack%3Dtrue";
                     let imageURL =
                         "https://az818438.vo.msecnd.net/icons/service-now.png";
                     let msg = new builder.Message(session);
@@ -77,7 +78,7 @@ module.exports = () => {
                     ]);
                     session.send(msg);
                     serviceNow
-                        .createIncident(session.dialogData, session.userData.caller_id)
+                        .createIncident(session.dialogData, session.userData)
                         .then((res) => {
                             session.endDialog();
                         })
@@ -92,7 +93,7 @@ module.exports = () => {
                     "Thanks! I was successfully able to submit your issue as an incident in ServiceNow!"
                 );
                 var url =
-                    "https://dev59625.service-now.com/nav_to.do?uri=%2Fincident_list.do%3Factive%3Dtrue%26sysparm_query%3Dactive%3Dtrue%5EEQ%26sysparm_userpref_module%3D4fed4395c0a8016400fcf06c27b1e6c6%26sysparm_clear_stack%3Dtrue";
+                    "https://dev68819.service-now.com/nav_to.do?uri=%2Fincident_list.do%3Factive%3Dtrue%26sysparm_query%3Dactive%3Dtrue%5EEQ%26sysparm_userpref_module%3D4fed4395c0a8016400fcf06c27b1e6c6%26sysparm_clear_stack%3Dtrue";
                 var imageURL =
                     "https://az818438.vo.msecnd.net/icons/service-now.png";
                 let msg = new builder.Message(session);
@@ -105,7 +106,7 @@ module.exports = () => {
                 ]);
                 session.send(msg);
                 global.serviceNow
-                    .createIncident(session.dialogData, session.userData.caller_id)
+                    .createIncident(session.dialogData, session.userData)
                     .then((res) => {
                         session.endDialog();
                     });
